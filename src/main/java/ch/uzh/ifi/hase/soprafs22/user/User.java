@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.entity;
+package ch.uzh.ifi.hase.soprafs22.user;
 
 public class User implements IUser {
 
@@ -8,7 +8,6 @@ public class User implements IUser {
 
     private String username;
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -18,7 +17,6 @@ public class User implements IUser {
         return this.id;
     }
 
-    @Override
     public void setToken(String token) {
         this.token = token;
     }
@@ -28,7 +26,6 @@ public class User implements IUser {
         return this.token;
     }
 
-    @Override
     public void setUsername(String username) {
         this.username = username;
     }
