@@ -1,5 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
+import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreateable;
+import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.user.IUser;
+import ch.uzh.ifi.hase.soprafs22.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,8 +30,25 @@ public class LobbyService {
      * Create a new lobby and add it to the LobbyManager
      * @return the created lobby
      */
-    public void createLobby(){
+    public ILobby createLobby(String token){
 
+        IUser host;
+
+        // Check if token is set, then find user with token and set him as admin
+        // ToDo: Create User with unique id etc.
+        host = new User();
+
+        ILobby lobby;
+
+        // Try to create a new lobby
+        try {
+            lobby = LobbyManager.getInstance().createLobby(host);
+        }catch(SmallestLobbyIdNotCreateable e){
+           e.printStackTrace();
+           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The server could not generate a unique id");
+        }
+
+        return lobby;
     }
 
 

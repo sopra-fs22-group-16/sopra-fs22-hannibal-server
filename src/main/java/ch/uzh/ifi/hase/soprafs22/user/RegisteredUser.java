@@ -5,13 +5,14 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
-@Entity
+// FIXME: THIS DOES NOT WORK!!! SERVER CAN'T START ANYMORE
+//@Entity
 public class RegisteredUser extends UserDecorator {
 
-    @Embedded
-    @OneToOne(targetEntity = User.class)
+    //@Embedded
+    //@OneToOne(targetEntity = User.class)
     private IUser user;
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String password;
     private int rankedScore;
     private int wins;

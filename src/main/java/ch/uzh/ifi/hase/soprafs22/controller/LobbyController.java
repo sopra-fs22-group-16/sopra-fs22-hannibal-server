@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +32,10 @@ public class LobbyController {
     @ResponseBody
     public LobbyGetDTO createLobby(@RequestHeader("token") String token) {
 
-        return new LobbyGetDTO();
+        // Create a new lobby for user with this token
+        ILobby lobby = lobbyService.createLobby(token);
+
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
     // TODO: Add implementation for get lobby with id

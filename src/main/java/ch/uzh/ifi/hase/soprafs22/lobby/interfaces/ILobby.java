@@ -36,4 +36,8 @@ public interface ILobby extends Iterable<IUser>{
      * @return true if the user is ready, false if the user is not ready or not in the lobby
      */
     boolean isUserReady(IUser user);
+
+    GameMode getGameMode();
+
+    GameType getGameType();
 }

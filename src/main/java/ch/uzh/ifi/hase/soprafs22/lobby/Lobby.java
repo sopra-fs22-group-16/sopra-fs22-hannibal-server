@@ -11,17 +11,16 @@ import org.springframework.web.client.RestTemplate;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class Lobby implements ILobby {
 
-    private long id;
+    private final long id;
     private String name;
     private LobbyMode lobbyMode;
     private Game game;
     private IUser host;
-    private List<IUser> userList;
-    private Map<IUser, Boolean> readyMap;
+    private final List<IUser> userList;
+    private final Map<IUser, Boolean> readyMap;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
@@ -42,8 +41,7 @@ public class Lobby implements ILobby {
         String data = URLEncoder.encode(HANNIBAL_URL + code, StandardCharsets.UTF_8);
         RestTemplate restTemplate = new RestTemplate();
         String url = QR_API_URL + "/?data=" + data + "&size=100x100";
-        byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-        return imageBytes;
+        return restTemplate.getForObject(url, byte[].class);
     }
 
     @Override
@@ -79,6 +77,7 @@ public class Lobby implements ILobby {
         this.game.setGameMode(gameMode);
     }
 
+    @Override
     public GameMode getGameMode(){
         return this.game.getGameMode();
     }
@@ -87,6 +86,9 @@ public class Lobby implements ILobby {
     public void setGameType(GameType gameType) {
         this.game.setGameType(gameType);
     }
+
+    @Override
+    public GameType getGameType(){return this.game.getGameType();}
 
     @Override
     public void startGame() {
@@ -117,6 +119,5 @@ public class Lobby implements ILobby {
     public Iterator<IUser> iterator() {
         return userList.iterator();
     }
-
 
 }
