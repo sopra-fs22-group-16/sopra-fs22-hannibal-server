@@ -29,6 +29,7 @@ public class Lobby implements ILobby {
         this.id = id;
         this.name = name;
         this.lobbyMode = lobbyMode;
+        this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.host = host;
         this.userList = new LinkedList<>();
         userList.add(host);
@@ -75,17 +76,16 @@ public class Lobby implements ILobby {
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        //this.game.setGameMode(gameMode);
+        this.game.setGameMode(gameMode);
     }
 
     public GameMode getGameMode(){
-        // return this.game.getGameMode();
-        return GameMode.ONE_VS_ONE;
+        return this.game.getGameMode();
     }
 
     @Override
     public void setGameType(GameType gameType) {
-        //this.game.setGameType(gameType);
+        this.game.setGameType(gameType);
     }
 
     @Override
