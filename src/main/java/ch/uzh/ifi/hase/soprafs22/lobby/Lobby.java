@@ -4,17 +4,16 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
-public class Lobby implements ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby {
+public class Lobby implements ILobby {
 
     private long id;
     private String name;
@@ -94,23 +93,30 @@ public class Lobby implements ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby 
         //this.game.start();
     }
 
+    @Override
     public long getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-    public List<IUser> getUserList() {
-        return userList;
-    }
-
+    @Override
     public IUser getHost() {
         return host;
     }
 
+    @Override
     public boolean isUserReady(IUser user){
-        return readyMap.get(user);
+        return readyMap.containsKey(user) && readyMap.get(user);
     }
+
+    @Override
+    public Iterator<IUser> iterator() {
+        return userList.iterator();
+    }
+
+
 }

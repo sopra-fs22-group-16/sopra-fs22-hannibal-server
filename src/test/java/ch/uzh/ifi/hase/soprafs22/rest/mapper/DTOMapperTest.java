@@ -4,11 +4,15 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.MemberGetDTO;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import ch.uzh.ifi.hase.soprafs22.user.User;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * DTOMapperTest
@@ -35,9 +39,20 @@ public class DTOMapperTest {
         assertEquals(lobbyGetDTO.getLobbyId(), lobby.getId());
         assertEquals(lobbyGetDTO.getName(), lobby.getName());
         assertEquals(lobbyGetDTO.getOwner(), lobby.getHost().getId());
-        assertEquals(lobbyGetDTO.getMembers().get(0).getId(), lobby.getUserList().get(0).getId());
-        assertEquals(lobbyGetDTO.getMembers().get(0).getName(), lobby.getUserList().get(0).getUsername());
-        // assertEquals(lobbyGetDTO.getMembers().get(0).isReady(), lobby.isUserReady(lobby.getUserList().get(0)));
+
+        int counter = 0;
+        for (Iterator<IUser> it = lobby.iterator(); it.hasNext(); ) {
+            // Check that there exists an element in the lobbyGetDTO
+            assertTrue(counter < lobbyGetDTO.getMembers().size());
+            // Get the next user from the lobby
+            IUser user = it.next();
+            // Check that their id, username and ready status matches
+            assertEquals(lobbyGetDTO.getMembers().get(counter).getId(), user.getId());
+            assertEquals(lobbyGetDTO.getMembers().get(counter).getName(), user.getUsername());
+            // assertEquals(lobbyGetDTO.getMembers().get(counter).isReady(), lobby.isUserReady(lobby.getUserList().get(0)));
+            ++counter;
+        }
+
         assertEquals(lobbyGetDTO.getVisibility(), lobby.getLobbyMode());
         // assertEquals(lobbyGetDTO.getGameMode(), lobby.getGame().getGameMode());
         // assertEquals(lobbyGetDTO.getRanked(), lobby.getGame().getGameType());

@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -34,7 +35,8 @@ public abstract class DTOMapper {
         // Set the member list by creating memberGetDTOs
         // and storing them in the list
         LinkedList<MemberGetDTO> members = new LinkedList<>();
-        for (IUser user: lobby.getUserList()) {
+        for (Iterator<IUser> it = lobby.iterator(); it.hasNext(); ) {
+            IUser user = it.next();
             MemberGetDTO userGetDTO = new MemberGetDTO();
             userGetDTO.setId(user.getId());
             userGetDTO.setName(user.getUsername());

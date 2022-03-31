@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 
-public interface ILobby {
+public interface ILobby extends Iterable<IUser>{
     byte[] generateQrCode(String code);
 
     void changeReadyStatus(int token);
@@ -23,4 +23,17 @@ public interface ILobby {
     void setGameType(GameType gameType);
 
     void startGame();
+
+    long getId();
+
+    String getName();
+
+    IUser getHost();
+
+    /**
+     * Checks if the specified user is ready
+     * @param user the specified user
+     * @return true if the user is ready, false if the user is not ready or not in the lobby
+     */
+    boolean isUserReady(IUser user);
 }
