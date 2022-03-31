@@ -1,7 +1,17 @@
 package ch.uzh.ifi.hase.soprafs22.user;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
+@Entity
 public class RegisteredUser extends UserDecorator {
+
+    @Embedded
+    @OneToOne(targetEntity = User.class)
     private IUser user;
+    @Column(nullable = false)
     private String password;
     private int rankedScore;
     private int wins;
