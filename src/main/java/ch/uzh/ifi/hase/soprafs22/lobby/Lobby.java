@@ -9,24 +9,32 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class Lobby implements ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby {
+
     private long id;
     private String name;
     private LobbyMode lobbyMode;
     private Game game;
     private IUser host;
     private List<IUser> userList;
-    private Map<Integer, Boolean> readyMap;
+    private Map<IUser, Boolean> readyMap;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
-    public Lobby(String name, LobbyMode lobbyMode, IUser host) {
+    public Lobby(Long id, String name, LobbyMode lobbyMode, IUser host) {
+        this.id = id;
         this.name = name;
         this.lobbyMode = lobbyMode;
         this.host = host;
+        this.userList = new LinkedList<>();
+        userList.add(host);
+        this.readyMap = new HashMap<>();
+        readyMap.put(host, false);
     }
 
     @Override
@@ -56,16 +64,24 @@ public class Lobby implements ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby 
     @Override
     public void addUser(IUser user) {
         userList.add(user);
+        readyMap.put(user, false);
     }
 
     @Override
     public IUser removeUser(int index) {
-        return userList.remove(index);
+        IUser user = userList.remove(index);
+        readyMap.remove(user);
+        return user;
     }
 
     @Override
     public void setGameMode(GameMode gameMode) {
         //this.game.setGameMode(gameMode);
+    }
+
+    public GameMode getGameMode(){
+        // return this.game.getGameMode();
+        return GameMode.ONE_VS_ONE;
     }
 
     @Override
@@ -76,5 +92,25 @@ public class Lobby implements ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby 
     @Override
     public void startGame() {
         //this.game.start();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<IUser> getUserList() {
+        return userList;
+    }
+
+    public IUser getHost() {
+        return host;
+    }
+
+    public boolean isUserReady(IUser user){
+        return readyMap.get(user);
     }
 }

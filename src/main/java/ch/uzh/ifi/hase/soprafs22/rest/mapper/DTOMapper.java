@@ -1,7 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.MemberGetDTO;
+import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+
+import java.util.LinkedList;
 
 /**
  * DTOMapper
@@ -15,8 +21,36 @@ import org.mapstruct.factory.Mappers;
  * creating information (POST).
  */
 @Mapper
-public interface DTOMapper {
+public abstract class DTOMapper {
 
-    DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+    public static DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+
+    public LobbyGetDTO convertLobbyToLobbyGetDTO(Lobby lobby){
+        LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
+        lobbyGetDTO.setLobbyId(lobby.getId());
+        lobbyGetDTO.setName(lobby.getName());
+        lobbyGetDTO.setOwner(lobby.getHost().getId());
+
+        // Set the member list by creating memberGetDTOs
+        // and storing them in the list
+        LinkedList<MemberGetDTO> members = new LinkedList<>();
+        for (IUser user: lobby.getUserList()) {
+            MemberGetDTO userGetDTO = new MemberGetDTO();
+            userGetDTO.setId(user.getId());
+            userGetDTO.setName(user.getUsername());
+            // userGetDTO.setReady(lobby.isUserReady(user));
+            members.add(userGetDTO);
+        }
+        lobbyGetDTO.setMembers(members);
+
+        lobbyGetDTO.setVisibility(lobby.getLobbyMode());
+
+        // lobbyGetDTO.setGameMode(lobby.getGame().getGameMode());
+        // lobbyGetDTO.setRanked(lobby.getGame().getGameType());
+        // lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
+
+
+        return lobbyGetDTO;
+    }
 
 }

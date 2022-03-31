@@ -5,19 +5,30 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 // TODO: Add visibility
 // TODO: ADD GameMode
 
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+
+import java.util.LinkedList;
+import java.util.List;
+
 public class LobbyGetDTO {
 
     Long lobbyId;
 
     String name;
 
-    String invitationCode;
-
     Long owner;
 
-    Long chatId;
+    List<MemberGetDTO> members;
 
-    boolean ranked;
+    LobbyMode visibility;
+
+    GameMode gameMode;
+
+    GameType ranked;
+
+    String invitationCode;
 
     public Long getLobbyId() {
         return lobbyId;
@@ -51,19 +62,35 @@ public class LobbyGetDTO {
         this.owner = owner;
     }
 
-    public Long getChatId() {
-        return chatId;
+    public List<MemberGetDTO> getMembers() {
+        return members;
     }
 
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
+    public void setMembers(LinkedList<MemberGetDTO> members) {
+        this.members = members;
     }
 
-    public boolean isRanked() {
+    public LobbyMode getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(LobbyMode visibility) {
+        this.visibility = visibility;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
+    }
+
+    public GameType getRanked() {
         return ranked;
     }
 
-    public void setRanked(boolean ranked) {
+    public void setRanked(GameType ranked) {
         this.ranked = ranked;
     }
 }
