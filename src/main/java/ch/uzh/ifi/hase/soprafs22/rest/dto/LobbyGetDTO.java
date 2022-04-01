@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-// TODO: Add list of members
 // TODO: Add QR_Code
-// TODO: Add visibility
-// TODO: ADD GameMode
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;

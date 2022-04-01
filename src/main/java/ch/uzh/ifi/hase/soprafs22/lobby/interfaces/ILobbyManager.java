@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
-import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
-import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;

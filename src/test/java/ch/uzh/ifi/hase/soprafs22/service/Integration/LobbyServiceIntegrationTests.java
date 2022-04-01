@@ -2,29 +2,23 @@ package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import ch.uzh.ifi.hase.soprafs22.user.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import org.mockito.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 
 public class LobbyServiceIntegrationTests {
 
@@ -40,7 +34,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_unregisteredUser_validInputs_success() throws SmallestLobbyIdNotCreatable {
+    void createLobby_unregisteredUser_validInputs_success(){
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
@@ -71,9 +65,8 @@ public class LobbyServiceIntegrationTests {
     void createLobby_unregisteredUser_NullAndEmptyParameters_throwsException(String lobbyName, LobbyMode lobbyMode, GameMode gameMode, GameType gameType) {
 
         // attempt to create a lobby with missing information
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType);
-        });
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
@@ -91,9 +84,8 @@ public class LobbyServiceIntegrationTests {
         LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE, new User());
 
         // attempt to create second lobby with same name
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType);
-        });
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.CONFLICT.value());
@@ -114,6 +106,8 @@ public class LobbyServiceIntegrationTests {
 
         // create lobby
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
         // Attempt to get lobby with id
@@ -145,12 +139,13 @@ public class LobbyServiceIntegrationTests {
 
         // create lobby
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
         // Attempt to
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            lobbyService.getLobby(token, 0L);
-        });
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getLobby(token, id));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.UNAUTHORIZED.value());
@@ -172,12 +167,12 @@ public class LobbyServiceIntegrationTests {
 
         // create lobby
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
-        Long id = createdLobby.getId();
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
 
         // Attempt to get nonexistent lobby with id 1L
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            lobbyService.getLobby("token", 1L);
-        });
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getLobby("token", 1L));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.NOT_FOUND.value());
@@ -199,12 +194,13 @@ public class LobbyServiceIntegrationTests {
 
         // create lobby
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
         // Attempt to get nonexistent lobby with id 1L
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, () -> {
-            lobbyService.getLobby("wrongToken", 0L);
-        });
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getLobby("wrongToken", id));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());

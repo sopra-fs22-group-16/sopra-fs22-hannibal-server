@@ -46,7 +46,7 @@ public class DTOMapperTest {
             // Check that their id, username and ready status matches
             assertEquals(lobbyGetDTO.getMembers().get(counter).getId(), user.getId());
             assertEquals(lobbyGetDTO.getMembers().get(counter).getName(), user.getUsername());
-            // assertEquals(lobbyGetDTO.getMembers().get(counter).isReady(), lobby.isUserReady(lobby.getUserList().get(0)));
+            assertEquals(lobbyGetDTO.getMembers().get(counter).isReady(), lobby.isUserReady(user));
             ++counter;
         }
 

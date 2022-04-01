@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.MemberGetDTO;
@@ -39,7 +38,7 @@ public abstract class DTOMapper {
             MemberGetDTO memberGetDTO = new MemberGetDTO();
             memberGetDTO.setId(user.getId());
             memberGetDTO.setName(user.getUsername());
-            // userGetDTO.setReady(lobby.isUserReady(user));
+            memberGetDTO.setReady(lobby.isUserReady(user));
             members.add(memberGetDTO);
         }
         lobbyGetDTO.setMembers(members);
