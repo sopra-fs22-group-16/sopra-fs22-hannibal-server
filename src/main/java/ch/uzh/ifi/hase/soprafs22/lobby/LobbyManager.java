@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -11,7 +13,7 @@ import java.util.stream.LongStream;
 
 public class LobbyManager implements ILobbyManager {
 
-    public volatile static LobbyManager uniqueInstance;
+    private volatile static LobbyManager uniqueInstance;
 
     private final HashMap<Long, ILobby> lobbyList;
 
@@ -31,22 +33,21 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public ILobby removeLobbyWithId(Long id) {
+    public ILobby removeLobbyWithId(long id) {
         return this.lobbyList.remove(id);
     }
 
     @Override
-    public ILobby getLobbyWithId(Long id) {
+    public ILobby getLobbyWithId(long id) {
         return lobbyList.get(id);
     }
 
     @Override
-    public ILobby createLobby(IUser host) throws SmallestLobbyIdNotCreatable {
+    public ILobby createLobby(String lobbyName, LobbyMode lobbyMode, IUser host) throws SmallestLobbyIdNotCreatable {
 
         long id = generateSmallestUniqueId();
-        String lobbyName = "Lobby-" + id;
 
-        ILobby lobby = new Lobby(id, lobbyName, LobbyMode.PRIVATE, host);
+        ILobby lobby = new Lobby(id, lobbyName, lobbyMode, host);
         this.lobbyList.put(id, lobby);
 
         return lobby;

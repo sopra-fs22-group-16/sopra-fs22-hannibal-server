@@ -1,6 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
@@ -31,7 +34,7 @@ public class LobbyService {
      * @return the created lobby
      * @throws ResponseStatusException with HttpStatus.INTERNAL_SERVER_ERROR if the lobbyManager wasn't able to generate a new id
      */
-    public ILobby createLobby(String token){
+    public ILobby createLobby(String token, String lobbyName, LobbyMode lobbyMode, GameMode gameMode, GameType gameType){
 
         IUser host;
 
@@ -49,11 +52,15 @@ public class LobbyService {
 
         // Try to create a new lobby
         try {
-            newLobby = LobbyManager.getInstance().createLobby(host);
+            newLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
         }catch(SmallestLobbyIdNotCreatable e){
            e.printStackTrace();
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The server could not generate a unique id");
         }
+
+        // Set the gameType and gameMode of the lobby
+        newLobby.setGameMode(gameMode);
+        newLobby.setGameType(gameType);
 
         log.debug("Created Information for Lobby: {}", newLobby);
         return newLobby;
