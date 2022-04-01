@@ -7,19 +7,19 @@ public class User implements IUser {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
 
     private String token;
 
     @Column(nullable = false, unique = true)
     private String username;
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     @Override
-    public Long getId() {
+    public long getId() {
         return this.id;
     }
 

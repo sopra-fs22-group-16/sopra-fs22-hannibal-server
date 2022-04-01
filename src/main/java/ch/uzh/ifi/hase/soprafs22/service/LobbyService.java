@@ -29,6 +29,7 @@ public class LobbyService {
     /**
      * Create a new lobby and add it to the LobbyManager
      * @return the created lobby
+     * @throws ResponseStatusException with HttpStatus.INTERNAL_SERVER_ERROR if the lobbyManager wasn't able to generate a new id
      */
     public ILobby createLobby(String token){
 

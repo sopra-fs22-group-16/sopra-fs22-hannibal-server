@@ -60,7 +60,7 @@ public class RegisteredUser extends UserDecorator {
     }
 
     @Override
-    public Long getId() {
+    public long getId() {
         return this.user.getId();
     }
 
