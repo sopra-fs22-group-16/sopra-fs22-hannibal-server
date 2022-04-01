@@ -33,20 +33,48 @@ public class LobbyService {
      * Create a new lobby and add it to the LobbyManager
      * @return the created lobby
      * @throws ResponseStatusException with HttpStatus.INTERNAL_SERVER_ERROR if the lobbyManager wasn't able to generate a new id
+     * @throws ResponseStatusException with HttpStatus.CONFLICT if the provided lobby name is not unique
+     * @throws ResponseStatusException with HttpStatus.BAD_REQUEST if the provided information is incomplete
+     * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no registered user was found with the provided token
+     *
      */
     public ILobby createLobby(String token, String lobbyName, LobbyMode lobbyMode, GameMode gameMode, GameType gameType){
+
+        // Check if values are valid
+        if(lobbyName == null || lobbyName.isEmpty()){
+            String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }else if(lobbyMode == null){
+            String errorMessage = "The lobby mode provided is empty. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }else if(gameMode == null){
+            String errorMessage = "The game mode provided is empty. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }else if(gameType == null){
+            String errorMessage = "The game type provided is empty. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
 
         IUser host;
 
         // Check if token is set, then find user with token and set him as admin
         // ToDo: Create User with unique id etc.
-        if(token.isEmpty()){
+        if(token == null || token.isEmpty()){
             host = new User();
         }else{
             // Create user with registered user info
             host = new User();
+            if(host == null){
+                String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be created!";
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+            }
         }
 
+        // Check if lobby name already exists
+        if(LobbyManager.getInstance().getLobbyWithName(lobbyName) != null){
+            String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
+        }
 
         ILobby newLobby;
 
@@ -55,7 +83,8 @@ public class LobbyService {
             newLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
         }catch(SmallestLobbyIdNotCreatable e){
            e.printStackTrace();
-           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The server could not generate a unique id");
+           String errorMessage = "The server could not generate a unique id";
+           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
         }
 
         // Set the gameType and gameMode of the lobby
@@ -66,20 +95,25 @@ public class LobbyService {
         return newLobby;
     }
 
-
-    // TODO: Implement getLobby
     /**
      * Find and return lobby with specified id using the LobbyManager
      * @param lobbyId the id of the lobby to look up
      * @return the lobby with the specified id
      * @throws ResponseStatusException with HttpStatus.NOT_FOUND if there is no lobby with the specified lobbyId
-     * @throws ResponseStatusException with HttpStatus.UNAUTHORIZED if the user is not in the lobby and thus shouldn't have access
+     * @throws ResponseStatusException with HttpStatus.UNAUTHORIZED if no authentication was provided
+     * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no player was found in the lobby with the provided token
      */
     public ILobby getLobby(String token, Long lobbyId){
 
+        // Check if authentication was provided
+        if(token == null || token.isEmpty()){
+            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
+        }
+
         ILobby lobby = LobbyManager.getInstance().getLobbyWithId(lobbyId);
 
-        // Check if lobby exists
+        // Check if lobby exists else throw an error
         if(lobby == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
         }
@@ -92,7 +126,9 @@ public class LobbyService {
             }
         }
 
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format("The user is not authorized to get the lobby with id %s", lobbyId));
+        // If no user was found matching the token throw an error
+        String errorMessage = "The provided authentication was incorrect.";
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
 }

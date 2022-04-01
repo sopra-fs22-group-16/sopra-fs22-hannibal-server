@@ -40,4 +40,6 @@ public interface ILobby extends Iterable<IUser>{
     GameMode getGameMode();
 
     GameType getGameType();
+
+    String getInvitationCode();
 }

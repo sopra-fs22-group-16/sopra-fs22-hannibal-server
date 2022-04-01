@@ -1,24 +1,34 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import ch.uzh.ifi.hase.soprafs22.user.User;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LobbyManagerTest {
 
+    private static LobbyManager lobbyManager;
+
+    @BeforeAll
+    static void setup(){
+        lobbyManager = LobbyManager.getInstance();
+    }
+
+    @BeforeEach
+    public void before(){
+        // Clear lobbyManager lobby list
+        lobbyManager.clear();
+    }
+
     @Test
     public void createLobby_emptyLobbyList() {
-        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
-            // Clear lobbyManager lobby list
-            lobbyManager.clear();
-
             // Create host
             IUser host = new User();
 
@@ -39,11 +49,7 @@ class LobbyManagerTest {
 
     @Test
     public void createLobby_idIncreases() {
-        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
-            // Clear lobbyManager lobby list
-            lobbyManager.clear();
-
             // Fill lobby list
             lobbyManager.createLobby("LobbyName1", LobbyMode.PRIVATE, new User());
 
@@ -67,11 +73,7 @@ class LobbyManagerTest {
 
     @Test
     public void createLobby_notContinuousIds_inList() {
-        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
-            // Clear lobbyManager lobby list
-            lobbyManager.clear();
-
             // Fill lobby list
             lobbyManager.createLobby("LobbyName0", LobbyMode.PRIVATE, new User()); // id = 0
             ILobby lobby1 = lobbyManager.createLobby("LobbyName1", LobbyMode.PRIVATE, new User()); // id = 1
@@ -100,12 +102,6 @@ class LobbyManagerTest {
 
     @Test
     public void removeLobbyWithId_removed(){
-        LobbyManager lobbyManager = LobbyManager.getInstance();
-
-        // Clear lobbyManager lobby list
-        lobbyManager.clear();
-
-
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("LobbyName", LobbyMode.PRIVATE, new User()); // id = 0
@@ -125,11 +121,6 @@ class LobbyManagerTest {
 
     @Test
     public void getLobbyWithId(){
-        LobbyManager lobbyManager = LobbyManager.getInstance();
-
-        // Clear lobbyManager lobby list
-        lobbyManager.clear();
-
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("LobbyName", LobbyMode.PRIVATE, new User()); // id = 0

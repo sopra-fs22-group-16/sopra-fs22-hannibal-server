@@ -18,9 +18,10 @@ public class Lobby implements ILobby {
     private String name;
     private LobbyMode lobbyMode;
     private Game game;
-    private IUser host;
+    private final IUser host;
     private final List<IUser> userList;
     private final Map<IUser, Boolean> readyMap;
+    private String invitationCode;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
@@ -89,6 +90,11 @@ public class Lobby implements ILobby {
 
     @Override
     public GameType getGameType(){return this.game.getGameType();}
+
+    @Override
+    public String getInvitationCode() {
+        return this.invitationCode;
+    }
 
     @Override
     public void startGame() {

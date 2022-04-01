@@ -70,9 +70,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.ranked", is(lobby.getGameType().toString())))
-                .andExpect(jsonPath("$.invitationCode").hasJsonPath());
-                //TODO: Add check for invitation code
-
+                .andExpect(jsonPath("$.invitationCode", is(lobby.getInvitationCode())));
     }
 
     @Test
@@ -112,8 +110,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.ranked", is(lobby.getGameType().toString())))
-                .andExpect(jsonPath("$.invitationCode").hasJsonPath());
-                //TODO: Add check for invitation code
+                .andExpect(jsonPath("$.invitationCode", is(lobby.getInvitationCode())));
 
     }
 
@@ -122,7 +119,7 @@ public class LobbyControllerTest {
      * can be processed
      * Input will look like this: {"name": "Test User", "username": "testUsername"}
      *
-     * @param object
+     * @param object object to be mapped
      * @return string
      */
     private String asJsonString(final Object object) {

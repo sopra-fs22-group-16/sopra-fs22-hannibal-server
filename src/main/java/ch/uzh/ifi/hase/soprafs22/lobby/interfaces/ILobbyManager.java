@@ -12,6 +12,8 @@ public interface ILobbyManager extends Iterable<ILobby>{
 
     ILobby getLobbyWithId(long id);
 
+    ILobby getLobbyWithName(String name);
+
     ILobby createLobby(String name, LobbyMode lobbyMode, IUser host) throws SmallestLobbyIdNotCreatable;
 
     void clear();

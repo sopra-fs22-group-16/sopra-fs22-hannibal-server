@@ -53,5 +53,6 @@ public class DTOMapperTest {
         assertEquals(lobbyGetDTO.getVisibility(), lobby.getLobbyMode());
         assertEquals(lobbyGetDTO.getGameMode(), lobby.getGameMode());
         assertEquals(lobbyGetDTO.getRanked(), lobby.getGameType());
+        assertEquals(lobbyGetDTO.getInvitationCode(), lobby.getInvitationCode());
     }
 }

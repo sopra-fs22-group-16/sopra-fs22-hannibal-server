@@ -43,6 +43,14 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public ILobby getLobbyWithName(String name) {
+        for(ILobby lobby: lobbyList.values()){
+            if(lobby.getName().equals(name)) return lobby;
+        }
+        return null;
+    }
+
+    @Override
     public ILobby createLobby(String lobbyName, LobbyMode lobbyMode, IUser host) throws SmallestLobbyIdNotCreatable {
 
         long id = generateSmallestUniqueId();

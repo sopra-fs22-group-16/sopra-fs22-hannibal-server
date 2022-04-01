@@ -48,7 +48,7 @@ public abstract class DTOMapper {
 
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setRanked(lobby.getGameType());
-        //lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
+        lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
 
 
         return lobbyGetDTO;

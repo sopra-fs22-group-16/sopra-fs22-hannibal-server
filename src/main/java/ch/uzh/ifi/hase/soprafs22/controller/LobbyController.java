@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
@@ -9,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,11 +35,6 @@ public class LobbyController {
     @ResponseBody
     public LobbyGetDTO createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
 
-        // Check if token is set else set to empty string
-        if(token == null){
-            token = "";
-        }
-
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
         LobbyMode lobbyMode = lobbyPostDTO.getLobbyMode();
@@ -58,11 +51,6 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO getLobby(@RequestHeader("token") String token, @PathVariable Long id) {
-
-        // Check if token is set else set to empty string
-        if(token == null){
-            token = "";
-        }
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
