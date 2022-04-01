@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 
 public interface ILobbyManager extends Iterable<ILobby>{
 
@@ -12,7 +12,7 @@ public interface ILobbyManager extends Iterable<ILobby>{
 
     ILobby getLobbyWithName(String name);
 
-    ILobby createLobby(String name, LobbyMode lobbyMode, IUser host) throws SmallestLobbyIdNotCreatable;
+    ILobby createLobby(String name, LobbyMode lobbyMode) throws SmallestIdNotCreatable;
 
     void clear();
 }

@@ -1,9 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.MemberGetDTO;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -25,26 +25,26 @@ public abstract class DTOMapper {
 
     public static DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    @Mapping(source = "playerId", target = "id")
+    @Mapping(source = "username", target = "name")
+    @Mapping(source = "ready", target = "ready")
+    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
+
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setLobbyId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
-        lobbyGetDTO.setOwner(lobby.getHost().getId());
+        lobbyGetDTO.setOwner(lobby.getHost().getPlayerId());
 
-        // Set the member list by creating memberGetDTOs
+        // Set the member list by creating playerGetDTOs
         // and storing them in the list
-        LinkedList<MemberGetDTO> members = new LinkedList<>();
-        for (IUser user : lobby) {
-            MemberGetDTO memberGetDTO = new MemberGetDTO();
-            memberGetDTO.setId(user.getId());
-            memberGetDTO.setName(user.getUsername());
-            memberGetDTO.setReady(lobby.isUserReady(user));
-            members.add(memberGetDTO);
+        LinkedList<PlayerGetDTO> members = new LinkedList<>();
+        for (Player player : lobby) {
+            members.add(convertPlayerToPlayerGetDTO(player));
         }
         lobbyGetDTO.setMembers(members);
 
         lobbyGetDTO.setVisibility(lobby.getLobbyMode());
-
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setRanked(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());

@@ -11,6 +11,9 @@ import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Lobby Controller
  * This class is responsible for handling all REST request that are related to
@@ -33,7 +36,7 @@ public class LobbyController {
     @PostMapping("/v1/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public LobbyGetDTO createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
+    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
 
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
@@ -44,7 +47,15 @@ public class LobbyController {
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, lobbyMode, gameMode, gameType);
 
-        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+
+        // Construct return value
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("lobby", lobbyGetDTO);
+        if(token == null || token.isEmpty())
+            returnMap.put("token", lobby.getHost().getToken());
+
+        return returnMap;
     }
 
     @GetMapping("/v1/game/lobby/{id}")

@@ -1,19 +1,21 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
-import ch.uzh.ifi.hase.soprafs22.user.User;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Objects;
 
 /**
  * Lobby Service
@@ -55,16 +57,12 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
 
-        IUser host;
+        RegisteredUser registeredUser = null;
+        // Check if token is set, then find user with token and link him to the host player
+        if(token != null && !token.isEmpty()){
+            // TODO: GET THE REGISTERED USER WITH TOKEN
 
-        // Check if token is set, then find user with token and set him as admin
-        // ToDo: Create User with unique id etc.
-        if(token == null || token.isEmpty()){
-            host = new User();
-        }else{
-            // Create user with registered user info
-            host = new User();
-            if(host == null){
+            if(registeredUser == null){
                 String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be created!";
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
             }
@@ -80,8 +78,8 @@ public class LobbyService {
 
         // Try to create a new lobby
         try {
-            newLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
-        }catch(SmallestLobbyIdNotCreatable e){
+            newLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
+        }catch(SmallestIdNotCreatable e){
            e.printStackTrace();
            String errorMessage = "The server could not generate a unique id";
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
@@ -90,6 +88,11 @@ public class LobbyService {
         // Set the gameType and gameMode of the lobby
         newLobby.setGameMode(gameMode);
         newLobby.setGameType(gameType);
+
+        if(registeredUser != null){
+           newLobby.getHost().linkRegisteredUser(registeredUser);
+        }
+
 
         log.debug("Created Information for Lobby: {}", newLobby);
         return newLobby;
@@ -119,9 +122,9 @@ public class LobbyService {
         }
 
         // Check if user is in lobby
-        for(IUser user: lobby){
+        for(Player player: lobby){
             // If tokens match return the lobby
-            if(user.getToken().equals(token)){
+            if(player.getToken().equals(token)){
                 return lobby;
             }
         }

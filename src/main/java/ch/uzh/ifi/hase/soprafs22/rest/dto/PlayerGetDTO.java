@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-public class MemberGetDTO {
+public class PlayerGetDTO {
 
     private Long id;
     private String name;

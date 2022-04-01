@@ -1,10 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
 
 import java.util.*;
 import java.util.stream.LongStream;
@@ -49,11 +49,11 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public ILobby createLobby(String lobbyName, LobbyMode lobbyMode, IUser host) throws SmallestLobbyIdNotCreatable {
+    public ILobby createLobby(String lobbyName, LobbyMode lobbyMode) throws SmallestIdNotCreatable {
 
         long id = generateSmallestUniqueId();
 
-        ILobby lobby = new Lobby(id, lobbyName, lobbyMode, host);
+        ILobby lobby = new Lobby(id, lobbyName, lobbyMode);
         this.lobbyList.put(id, lobby);
 
         return lobby;
@@ -62,9 +62,9 @@ public class LobbyManager implements ILobbyManager {
     /**
      * Generates the smallest id that is not yet in use [0,Long.MAX_VALUE]
      * @return smallest id not yet in use
-     * @throws SmallestLobbyIdNotCreatable if we could not generate a unique id
+     * @throws SmallestIdNotCreatable if we could not generate a unique id
      */
-    private long generateSmallestUniqueId() throws SmallestLobbyIdNotCreatable {
+    private long generateSmallestUniqueId() throws SmallestIdNotCreatable {
         // Create smallest unique id
 
         // Get all ids and store them additionally save the largest id
@@ -89,7 +89,7 @@ public class LobbyManager implements ILobbyManager {
         // Remove all elements that already exist
         // Get smallest from them
         OptionalLong optionalId = LongStream.range(lowerRange, upperRange).filter(value -> (!idList.contains(value))).min();
-        return optionalId.orElseThrow(SmallestLobbyIdNotCreatable::new);
+        return optionalId.orElseThrow(SmallestIdNotCreatable::new);
     }
 
     @Override

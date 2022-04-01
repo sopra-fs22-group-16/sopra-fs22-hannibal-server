@@ -17,7 +17,7 @@ public class LobbyGetDTO {
 
     Long owner;
 
-    List<MemberGetDTO> members;
+    List<PlayerGetDTO> members;
 
     LobbyMode visibility;
 
@@ -59,11 +59,11 @@ public class LobbyGetDTO {
         this.owner = owner;
     }
 
-    public List<MemberGetDTO> getMembers() {
+    public List<PlayerGetDTO> getMembers() {
         return members;
     }
 
-    public void setMembers(LinkedList<MemberGetDTO> members) {
+    public void setMembers(LinkedList<PlayerGetDTO> members) {
         this.members = members;
     }
 

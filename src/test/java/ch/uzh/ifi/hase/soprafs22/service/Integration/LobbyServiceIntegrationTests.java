@@ -4,10 +4,9 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import ch.uzh.ifi.hase.soprafs22.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +47,8 @@ public class LobbyServiceIntegrationTests {
         assertEquals(lobbyName, createdLobby.getName());
         assertEquals(gameMode, gameMode);
         assertEquals(gameType, gameType);
+        assertNotNull(createdLobby.getHost());
+        assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
     }
 
     public static Stream<Arguments> provideDataForCreateLobbyNullAndEmptyParameters() {
@@ -73,7 +74,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestLobbyIdNotCreatable {
+    void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
@@ -81,7 +82,7 @@ public class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE, new User());
+        LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -92,26 +93,21 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_validInputs_success() throws SmallestLobbyIdNotCreatable {
+    void getLobby_validInputs_success() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
-        User host = new User();
-        host.setId(0L);
-        host.setUsername("MyUsername");
-        host.setToken("token");
-
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
         // Attempt to get lobby with id
-        ILobby lobby = lobbyService.getLobby("token", id);
+        ILobby lobby = lobbyService.getLobby(createdLobby.getHost().getToken(), id);
 
         // Check
         assertEquals(createdLobby.getId(), lobby.getId());
@@ -125,20 +121,15 @@ public class LobbyServiceIntegrationTests {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void getLobby_emptyToken_throwException(String token) throws SmallestLobbyIdNotCreatable {
+    void getLobby_emptyToken_throwException(String token) throws SmallestIdNotCreatable {
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
-        User host = new User();
-        host.setId(0L);
-        host.setUsername("MyUsername");
-        host.setToken("token");
-
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -153,20 +144,15 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_noLobbyWithId_throwException() throws SmallestLobbyIdNotCreatable {
+    void getLobby_noLobbyWithId_throwException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
-        User host = new User();
-        host.setId(0L);
-        host.setUsername("MyUsername");
-        host.setToken("token");
-
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -180,20 +166,15 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_wrongToken_throwException() throws SmallestLobbyIdNotCreatable {
+    void getLobby_wrongToken_throwException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "LobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
-        User host = new User();
-        host.setId(0L);
-        host.setUsername("MyUsername");
-        host.setToken("token");
-
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode, host);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();

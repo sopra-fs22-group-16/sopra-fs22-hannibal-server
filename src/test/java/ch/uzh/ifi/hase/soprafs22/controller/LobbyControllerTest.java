@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
@@ -7,11 +8,10 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
-import ch.uzh.ifi.hase.soprafs22.user.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,28 +46,29 @@ public class LobbyControllerTest {
     @Test
     public void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
-        IUser host = new User();
-        ILobby lobby = LobbyManager.getInstance().createLobby("LobbyName", LobbyMode.PRIVATE, host);
+        ILobby lobby = LobbyManager.getInstance().createLobby("LobbyName", LobbyMode.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.getLobby("token", 1L)).willReturn(lobby);
+        given(lobbyService.getLobby(lobby.getHost().getToken(), 1L)).willReturn(lobby);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby/1").contentType(MediaType.APPLICATION_JSON).header("token", "token");
+        MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", lobby.getHost().getToken());
 
         // then
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lobbyId", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getId())))
-                .andExpect(jsonPath("$.members[0].id", is((int)host.getId())))
-                .andExpect(jsonPath("$.members[0].name", is(host.getUsername())))
-                .andExpect(jsonPath("$.members[0].ready", is(false)))
+                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getPlayerId())))
+                .andExpect(jsonPath("$.members[0].id", is((int)lobby.getHost().getPlayerId())))
+                .andExpect(jsonPath("$.members[0].name", is(lobby.getHost().getUsername())))
+                .andExpect(jsonPath("$.members[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.ranked", is(lobby.getGameType().toString())))
@@ -76,8 +78,7 @@ public class LobbyControllerTest {
     @Test
     public void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        IUser host = new User();
-        ILobby lobby = LobbyManager.getInstance().createLobby("LobbyName", LobbyMode.PRIVATE, host);
+        ILobby lobby = LobbyManager.getInstance().createLobby("LobbyName", LobbyMode.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -103,10 +104,10 @@ public class LobbyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.lobbyId", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getId())))
-                .andExpect(jsonPath("$.members[0].id", is((int)host.getId())))
-                .andExpect(jsonPath("$.members[0].name", is(host.getUsername())))
-                .andExpect(jsonPath("$.members[0].ready", is(false)))
+                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getPlayerId())))
+                .andExpect(jsonPath("$.members[0].id", is((int)lobby.getHost().getPlayerId())))
+                .andExpect(jsonPath("$.members[0].name", is(lobby.getHost().getUsername())))
+                .andExpect(jsonPath("$.members[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.ranked", is(lobby.getGameType().toString())))

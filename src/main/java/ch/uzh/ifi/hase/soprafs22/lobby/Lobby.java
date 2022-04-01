@@ -1,16 +1,18 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.LongStream;
 
 public class Lobby implements ILobby {
 
@@ -18,23 +20,22 @@ public class Lobby implements ILobby {
     private String name;
     private LobbyMode lobbyMode;
     private Game game;
-    private final IUser host;
-    private final List<IUser> userList;
-    private final Map<IUser, Boolean> readyMap;
+    private final Player host;
+    private final List<Player> playerList;
     private String invitationCode;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
-    public Lobby(Long id, String name, LobbyMode lobbyMode, IUser host) {
+    public Lobby(Long id, String name, LobbyMode lobbyMode) {
         this.id = id;
         this.name = name;
         this.lobbyMode = lobbyMode;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
-        this.host = host;
-        this.userList = new LinkedList<>();
-        userList.add(host);
-        this.readyMap = new HashMap<>();
-        readyMap.put(host, false);
+        this.playerList = new LinkedList<>();
+
+        // Generate the host player
+        this.host = generatePlayer();
+        playerList.add(host);
     }
 
     @Override
@@ -61,16 +62,13 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void addUser(IUser user) {
-        userList.add(user);
-        readyMap.put(user, false);
+    public void addPlayer(Player player) {
+        playerList.add(player);
     }
 
     @Override
-    public IUser removeUser(int index) {
-        IUser user = userList.remove(index);
-        readyMap.remove(user);
-        return user;
+    public Player removePlayer(int index) {
+        return playerList.remove(index);
     }
 
     @Override
@@ -112,18 +110,30 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public IUser getHost() {
+    public Player getHost() {
         return host;
     }
 
     @Override
-    public boolean isUserReady(IUser user){
-        return readyMap.containsKey(user) && readyMap.get(user);
+    public Iterator<Player> iterator() {
+        return playerList.iterator();
     }
 
-    @Override
-    public Iterator<IUser> iterator() {
-        return userList.iterator();
-    }
+    private Player generatePlayer(){
 
+        long id = 0L;
+        // Get all ids currently in use
+        List<Long> idList = new LinkedList<>();
+        for(Player player : playerList){
+            idList.add(player.getPlayerId());
+        }
+        // if id already in use increase by 1
+        while(idList.contains(id)){++id;}
+
+        String username = "Player-"+id;
+
+        String token = UUID.randomUUID().toString();
+
+        return new Player(id, username, token);
+    }
 }

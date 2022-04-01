@@ -1,11 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
 
-public interface ILobby extends Iterable<IUser>{
+public interface ILobby extends Iterable<Player>{
     byte[] generateQrCode(String code);
 
     void changeReadyStatus(int token);
@@ -14,9 +14,9 @@ public interface ILobby extends Iterable<IUser>{
 
     void setLobbyMode(LobbyMode lobbyMode);
 
-    void addUser(IUser user);
+    void addPlayer(Player player);
 
-    IUser removeUser(int index);
+    Player removePlayer(int index);
 
     void setGameMode(GameMode gameMode);
 
@@ -28,14 +28,7 @@ public interface ILobby extends Iterable<IUser>{
 
     String getName();
 
-    IUser getHost();
-
-    /**
-     * Checks if the specified user is ready
-     * @param user the specified user
-     * @return true if the user is ready, false if the user is not ready or not in the lobby
-     */
-    boolean isUserReady(IUser user);
+    Player getHost();
 
     GameMode getGameMode();
 
