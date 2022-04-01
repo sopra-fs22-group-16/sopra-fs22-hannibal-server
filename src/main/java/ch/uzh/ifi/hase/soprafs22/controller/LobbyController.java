@@ -38,14 +38,14 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
-    // TODO: Add implementation for get lobby with id
-
     @GetMapping("/v1/game/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO getLobby(@RequestHeader("token") String token, @PathVariable Long id) {
 
-        return new LobbyGetDTO();
+        ILobby lobby = lobbyService.getLobby(token, id);
+
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
 }

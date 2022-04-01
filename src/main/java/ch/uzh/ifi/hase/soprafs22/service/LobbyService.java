@@ -36,19 +36,26 @@ public class LobbyService {
 
         // Check if token is set, then find user with token and set him as admin
         // ToDo: Create User with unique id etc.
-        host = new User();
+        if(token.isEmpty()){
+            host = new User();
+        }else{
+            // Create user with registered user info
+            host = new User();
+        }
 
-        ILobby lobby;
+
+        ILobby newLobby;
 
         // Try to create a new lobby
         try {
-            lobby = LobbyManager.getInstance().createLobby(host);
+            newLobby = LobbyManager.getInstance().createLobby(host);
         }catch(SmallestLobbyIdNotCreatable e){
            e.printStackTrace();
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The server could not generate a unique id");
         }
 
-        return lobby;
+        log.debug("Created Information for Lobby: {}", newLobby);
+        return newLobby;
     }
 
 
@@ -58,9 +65,26 @@ public class LobbyService {
      * @param lobbyId the id of the lobby to look up
      * @return the lobby with the specified id
      * @throws ResponseStatusException with HttpStatus.NOT_FOUND if there is no lobby with the specified lobbyId
+     * @throws ResponseStatusException with HttpStatus.UNAUTHORIZED if the user is not in the lobby and thus shouldn't have access
      */
-    public void getLobby(Long lobbyId){
+    public ILobby getLobby(String token, Long lobbyId){
 
+        ILobby lobby = LobbyManager.getInstance().getLobbyWithId(lobbyId);
+
+        // Check if lobby exists
+        if(lobby == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        }
+
+        // Check if user is in lobby
+        for(IUser user: lobby){
+            // If tokens match return the lobby
+            if(user.getToken().equals(token)){
+                return lobby;
+            }
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format("The user is not authorized to get the lobby with id %s", lobbyId));
     }
 
 }
