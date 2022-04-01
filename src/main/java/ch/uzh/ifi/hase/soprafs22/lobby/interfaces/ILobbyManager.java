@@ -1,16 +1,15 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreateable;
+import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 
-import java.util.List;
+public interface ILobbyManager extends Iterable<ILobby>{
 
-public interface ILobbyManager {
-    void addLobby(ILobby lobby);
+    ILobby removeLobbyWithId(Long id);
 
-    ILobby removeLobby(int index);
+    ILobby getLobbyWithId(Long id);
 
-    List<ILobby> getLobbyList();
+    ILobby createLobby(IUser host) throws SmallestLobbyIdNotCreatable;
 
-    ILobby createLobby(IUser host) throws SmallestLobbyIdNotCreateable;
+    void clear();
 }

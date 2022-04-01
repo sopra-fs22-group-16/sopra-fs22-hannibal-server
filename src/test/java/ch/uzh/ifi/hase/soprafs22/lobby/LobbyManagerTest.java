@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreateable;
+import ch.uzh.ifi.hase.soprafs22.lobby.exceptions.SmallestLobbyIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 import ch.uzh.ifi.hase.soprafs22.user.User;
@@ -13,82 +13,136 @@ class LobbyManagerTest {
 
     @Test
     public void createLobby_emptyLobbyList() {
+        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
             // Clear lobbyManager lobby list
-            LobbyManager.getInstance().getLobbyList().clear();
+            lobbyManager.clear();
 
             // Create host
             IUser host = new User();
 
             // Create a new lobby
-            ILobby lobby = LobbyManager.getInstance().createLobby(host);
+            ILobby lobby = lobbyManager.createLobby(host);
 
             // Assert that
-            assertEquals(lobby.getId(), 0L);
-            assertEquals(lobby.getName(), "Lobby-0");
-            assertEquals(lobby.getLobbyMode(), LobbyMode.PRIVATE);
-            assertEquals(lobby.getHost(), host);
+            assertEquals(0L, lobby.getId());
+            assertEquals("Lobby-0", lobby.getName());
+            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(host, lobby.getHost());
         }
-        catch (SmallestLobbyIdNotCreateable e) {
+        catch (SmallestLobbyIdNotCreatable e) {
             e.printStackTrace();
+            fail();
         }
     }
 
     @Test
-    public void createLobby_continuousIds_inList() {
+    public void createLobby_idIncreases() {
+        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
             // Clear lobbyManager lobby list
-            LobbyManager.getInstance().getLobbyList().clear();
+            lobbyManager.clear();
 
             // Fill lobby list
-            LobbyManager.getInstance().addLobby(new Lobby(0L, "Lobby-0", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(1L, "Lobby-1", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(2L, "Lobby-2", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(3L, "Lobby-3", LobbyMode.PRIVATE, new User()));
+            lobbyManager.createLobby(new User());
 
             // Create host
             IUser host = new User();
 
             // Create a new lobby
-            ILobby lobby = LobbyManager.getInstance().createLobby(host);
+            ILobby lobby = lobbyManager.createLobby(host);
 
             // Assert that
-            assertEquals(lobby.getId(), 4L);
-            assertEquals(lobby.getName(), "Lobby-4");
-            assertEquals(lobby.getLobbyMode(), LobbyMode.PRIVATE);
-            assertEquals(lobby.getHost(), host);
+            assertEquals(1L, lobby.getId());
+            assertEquals("Lobby-1", lobby.getName());
+            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(host, lobby.getHost());
         }
-        catch (SmallestLobbyIdNotCreateable e) {
+        catch (SmallestLobbyIdNotCreatable e) {
             e.printStackTrace();
+            fail();
         }
     }
 
     @Test
     public void createLobby_notContinuousIds_inList() {
+        LobbyManager lobbyManager = LobbyManager.getInstance();
         try {
             // Clear lobbyManager lobby list
-            LobbyManager.getInstance().getLobbyList().clear();
+            lobbyManager.clear();
 
             // Fill lobby list
-            LobbyManager.getInstance().addLobby(new Lobby(0L, "Lobby-0", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(1L, "Lobby-1", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(5L, "Lobby-2", LobbyMode.PRIVATE, new User()));
-            LobbyManager.getInstance().addLobby(new Lobby(9L, "Lobby-3", LobbyMode.PRIVATE, new User()));
+            lobbyManager.createLobby(new User()); // id = 0
+            ILobby lobby1 = lobbyManager.createLobby(new User()); // id = 1
+            lobbyManager.createLobby(new User()); // id = 2
+
+            // Remove lobby1 to generate non-continuous lobby list
+            lobbyManager.removeLobbyWithId(lobby1.getId());
 
             // Create host
             IUser host = new User();
 
             // Create a new lobby
-            ILobby lobby = LobbyManager.getInstance().createLobby(host);
+            ILobby lobby = lobbyManager.createLobby(host);
 
             // Assert that
-            assertEquals(lobby.getId(), 2L);
-            assertEquals(lobby.getName(), "Lobby-2");
-            assertEquals(lobby.getLobbyMode(), LobbyMode.PRIVATE);
-            assertEquals(lobby.getHost(), host);
+            assertEquals(1L, lobby.getId());
+            assertEquals("Lobby-1", lobby.getName());
+            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(host, lobby.getHost());
         }
-        catch (SmallestLobbyIdNotCreateable e) {
+        catch (SmallestLobbyIdNotCreatable e) {
             e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void removeLobbyWithId_removed(){
+        LobbyManager lobbyManager = LobbyManager.getInstance();
+
+        // Clear lobbyManager lobby list
+        lobbyManager.clear();
+
+
+        try {
+            // Fill lobby list
+            ILobby lobby = lobbyManager.createLobby(new User()); // id = 0
+
+            // Remove from lobby list
+            lobbyManager.removeLobbyWithId(lobby.getId());
+
+            // check
+            assertFalse(LobbyManager.getInstance().iterator().hasNext());
+
+        }
+        catch (SmallestLobbyIdNotCreatable e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void getLobbyWithId(){
+        LobbyManager lobbyManager = LobbyManager.getInstance();
+
+        // Clear lobbyManager lobby list
+        lobbyManager.clear();
+
+        try {
+            // Fill lobby list
+            ILobby lobby = lobbyManager.createLobby(new User()); // id = 0
+
+            // Remove from lobby list
+            ILobby result = lobbyManager.getLobbyWithId(lobby.getId());
+
+            // check
+            assertEquals(lobby, result);
+
+        }
+        catch (SmallestLobbyIdNotCreatable e) {
+            e.printStackTrace();
+            fail();
         }
     }
 }
