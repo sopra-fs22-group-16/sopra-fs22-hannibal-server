@@ -31,8 +31,6 @@ public class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    // TODO: Add implementation for creating lobby
-
     @PostMapping("/v1/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody

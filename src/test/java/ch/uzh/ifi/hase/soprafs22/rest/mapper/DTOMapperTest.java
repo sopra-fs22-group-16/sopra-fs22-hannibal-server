@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.junit.jupiter.api.Test;
 
 
@@ -21,7 +22,7 @@ public class DTOMapperTest {
     public void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
 
         // create Lobby
-        ILobby lobby = new Lobby(1L,"MyLobbyName", LobbyMode.PRIVATE);
+        ILobby lobby = new Lobby(1L,"myLobbyName", LobbyMode.PRIVATE);
 
         // MAP -> LobbyGetDTO
         LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
@@ -47,5 +48,19 @@ public class DTOMapperTest {
         assertEquals(lobbyGetDTO.getGameMode(), lobby.getGameMode());
         assertEquals(lobbyGetDTO.getRanked(), lobby.getGameType());
         assertEquals(lobbyGetDTO.getInvitationCode(), lobby.getInvitationCode());
+    }
+
+    @Test
+    public void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
+        // create Lobby
+        Player player = new Player(1L, "username", "token");
+
+        // MAP -> LobbyGetDTO
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(player);
+
+        // check content
+        assertEquals(player.getPlayerId(), playerGetDTO.getId());
+        assertEquals(player.getUsername(), playerGetDTO.getName());
+        assertEquals(player.isReady(), playerGetDTO.isReady());
     }
 }

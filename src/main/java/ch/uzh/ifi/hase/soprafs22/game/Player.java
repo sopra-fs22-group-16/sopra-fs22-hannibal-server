@@ -29,12 +29,12 @@ public class Player {
     }
 
     public String getUsername() {
+        if(registeredUser != null) return registeredUser.getUsername();
         return username;
     }
 
     public void setUsername(String username) {
-        if(registeredUser == null)
-            this.username = username;
+        if(registeredUser == null) this.username = username;
     }
 
     public boolean isReady() {

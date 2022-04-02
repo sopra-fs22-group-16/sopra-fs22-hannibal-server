@@ -66,9 +66,9 @@ class LobbyManagerTest {
     public void createLobby_notContinuousIds_inList() {
         try {
             // Fill lobby list
-            lobbyManager.createLobby("LobbyName0", LobbyMode.PRIVATE); // id = 0
-            ILobby lobby1 = lobbyManager.createLobby("LobbyName1", LobbyMode.PRIVATE); // id = 1
-            lobbyManager.createLobby("LobbyName2", LobbyMode.PRIVATE); // id = 2
+            lobbyManager.createLobby("lobbyName0", LobbyMode.PRIVATE); // id = 0
+            ILobby lobby1 = lobbyManager.createLobby("lobbyName1", LobbyMode.PRIVATE); // id = 1
+            lobbyManager.createLobby("lobbyName2", LobbyMode.PRIVATE); // id = 2
 
             // Remove lobby1 to generate non-continuous lobby list
             lobbyManager.removeLobbyWithId(lobby1.getId());
@@ -91,7 +91,7 @@ class LobbyManagerTest {
     public void removeLobbyWithId_removed(){
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("LobbyName", LobbyMode.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", LobbyMode.PRIVATE); // id = 0
 
             // Remove from lobby list
             lobbyManager.removeLobbyWithId(lobby.getId());
@@ -110,7 +110,7 @@ class LobbyManagerTest {
     public void getLobbyWithId(){
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("LobbyName", LobbyMode.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", LobbyMode.PRIVATE); // id = 0
 
             // Remove from lobby list
             ILobby result = lobbyManager.getLobbyWithId(lobby.getId());

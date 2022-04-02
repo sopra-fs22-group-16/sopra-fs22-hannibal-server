@@ -5,7 +5,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "RegisteredUser")
+@Table(name = "REGISTEREDUSER")
 public class RegisteredUser implements Serializable {
 
     @Serial

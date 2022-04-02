@@ -12,22 +12,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@WebAppConfiguration
+@SpringBootTest
 public class LobbyServiceIntegrationTests {
 
-
+    @Autowired
     private LobbyService lobbyService;
 
     @BeforeEach
     public void setup() {
-        lobbyService = new LobbyService();
-
         // Clear lobbyManager
         LobbyManager.getInstance().clear();
     }
@@ -35,7 +38,7 @@ public class LobbyServiceIntegrationTests {
     @Test
     void createLobby_unregisteredUser_validInputs_success(){
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -55,9 +58,9 @@ public class LobbyServiceIntegrationTests {
         return Stream.of(
                 Arguments.of(null, LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
                 Arguments.of("", LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
-                Arguments.of("LobbyName", null, GameMode.ONE_VS_ONE, GameType.UNRANKED),
-                Arguments.of("LobbyName", LobbyMode.PRIVATE, null, GameType.UNRANKED),
-                Arguments.of("LobbyName", LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, null)
+                Arguments.of("lobbyName", null, GameMode.ONE_VS_ONE, GameType.UNRANKED),
+                Arguments.of("lobbyName", LobbyMode.PRIVATE, null, GameType.UNRANKED),
+                Arguments.of("lobbyName", LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, null)
         );
     }
 
@@ -76,7 +79,7 @@ public class LobbyServiceIntegrationTests {
     @Test
     void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestIdNotCreatable {
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -93,9 +96,28 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
+    void createLobby_withToken_registeredUserNotFound_throwsException() throws SmallestIdNotCreatable {
+        // given
+        String lobbyName = "lobbyName";
+        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby with same name
+        LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE);
+
+        // attempt to create second lobby with same name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createLobby("token", lobbyName, lobbyMode, gameMode, gameType));
+
+        // Check https status code
+        assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     void getLobby_validInputs_success() throws SmallestIdNotCreatable {
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -123,7 +145,7 @@ public class LobbyServiceIntegrationTests {
     @NullAndEmptySource
     void getLobby_emptyToken_throwException(String token) throws SmallestIdNotCreatable {
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -146,7 +168,7 @@ public class LobbyServiceIntegrationTests {
     @Test
     void getLobby_noLobbyWithId_throwException() throws SmallestIdNotCreatable {
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -168,7 +190,7 @@ public class LobbyServiceIntegrationTests {
     @Test
     void getLobby_wrongToken_throwException() throws SmallestIdNotCreatable {
         // given
-        String lobbyName = "LobbyName";
+        String lobbyName = "lobbyName";
         LobbyMode lobbyMode = LobbyMode.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;

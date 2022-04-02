@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -12,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.LongStream;
 
 public class Lobby implements ILobby {
 
@@ -47,8 +45,11 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void changeReadyStatus(int token) {
-
+    public void changeReadyStatus(String token) {
+        for(Player player : playerList){
+            if(player.getToken().equals(token))
+                player.setReady(!player.isReady());
+        }
     }
 
     @Override
@@ -61,9 +62,15 @@ public class Lobby implements ILobby {
         this.lobbyMode = lobbyMode;
     }
 
+    /**
+     * Create and add a new player
+     * @return The created player
+     */
     @Override
-    public void addPlayer(Player player) {
+    public Player addPlayer() {
+        Player player = generatePlayer();
         playerList.add(player);
+        return player;
     }
 
     @Override
@@ -107,6 +114,11 @@ public class Lobby implements ILobby {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

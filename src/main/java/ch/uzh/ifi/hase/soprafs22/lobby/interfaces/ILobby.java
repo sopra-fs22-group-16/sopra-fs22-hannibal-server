@@ -8,13 +8,13 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 public interface ILobby extends Iterable<Player>{
     byte[] generateQrCode(String code);
 
-    void changeReadyStatus(int token);
+    void changeReadyStatus(String token);
 
     LobbyMode getLobbyMode();
 
     void setLobbyMode(LobbyMode lobbyMode);
 
-    void addPlayer(Player player);
+    Player addPlayer();
 
     Player removePlayer(int index);
 
@@ -27,6 +27,8 @@ public interface ILobby extends Iterable<Player>{
     long getId();
 
     String getName();
+
+    void setName(String name);
 
     Player getHost();
 
