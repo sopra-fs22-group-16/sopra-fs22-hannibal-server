@@ -5,6 +5,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.user.IUser;
 
+import java.util.UUID;
+
 public interface ILobby {
     byte[] generateQrCode(String code);
 
@@ -16,11 +18,23 @@ public interface ILobby {
 
     void addUser(IUser user);
 
-    IUser removeUser(int index);
+    IUser removeUser(long userId);
 
     void setGameMode(GameMode gameMode);
 
     void setGameType(GameType gameType);
 
     void startGame();
+
+    String getName();
+
+    void setName(String name);
+
+    GameType getRanked();
+
+    GameMode getMode();
+
+    IUser getHost();
+
+    long getId();
 }
