@@ -4,7 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -49,13 +49,13 @@ public class LobbyService {
      * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no registered user was found with the provided token
      *
      */
-    public ILobby createLobby(String token, String lobbyName, LobbyMode lobbyMode, GameMode gameMode, GameType gameType){
+    public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType){
 
         // Check if values are valid
         if(lobbyName == null || lobbyName.isEmpty()){
             String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }else if(lobbyMode == null){
+        }else if(visibility == null){
             String errorMessage = "The lobby mode provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }else if(gameMode == null){
@@ -86,7 +86,7 @@ public class LobbyService {
 
         // Try to create a new lobby
         try {
-            newLobby = lobbyManager.createLobby(lobbyName, lobbyMode);
+            newLobby = lobbyManager.createLobby(lobbyName, visibility);
         }catch(SmallestIdNotCreatable e){
            e.printStackTrace();
            String errorMessage = "The server could not generate a unique id";

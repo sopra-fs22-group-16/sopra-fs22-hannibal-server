@@ -26,17 +26,17 @@ public abstract class DTOMapper {
 
     public static DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-    @Mapping(source = "playerId", target = "id")
-    @Mapping(source = "username", target = "name")
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
-        lobbyGetDTO.setLobbyId(lobby.getId());
+        lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
-        lobbyGetDTO.setOwner(lobby.getHost().getPlayerId());
+        lobbyGetDTO.setOwner(lobby.getHost().getId());
 
         // Set the member list by creating playerGetDTOs
         // and storing them in the list
@@ -44,11 +44,11 @@ public abstract class DTOMapper {
         for (Player player : lobby) {
             members.add(convertPlayerToPlayerGetDTO(player));
         }
-        lobbyGetDTO.setMembers(members);
+        lobbyGetDTO.setPlayers(members);
 
         lobbyGetDTO.setVisibility(lobby.getLobbyMode());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
-        lobbyGetDTO.setRanked(lobby.getGameType());
+        lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
 
 

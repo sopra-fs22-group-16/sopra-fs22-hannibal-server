@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service.Integration;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
@@ -39,12 +39,12 @@ public class LobbyServiceIntegrationTests {
     void createLobby_unregisteredUser_validInputs_success(){
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // testUser
-        ILobby createdLobby = lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType);
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
 
         assertEquals(0L, createdLobby.getId());
         assertEquals(lobbyName, createdLobby.getName());
@@ -57,21 +57,21 @@ public class LobbyServiceIntegrationTests {
 
     public static Stream<Arguments> provideDataForCreateLobbyNullAndEmptyParameters() {
         return Stream.of(
-                Arguments.of(null, LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
-                Arguments.of("", LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
+                Arguments.of(null, Visibility.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
+                Arguments.of("", Visibility.PRIVATE, GameMode.ONE_VS_ONE, GameType.UNRANKED),
                 Arguments.of("lobbyName", null, GameMode.ONE_VS_ONE, GameType.UNRANKED),
-                Arguments.of("lobbyName", LobbyMode.PRIVATE, null, GameType.UNRANKED),
-                Arguments.of("lobbyName", LobbyMode.PRIVATE, GameMode.ONE_VS_ONE, null)
+                Arguments.of("lobbyName", Visibility.PRIVATE, null, GameType.UNRANKED),
+                Arguments.of("lobbyName", Visibility.PRIVATE, GameMode.ONE_VS_ONE, null)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideDataForCreateLobbyNullAndEmptyParameters")
-    void createLobby_unregisteredUser_NullAndEmptyParameters_throwsException(String lobbyName, LobbyMode lobbyMode, GameMode gameMode, GameType gameType) {
+    void createLobby_unregisteredUser_NullAndEmptyParameters_throwsException(String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // attempt to create a lobby with missing information
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType));
+                () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
@@ -81,16 +81,16 @@ public class LobbyServiceIntegrationTests {
     void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE);
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createLobby("", lobbyName, lobbyMode, gameMode, gameType));
+                () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.CONFLICT.value());
@@ -100,16 +100,16 @@ public class LobbyServiceIntegrationTests {
     void createLobby_withToken_registeredUserNotFound_throwsException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, LobbyMode.PRIVATE);
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createLobby("token", lobbyName, lobbyMode, gameMode, gameType));
+                () -> lobbyService.createLobby("token", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
         assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
@@ -119,12 +119,12 @@ public class LobbyServiceIntegrationTests {
     void getLobby_validInputs_success() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -147,12 +147,12 @@ public class LobbyServiceIntegrationTests {
     void getLobby_emptyToken_throwException(String token) throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -170,12 +170,12 @@ public class LobbyServiceIntegrationTests {
     void getLobby_noLobbyWithId_throwException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -192,12 +192,12 @@ public class LobbyServiceIntegrationTests {
     void getLobby_wrongToken_throwException() throws SmallestIdNotCreatable {
         // given
         String lobbyName = "lobbyName";
-        LobbyMode lobbyMode = LobbyMode.PRIVATE;
+        Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, lobbyMode);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();

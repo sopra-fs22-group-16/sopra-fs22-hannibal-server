@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
@@ -48,11 +48,11 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public ILobby createLobby(String lobbyName, LobbyMode lobbyMode) throws SmallestIdNotCreatable {
+    public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatable {
 
         long id = generateSmallestUniqueId();
 
-        ILobby lobby = new Lobby(id, lobbyName, lobbyMode);
+        ILobby lobby = new Lobby(id, lobbyName, visibility);
         this.lobbyList.put(id, lobby);
 
         return lobby;

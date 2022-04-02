@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
@@ -38,12 +38,12 @@ public class LobbyController {
 
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
-        LobbyMode lobbyMode = lobbyPostDTO.getLobbyMode();
+        Visibility visibility = lobbyPostDTO.getVisibility();
         GameMode gameMode = lobbyPostDTO.getGameMode();
         GameType gameType= lobbyPostDTO.getGameType();
 
         // Create a new lobby for user with this token
-        ILobby lobby = lobbyService.createLobby(token, name, lobbyMode, gameMode, gameType);
+        ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
 
         LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
 

@@ -3,20 +3,20 @@ package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
 public interface ILobby extends Iterable<Player>{
     byte[] generateQrCode(String code);
 
     void changeReadyStatus(String token);
 
-    LobbyMode getLobbyMode();
+    Visibility getLobbyMode();
 
-    void setLobbyMode(LobbyMode lobbyMode);
+    void setLobbyMode(Visibility visibility);
 
     Player addPlayer();
 
-    Player removePlayer(int index);
+    Player removePlayer(String token);
 
     void setGameMode(GameMode gameMode);
 

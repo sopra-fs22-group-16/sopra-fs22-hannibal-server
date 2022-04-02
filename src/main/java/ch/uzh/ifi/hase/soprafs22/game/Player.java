@@ -4,9 +4,9 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 
 public class Player {
-    private final long playerId;
+    private final long id;
 
-    private String username;
+    private String name;
 
     private final String token;
 
@@ -16,29 +16,29 @@ public class Player {
 
     private RegisteredUser registeredUser;
 
-    public Player(long id, String username, String token, Team team) {
-        this.playerId = id;
-        this.username = username;
+    public Player(long id, String name, String token, Team team) {
+        this.id = id;
+        this.name = name;
         this.token = token;
         this.team = team;
         this.ready = false;
     }
 
-    public long getPlayerId() {
-        return playerId;
+    public long getId() {
+        return id;
     }
 
     public String getToken() {
         return token;
     }
 
-    public String getUsername() {
+    public String getName() {
         if(registeredUser != null) return registeredUser.getUsername();
-        return username;
+        return name;
     }
 
-    public void setUsername(String username) {
-        if(registeredUser == null) this.username = username;
+    public void setName(String name) {
+        if(registeredUser == null) this.name = name;
     }
 
     public boolean isReady() {
@@ -63,7 +63,7 @@ public class Player {
 
     public void linkRegisteredUser(RegisteredUser registeredUser){
         this.registeredUser = registeredUser;
-        this.username = registeredUser.getUsername();
+        this.name = registeredUser.getUsername();
     }
 
 }

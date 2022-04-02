@@ -2,13 +2,13 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
 public class LobbyPostDTO {
 
     private String name;
 
-    private LobbyMode lobbyMode;
+    private Visibility visibility;
 
     private GameMode gameMode;
 
@@ -22,12 +22,12 @@ public class LobbyPostDTO {
         this.name = name;
     }
 
-    public LobbyMode getLobbyMode() {
-        return lobbyMode;
+    public Visibility getVisibility() {
+        return visibility;
     }
 
-    public void setLobbyMode(LobbyMode lobbyMode) {
-        this.lobbyMode = lobbyMode;
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public GameMode getGameMode() {

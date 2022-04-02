@@ -21,7 +21,7 @@ class PlayerTest {
 
         // then
         assertEquals(registeredUser, player.getRegisteredUser());
-        assertEquals(registeredUser.getUsername(), player.getUsername());
+        assertEquals(registeredUser.getUsername(), player.getName());
     }
 
     @Test
@@ -33,10 +33,10 @@ class PlayerTest {
         player.linkRegisteredUser(registeredUser);
 
         // when
-        player.setUsername("newUsername");
+        player.setName("newUsername");
 
         // then no change
-        assertEquals(registeredUser.getUsername(), player.getUsername());
+        assertEquals(registeredUser.getUsername(), player.getName());
 
     }
 }

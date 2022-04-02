@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.game.Player;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,12 +28,12 @@ class LobbyManagerTest {
     public void createLobby_emptyLobbyList() {
         try {
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName", LobbyMode.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName", Visibility.PRIVATE);
 
             // Assert that
             assertEquals(0L, lobby.getId());
             assertEquals("LobbyName", lobby.getName());
-            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();
@@ -46,15 +45,15 @@ class LobbyManagerTest {
     public void createLobby_idIncreases() {
         try {
             // Fill lobby list
-            lobbyManager.createLobby("LobbyName1", LobbyMode.PRIVATE);
+            lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
 
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName2", LobbyMode.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName2", Visibility.PRIVATE);
 
             // Assert that
             assertEquals(1L, lobby.getId());
             assertEquals("LobbyName2", lobby.getName());
-            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();
@@ -66,20 +65,20 @@ class LobbyManagerTest {
     public void createLobby_notContinuousIds_inList() {
         try {
             // Fill lobby list
-            lobbyManager.createLobby("lobbyName0", LobbyMode.PRIVATE); // id = 0
-            ILobby lobby1 = lobbyManager.createLobby("lobbyName1", LobbyMode.PRIVATE); // id = 1
-            lobbyManager.createLobby("lobbyName2", LobbyMode.PRIVATE); // id = 2
+            lobbyManager.createLobby("lobbyName0", Visibility.PRIVATE); // id = 0
+            ILobby lobby1 = lobbyManager.createLobby("lobbyName1", Visibility.PRIVATE); // id = 1
+            lobbyManager.createLobby("lobbyName2", Visibility.PRIVATE); // id = 2
 
             // Remove lobby1 to generate non-continuous lobby list
             lobbyManager.removeLobbyWithId(lobby1.getId());
 
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName1", LobbyMode.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
 
             // Assert that
             assertEquals(1L, lobby.getId());
             assertEquals("LobbyName1", lobby.getName());
-            assertEquals(LobbyMode.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();
@@ -91,7 +90,7 @@ class LobbyManagerTest {
     public void removeLobbyWithId_removed(){
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("lobbyName", LobbyMode.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
 
             // Remove from lobby list
             lobbyManager.removeLobbyWithId(lobby.getId());
@@ -110,7 +109,7 @@ class LobbyManagerTest {
     public void getLobbyWithId(){
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("lobbyName", LobbyMode.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
 
             // Remove from lobby list
             ILobby result = lobbyManager.getLobbyWithId(lobby.getId());

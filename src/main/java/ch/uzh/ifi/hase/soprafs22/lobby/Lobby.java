@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +17,7 @@ public class Lobby implements ILobby {
 
     private final long id;
     private String name;
-    private LobbyMode lobbyMode;
+    private Visibility visibility;
     private Game game;
     private final Player host;
     private final List<Player> playerList;
@@ -25,10 +25,10 @@ public class Lobby implements ILobby {
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
-    public Lobby(Long id, String name, LobbyMode lobbyMode) {
+    public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
         this.name = name;
-        this.lobbyMode = lobbyMode;
+        this.visibility = visibility;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.playerList = new LinkedList<>();
 
@@ -54,13 +54,13 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public LobbyMode getLobbyMode() {
-        return lobbyMode;
+    public Visibility getLobbyMode() {
+        return visibility;
     }
 
     @Override
-    public void setLobbyMode(LobbyMode lobbyMode) {
-        this.lobbyMode = lobbyMode;
+    public void setLobbyMode(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     /**
@@ -75,8 +75,13 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player removePlayer(int index) {
-        return playerList.remove(index);
+    public Player removePlayer(String token) {
+        for(Player player : playerList){
+            if(player.getToken().equals(token)) playerList.remove(player);
+            return player;
+        }
+
+        return null;
     }
 
     @Override
@@ -144,7 +149,7 @@ public class Lobby implements ILobby {
         // Count the number of players in each team
         List<Long> idList = new LinkedList<>();
         for(Player player : playerList){
-            idList.add(player.getPlayerId());
+            idList.add(player.getId());
             int teamMembers = numberOfTeamMembers.get(player.getTeam());
             numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
         }

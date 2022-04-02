@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
@@ -44,7 +44,7 @@ public class LobbyControllerTest {
     @Test
     public void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", LobbyMode.PRIVATE);
+        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -61,29 +61,29 @@ public class LobbyControllerTest {
         // then
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lobbyId", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.members[0].id", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.members[0].name", is(lobby.getHost().getUsername())))
-                .andExpect(jsonPath("$.members[0].ready", is(lobby.getHost().isReady())))
-                .andExpect(jsonPath("$.members[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.owner", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.players[0].name", is(lobby.getHost().getName())))
+                .andExpect(jsonPath("$.players[0].ready", is(lobby.getHost().isReady())))
+                .andExpect(jsonPath("$.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
                 .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
-                .andExpect(jsonPath("$.ranked", is(lobby.getGameType().toString())))
+                .andExpect(jsonPath("$.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.invitationCode", is(lobby.getInvitationCode())));
     }
 
     @Test
     public void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", LobbyMode.PRIVATE);
+        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
-        lobbyPostDTO.setLobbyMode(lobby.getLobbyMode());
+        lobbyPostDTO.setVisibility(lobby.getLobbyMode());
         lobbyPostDTO.setGameMode(lobby.getGameMode());
         lobbyPostDTO.setGameType(lobby.getGameType());
 
@@ -101,16 +101,16 @@ public class LobbyControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.lobby.lobbyId", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.lobby.members[0].id", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.lobby.members[0].name", is(lobby.getHost().getUsername())))
-                .andExpect(jsonPath("$.lobby.members[0].ready", is(lobby.getHost().isReady())))
-                .andExpect(jsonPath("$.lobby.members[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
+                .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
+                .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
-                .andExpect(jsonPath("$.lobby.ranked", is(lobby.getGameType().toString())))
+                .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
                 .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())));
 
@@ -119,13 +119,13 @@ public class LobbyControllerTest {
     @Test
     public void  registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", LobbyMode.PRIVATE);
+        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
-        lobbyPostDTO.setLobbyMode(lobby.getLobbyMode());
+        lobbyPostDTO.setVisibility(lobby.getLobbyMode());
         lobbyPostDTO.setGameMode(lobby.getGameMode());
         lobbyPostDTO.setGameType(lobby.getGameType());
 
@@ -143,16 +143,16 @@ public class LobbyControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.lobby.lobbyId", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.lobby.members[0].id", is((int)lobby.getHost().getPlayerId())))
-                .andExpect(jsonPath("$.lobby.members[0].name", is(lobby.getHost().getUsername())))
-                .andExpect(jsonPath("$.lobby.members[0].ready", is(lobby.getHost().isReady())))
-                .andExpect(jsonPath("$.lobby.members[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
+                .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
+                .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getLobbyMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
-                .andExpect(jsonPath("$.lobby.ranked", is(lobby.getGameType().toString())))
+                .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
 
     }
