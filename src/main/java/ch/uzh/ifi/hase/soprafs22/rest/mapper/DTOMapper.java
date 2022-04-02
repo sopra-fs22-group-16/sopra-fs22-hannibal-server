@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
@@ -28,6 +29,7 @@ public abstract class DTOMapper {
     @Mapping(source = "playerId", target = "id")
     @Mapping(source = "username", target = "name")
     @Mapping(source = "ready", target = "ready")
+    @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
@@ -51,6 +53,10 @@ public abstract class DTOMapper {
 
 
         return lobbyGetDTO;
+    }
+
+    int convertTeamToTeamNumber(Team team){
+        return team.getTeamNumber();
     }
 
 }

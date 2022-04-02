@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 
 public class Player {
@@ -11,12 +12,15 @@ public class Player {
 
     private boolean ready;
 
+    private Team team;
+
     private RegisteredUser registeredUser;
 
-    public Player(long id, String username, String token) {
+    public Player(long id, String username, String token, Team team) {
         this.playerId = id;
         this.username = username;
         this.token = token;
+        this.team = team;
         this.ready = false;
     }
 
@@ -43,6 +47,14 @@ public class Player {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public RegisteredUser getRegisteredUser() {

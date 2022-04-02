@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.springframework.web.client.RestTemplate;
@@ -133,11 +134,19 @@ public class Lobby implements ILobby {
 
     private Player generatePlayer(){
 
+        Map<Team, Integer> numberOfTeamMembers = new HashMap<>();
+        for(Team t : Team.values()){
+            numberOfTeamMembers.put(t, 0);
+        }
+
         long id = 0L;
         // Get all ids currently in use
+        // Count the number of players in each team
         List<Long> idList = new LinkedList<>();
         for(Player player : playerList){
             idList.add(player.getPlayerId());
+            int teamMembers = numberOfTeamMembers.get(player.getTeam());
+            numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
         }
         // if id already in use increase by 1
         while(idList.contains(id)){++id;}
@@ -146,6 +155,14 @@ public class Lobby implements ILobby {
 
         String token = UUID.randomUUID().toString();
 
-        return new Player(id, username, token);
+        // Find team with the lowest number of players
+        Team team = Team.values()[0];
+        for(Team t : Team.values()){
+            int teamMembers = numberOfTeamMembers.get(t);
+            if(teamMembers < numberOfTeamMembers.get(team))
+                team = t;
+        }
+
+        return new Player(id, username, token, team);
     }
 }

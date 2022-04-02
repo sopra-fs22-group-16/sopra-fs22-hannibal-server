@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -41,6 +42,7 @@ public class DTOMapperTest {
             assertEquals(lobbyGetDTO.getMembers().get(counter).getId(), player.getPlayerId());
             assertEquals(lobbyGetDTO.getMembers().get(counter).getName(), player.getUsername());
             assertEquals(lobbyGetDTO.getMembers().get(counter).isReady(), player.isReady());
+            assertEquals(lobbyGetDTO.getMembers().get(counter).getTeam(), player.getTeam().getTeamNumber());
             ++counter;
         }
 
@@ -53,7 +55,7 @@ public class DTOMapperTest {
     @Test
     public void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
         // create Lobby
-        Player player = new Player(1L, "username", "token");
+        Player player = new Player(1L, "username", "token", Team.Red);
 
         // MAP -> LobbyGetDTO
         PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(player);
@@ -62,5 +64,6 @@ public class DTOMapperTest {
         assertEquals(player.getPlayerId(), playerGetDTO.getId());
         assertEquals(player.getUsername(), playerGetDTO.getName());
         assertEquals(player.isReady(), playerGetDTO.isReady());
+        assertEquals(player.getTeam().getTeamNumber(), playerGetDTO.getTeam());
     }
 }

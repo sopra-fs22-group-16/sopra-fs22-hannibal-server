@@ -52,6 +52,7 @@ public class LobbyServiceIntegrationTests {
         assertEquals(gameType, gameType);
         assertNotNull(createdLobby.getHost());
         assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
+        assertNotNull(createdLobby.getHost().getTeam());
     }
 
     public static Stream<Arguments> provideDataForCreateLobbyNullAndEmptyParameters() {

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class PlayerTest {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
-        Player player = new Player(0L, "username", "token");
+        Player player = new Player(0L, "username", "token", Team.Red);
 
         // when
         player.linkRegisteredUser(registeredUser);
@@ -28,7 +29,7 @@ class PlayerTest {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
-        Player player = new Player(0L, "username", "token");
+        Player player = new Player(0L, "username", "token", Team.Red);
         player.linkRegisteredUser(registeredUser);
 
         // when

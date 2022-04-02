@@ -30,6 +30,7 @@ class LobbyTest {
         assertNotNull(host);
         assertNotNull(host.getToken());
         assertNotNull(host.getUsername());
+        assertNotNull(host.getTeam());
         assertFalse(host.isReady());
     }
 
