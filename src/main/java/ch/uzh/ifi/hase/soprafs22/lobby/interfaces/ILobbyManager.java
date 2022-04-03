@@ -9,6 +9,8 @@ public interface ILobbyManager extends Iterable<ILobby>{
 
     ILobby getLobbyWithId(long id);
 
+    void updateLobby(long userId, long lobbyId, LobbyPutDTO lobbyPutDTO);
+
     ILobby getLobbyWithName(String name);
 
     ILobby createLobby(String name, Visibility visibility) throws SmallestIdNotCreatable;

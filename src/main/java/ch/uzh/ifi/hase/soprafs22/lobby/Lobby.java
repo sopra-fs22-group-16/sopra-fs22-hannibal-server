@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
@@ -110,7 +111,9 @@ public class Lobby implements ILobby {
 
     @Override
     public void startGame() {
-        //this.game.start();
+        // How about creating a game with the stored parameters and starting it? It seems easier than the game dealing
+        // with updates whenever the lobby changes.
+        // this.game.start();
     }
 
     @Override
