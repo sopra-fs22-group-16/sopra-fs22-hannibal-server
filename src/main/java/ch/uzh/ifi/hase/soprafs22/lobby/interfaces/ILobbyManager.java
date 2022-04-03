@@ -1,17 +1,22 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
 
-import java.util.List;
+public interface ILobbyManager extends Iterable<ILobby>{
 
-public interface ILobbyManager {
-    void addLobby(ILobby lobby);
+    ILobby removeLobbyWithId(long id);
 
-    ILobby removeLobby(long index);
-
-    List<ILobby> getLobbyList();
+    ILobby getLobbyWithId(long id);
 
     void updateLobby(long userId, long lobbyId, LobbyPutDTO lobbyPutDTO);
 
-    ILobby getLobbyById(long lobbyId);
+    ILobby getLobbyWithName(String name);
+
+    ILobby createLobby(String name, Visibility visibility) throws SmallestIdNotCreatable;
+
+    boolean isLobbyNameInUse(String lobbyName);
+
+    void clear();
 }

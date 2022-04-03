@@ -1,29 +1,60 @@
 package ch.uzh.ifi.hase.soprafs22.user;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
-public class RegisteredUser extends UserDecorator {
+@Table(name = "REGISTEREDUSER")
+public class RegisteredUser implements Serializable {
 
-    @Embedded
-    @OneToOne(targetEntity = User.class)
-    private IUser user;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String token;
+
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String password;
+
+    @Column
     private int rankedScore;
+
+    @Column
     private int wins;
+
+    @Column
     private int losses;
 
-    /**
-     * A registered user acts as a decorated user. It contains the user's properties and adds password, wins, losses,
-     * and ranked score.
-     * @param user
-     */
-    public RegisteredUser(IUser user) {
-        this.user = user;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -56,20 +87,5 @@ public class RegisteredUser extends UserDecorator {
 
     public void setLosses(int losses) {
         this.losses = losses;
-    }
-
-    @Override
-    public Long getId() {
-        return this.user.getId();
-    }
-
-    @Override
-    public String getToken() {
-        return this.user.getToken();
-    }
-
-    @Override
-    public String getUsername() {
-        return this.user.getUsername();
     }
 }

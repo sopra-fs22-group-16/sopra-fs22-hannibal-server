@@ -1,24 +1,22 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.LobbyMode;
-import ch.uzh.ifi.hase.soprafs22.user.IUser;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
-import java.util.UUID;
-
-public interface ILobby {
+public interface ILobby extends Iterable<Player>{
     byte[] generateQrCode(String code);
 
-    void changeReadyStatus(int token);
+    void changeReadyStatus(String token);
 
-    LobbyMode getLobbyMode();
+    Visibility getVisibility();
 
-    void setLobbyMode(LobbyMode lobbyMode);
+    void setVisibility(Visibility visibility);
 
-    void addUser(IUser user);
+    Player addPlayer();
 
-    IUser removeUser(long userId);
+    Player removePlayer(String token);
 
     void setGameMode(GameMode gameMode);
 
@@ -26,15 +24,17 @@ public interface ILobby {
 
     void startGame();
 
+    long getId();
+
     String getName();
 
     void setName(String name);
 
-    GameType getRanked();
+    Player getOwner();
 
-    GameMode getMode();
+    GameMode getGameMode();
 
-    IUser getHost();
+    GameType getGameType();
 
-    long getId();
+    String getInvitationCode();
 }

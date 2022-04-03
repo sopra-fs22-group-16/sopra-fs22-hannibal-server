@@ -1,15 +1,33 @@
-package ch.uzh.ifi.hase.soprafs22.game;
+package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
-public class Game {
+public class LobbyPostDTO {
+
+    private String name;
+
+    private Visibility visibility;
+
     private GameMode gameMode;
+
     private GameType gameType;
 
-    public Game(GameMode gameMode, GameType gameType){
-        this.gameMode = gameMode;
-        this.gameType = gameType;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public GameMode getGameMode() {
