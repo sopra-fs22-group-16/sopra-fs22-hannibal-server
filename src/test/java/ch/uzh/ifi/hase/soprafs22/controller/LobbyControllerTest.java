@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
+import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
@@ -44,7 +44,7 @@ public class LobbyControllerTest {
     @Test
     public void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -63,7 +63,7 @@ public class LobbyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.owner", is((int)lobby.getOwner().getId())))
+                .andExpect(jsonPath("$.ownerId", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.players[0].id", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.players[0].ready", is(lobby.getOwner().isReady())))
@@ -77,7 +77,7 @@ public class LobbyControllerTest {
     @Test
     public void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -103,7 +103,7 @@ public class LobbyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getOwner().getId())))
+                .andExpect(jsonPath("$.lobby.ownerId", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getOwner().isReady())))
@@ -119,7 +119,7 @@ public class LobbyControllerTest {
     @Test
     public void  registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = LobbyManager.getInstance().createLobby("lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -145,7 +145,7 @@ public class LobbyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.owner", is((int)lobby.getOwner().getId())))
+                .andExpect(jsonPath("$.lobby.ownerId", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getOwner().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getOwner().isReady())))

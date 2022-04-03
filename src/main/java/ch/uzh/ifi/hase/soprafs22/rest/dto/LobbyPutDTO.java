@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class LobbyPutDTO {
-    private String visibility;
+
     private String name;
+    private String visibility;
     private String gameMode;
     private String gameType;
 

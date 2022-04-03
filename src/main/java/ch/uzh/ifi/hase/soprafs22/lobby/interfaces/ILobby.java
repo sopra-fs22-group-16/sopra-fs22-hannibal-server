@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
-public interface ILobby {
+public interface ILobby extends Iterable<Player>{
     byte[] generateQrCode(String code);
 
     void changeReadyStatus(String token);

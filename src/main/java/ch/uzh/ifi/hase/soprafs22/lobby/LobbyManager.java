@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,9 +23,11 @@ public class LobbyManager implements ILobbyManager {
     private volatile static LobbyManager uniqueInstance;
 
     private final HashMap<Long, ILobby> lobbyList;
+    private final Set<String> lobbyNames;
 
     private LobbyManager() {
         this.lobbyList = new HashMap<>();
+        this.lobbyNames = new HashSet<>();
     }
 
     public static LobbyManager getInstance() {
@@ -57,12 +60,19 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public boolean isLobbyNameInUse(String lobbyName){
+        return lobbyNames.contains(lobbyName);
+    }
+
+    @Override
     public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatable {
+        if(lobbyNames.contains(lobbyName)) throw new IllegalArgumentException("The specified lobby name is already in use!");
 
         long id = generateSmallestUniqueId();
 
         ILobby lobby = new Lobby(id, lobbyName, visibility);
         this.lobbyList.put(id, lobby);
+        this.lobbyNames.add(lobbyName);
 
         return lobby;
     }
@@ -101,55 +111,30 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public Iterator<ILobby> iterator() {
-        return lobbyList.values().iterator();
-    }
-
-    @Override
-    public void clear(){
-        lobbyList.clear();
-    }
-
-    @Override
     public void updateLobby(long userId, long lobbyId, LobbyPutDTO lobbyPutDTO) {
         ILobby lobby = getLobbyWithId(lobbyId);
         if (lobby.getOwner().getId() != userId)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not the host of the lobby.");
         // Not null, value was provided by DTO.
         if (lobbyPutDTO.getVisibility() != null) {
-            switch(lobbyPutDTO.getVisibility()) {
-                case "PUBLIC":
-                    lobby.setLobbyMode(Visibility.PUBLIC);
-                    break;
-                case "PRIVATE":
-                    lobby.setLobbyMode(Visibility.PRIVATE);
-                    break;
-                default:
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Visibility cannot be:" + lobbyPutDTO.getVisibility());
+            switch (lobbyPutDTO.getVisibility()) {
+                case "PUBLIC" -> lobby.setVisibility(Visibility.PUBLIC);
+                case "PRIVATE" -> lobby.setVisibility(Visibility.PRIVATE);
+                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Visibility cannot be:" + lobbyPutDTO.getVisibility());
             }
         }
         if (lobbyPutDTO.getGameType() != null){
-            switch(lobbyPutDTO.getGameType()) {
-                case "RANKED":
-                    lobby.setGameType(GameType.RANKED);
-                    break;
-                case "UNRANKED":
-                    lobby.setGameType(GameType.UNRANKED);
-                    break;
-                default:
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "GameType cannot be:" + lobbyPutDTO.getGameType());
+            switch (lobbyPutDTO.getGameType()) {
+                case "RANKED" -> lobby.setGameType(GameType.RANKED);
+                case "UNRANKED" -> lobby.setGameType(GameType.UNRANKED);
+                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "GameType cannot be:" + lobbyPutDTO.getGameType());
             }
         }
         if (lobbyPutDTO.getGameMode() !=null){
             switch (lobbyPutDTO.getGameMode()) {
-                case "ONE_VS_ONE":
-                    lobby.setGameMode(GameMode.ONE_VS_ONE);
-                    break;
-                case "TWO_VS_TWO":
-                    lobby.setGameMode(GameMode.TWO_VS_TWO);
-                    break;
-                default:
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mode cannot be:" + lobbyPutDTO.getGameMode());
+                case "ONE_VS_ONE" -> lobby.setGameMode(GameMode.ONE_VS_ONE);
+                case "TWO_VS_TWO" -> lobby.setGameMode(GameMode.TWO_VS_TWO);
+                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mode cannot be:" + lobbyPutDTO.getGameMode());
             }
         }
         if (lobbyPutDTO.getName() !=null){
@@ -163,5 +148,16 @@ public class LobbyManager implements ILobbyManager {
             lobbyNames.add(lobbyPutDTO.getName());
             lobby.setName(lobbyPutDTO.getName());
         }
+    }
+
+    @Override
+    public void clear(){
+        lobbyList.clear();
+        lobbyNames.clear();
+    }
+
+    @Override
+    public Iterator<ILobby> iterator() {
+        return lobbyList.values().iterator();
     }
 }
