@@ -46,7 +46,7 @@ public class DTOMapperTest {
             ++counter;
         }
 
-        assertEquals(lobbyGetDTO.getVisibility(), lobby.getLobbyMode());
+        assertEquals(lobbyGetDTO.getVisibility(), lobby.getVisibility());
         assertEquals(lobbyGetDTO.getGameMode(), lobby.getGameMode());
         assertEquals(lobbyGetDTO.getGameType(), lobby.getGameType());
         assertEquals(lobbyGetDTO.getInvitationCode(), lobby.getInvitationCode());

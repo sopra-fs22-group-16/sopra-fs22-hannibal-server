@@ -33,7 +33,7 @@ class LobbyManagerTest {
             // Assert that
             assertEquals(0L, lobby.getId());
             assertEquals("LobbyName", lobby.getName());
-            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ class LobbyManagerTest {
             // Assert that
             assertEquals(1L, lobby.getId());
             assertEquals("LobbyName2", lobby.getName());
-            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();
@@ -78,7 +78,7 @@ class LobbyManagerTest {
             // Assert that
             assertEquals(1L, lobby.getId());
             assertEquals("LobbyName1", lobby.getName());
-            assertEquals(Visibility.PRIVATE, lobby.getLobbyMode());
+            assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
         catch (SmallestIdNotCreatable e) {
             e.printStackTrace();

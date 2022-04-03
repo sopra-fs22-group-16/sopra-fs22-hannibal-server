@@ -46,7 +46,7 @@ public abstract class DTOMapper {
         }
         lobbyGetDTO.setPlayers(members);
 
-        lobbyGetDTO.setVisibility(lobby.getLobbyMode());
+        lobbyGetDTO.setVisibility(lobby.getVisibility());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());

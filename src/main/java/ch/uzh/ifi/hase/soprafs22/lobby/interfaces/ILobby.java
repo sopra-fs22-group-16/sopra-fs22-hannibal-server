@@ -10,9 +10,9 @@ public interface ILobby extends Iterable<Player>{
 
     void changeReadyStatus(String token);
 
-    Visibility getLobbyMode();
+    Visibility getVisibility();
 
-    void setLobbyMode(Visibility visibility);
+    void setVisibility(Visibility visibility);
 
     Player addPlayer();
 

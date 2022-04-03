@@ -68,7 +68,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.players[0].ready", is(lobby.getOwner().isReady())))
                 .andExpect(jsonPath("$.players[0].team", is(lobby.getOwner().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.visibility", is(lobby.getLobbyMode().toString())))
+                .andExpect(jsonPath("$.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.invitationCode", is(lobby.getInvitationCode())));
@@ -83,14 +83,14 @@ public class LobbyControllerTest {
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
-        lobbyPostDTO.setVisibility(lobby.getLobbyMode());
+        lobbyPostDTO.setVisibility(lobby.getVisibility());
         lobbyPostDTO.setGameMode(lobby.getGameMode());
         lobbyPostDTO.setGameType(lobby.getGameType());
 
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.createLobby("", lobby.getName(), lobby.getLobbyMode(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
+        given(lobbyService.createLobby("", lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
 
         // when
         MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby")
@@ -108,7 +108,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getOwner().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getOwner().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.lobby.visibility", is(lobby.getLobbyMode().toString())))
+                .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
@@ -125,14 +125,14 @@ public class LobbyControllerTest {
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
-        lobbyPostDTO.setVisibility(lobby.getLobbyMode());
+        lobbyPostDTO.setVisibility(lobby.getVisibility());
         lobbyPostDTO.setGameMode(lobby.getGameMode());
         lobbyPostDTO.setGameType(lobby.getGameType());
 
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.createLobby("registeredUserToken", lobby.getName(), lobby.getLobbyMode(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
+        given(lobbyService.createLobby("registeredUserToken", lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
 
         // when
         MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby")
@@ -150,7 +150,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getOwner().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getOwner().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getOwner().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.lobby.visibility", is(lobby.getLobbyMode().toString())))
+                .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));

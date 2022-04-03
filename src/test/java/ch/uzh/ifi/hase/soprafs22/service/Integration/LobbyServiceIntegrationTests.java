@@ -135,7 +135,7 @@ public class LobbyServiceIntegrationTests {
         // Check
         assertEquals(createdLobby.getId(), lobby.getId());
         assertEquals(createdLobby.getName(), lobby.getName());
-        assertEquals(createdLobby.getLobbyMode(), lobby.getLobbyMode());
+        assertEquals(createdLobby.getVisibility(), lobby.getVisibility());
         assertEquals(createdLobby.getGameMode(), lobby.getGameMode());
         assertEquals(createdLobby.getGameType(), lobby.getGameType());
         assertEquals(createdLobby.getOwner(), lobby.getOwner());

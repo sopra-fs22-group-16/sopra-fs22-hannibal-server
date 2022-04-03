@@ -54,12 +54,12 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Visibility getLobbyMode() {
+    public Visibility getVisibility() {
         return visibility;
     }
 
     @Override
-    public void setLobbyMode(Visibility visibility) {
+    public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
     }
 
