@@ -61,12 +61,12 @@ public class LobbyManager implements ILobbyManager {
 
     @Override
     public boolean isLobbyNameInUse(String lobbyName){
-        return lobbyNames.contains(lobbyName);
+        return this.lobbyNames.contains(lobbyName);
     }
 
     @Override
     public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatable {
-        if(lobbyNames.contains(lobbyName)) throw new IllegalArgumentException("The specified lobby name is already in use!");
+        if(this.lobbyNames.contains(lobbyName)) throw new IllegalArgumentException("The specified lobby name is already in use!");
 
         long id = generateSmallestUniqueId();
 
