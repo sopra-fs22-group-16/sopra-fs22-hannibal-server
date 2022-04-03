@@ -15,7 +15,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getHost();
+        Player host = lobby.getOwner();
         assertNotNull(host);
         assertEquals(host, lobby.iterator().next());
     }
@@ -26,7 +26,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getHost();
+        Player host = lobby.getOwner();
         assertNotNull(host);
         assertNotNull(host.getToken());
         assertNotNull(host.getName());

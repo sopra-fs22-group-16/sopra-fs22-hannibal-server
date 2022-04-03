@@ -31,7 +31,7 @@ public class DTOMapperTest {
         // check content
         assertEquals(lobbyGetDTO.getId(), lobby.getId());
         assertEquals(lobbyGetDTO.getName(), lobby.getName());
-        assertEquals(lobbyGetDTO.getOwner(), lobby.getHost().getId());
+        assertEquals(lobbyGetDTO.getOwnerId(), lobby.getOwner().getId());
 
         int counter = 0;
         for (Player player : lobby) {

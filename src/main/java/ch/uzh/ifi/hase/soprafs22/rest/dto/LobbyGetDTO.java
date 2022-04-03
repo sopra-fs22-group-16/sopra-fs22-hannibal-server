@@ -11,21 +11,21 @@ import java.util.List;
 
 public class LobbyGetDTO {
 
-    Long id;
+    private Long id;
 
-    String name;
+    private String name;
 
-    Long owner;
+    private Long ownerId;
 
-    List<PlayerGetDTO> players;
+    private List<PlayerGetDTO> players;
 
-    Visibility visibility;
+    private Visibility visibility;
 
-    GameMode gameMode;
+    private GameMode gameMode;
 
-    GameType gameType;
+    private GameType gameType;
 
-    String invitationCode;
+    private String invitationCode;
 
     public Long getId() {
         return id;
@@ -51,12 +51,12 @@ public class LobbyGetDTO {
         this.invitationCode = invitationCode;
     }
 
-    public Long getOwner() {
-        return owner;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwner(Long owner) {
-        this.owner = owner;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
     public List<PlayerGetDTO> getPlayers() {

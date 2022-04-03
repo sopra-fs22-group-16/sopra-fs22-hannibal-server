@@ -50,9 +50,9 @@ public class LobbyServiceIntegrationTests {
         assertEquals(lobbyName, createdLobby.getName());
         assertEquals(gameMode, gameMode);
         assertEquals(gameType, gameType);
-        assertNotNull(createdLobby.getHost());
-        assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
-        assertNotNull(createdLobby.getHost().getTeam());
+        assertNotNull(createdLobby.getOwner());
+        assertEquals(createdLobby.getOwner(), createdLobby.iterator().next());
+        assertNotNull(createdLobby.getOwner().getTeam());
     }
 
     public static Stream<Arguments> provideDataForCreateLobbyNullAndEmptyParameters() {
@@ -130,7 +130,7 @@ public class LobbyServiceIntegrationTests {
         Long id = createdLobby.getId();
 
         // Attempt to get lobby with id
-        ILobby lobby = lobbyService.getLobby(createdLobby.getHost().getToken(), id);
+        ILobby lobby = lobbyService.getLobby(createdLobby.getOwner().getToken(), id);
 
         // Check
         assertEquals(createdLobby.getId(), lobby.getId());
@@ -138,7 +138,7 @@ public class LobbyServiceIntegrationTests {
         assertEquals(createdLobby.getLobbyMode(), lobby.getLobbyMode());
         assertEquals(createdLobby.getGameMode(), lobby.getGameMode());
         assertEquals(createdLobby.getGameType(), lobby.getGameType());
-        assertEquals(createdLobby.getHost(), lobby.getHost());
+        assertEquals(createdLobby.getOwner(), lobby.getOwner());
 
     }
 

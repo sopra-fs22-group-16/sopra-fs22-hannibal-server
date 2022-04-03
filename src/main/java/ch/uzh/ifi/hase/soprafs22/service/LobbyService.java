@@ -99,7 +99,7 @@ public class LobbyService {
 
         // Link the host to the registered user
         if(registeredUser != null){
-           newLobby.getHost().linkRegisteredUser(registeredUser);
+           newLobby.getOwner().linkRegisteredUser(registeredUser);
         }
 
         log.debug("Created Information for Lobby: {}", newLobby);

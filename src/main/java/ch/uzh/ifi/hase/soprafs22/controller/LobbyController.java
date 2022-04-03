@@ -51,7 +51,7 @@ public class LobbyController {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         if(token == null || token.isEmpty())
-            returnMap.put("token", lobby.getHost().getToken());
+            returnMap.put("token", lobby.getOwner().getToken());
 
         return returnMap;
     }

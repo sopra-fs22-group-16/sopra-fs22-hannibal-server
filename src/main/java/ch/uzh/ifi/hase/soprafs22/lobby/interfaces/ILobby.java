@@ -30,7 +30,7 @@ public interface ILobby extends Iterable<Player>{
 
     void setName(String name);
 
-    Player getHost();
+    Player getOwner();
 
     GameMode getGameMode();
 

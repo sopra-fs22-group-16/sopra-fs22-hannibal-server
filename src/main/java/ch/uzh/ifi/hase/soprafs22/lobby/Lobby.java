@@ -19,7 +19,7 @@ public class Lobby implements ILobby {
     private String name;
     private Visibility visibility;
     private Game game;
-    private final Player host;
+    private final Player owner;
     private final List<Player> playerList;
     private String invitationCode;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
@@ -33,8 +33,8 @@ public class Lobby implements ILobby {
         this.playerList = new LinkedList<>();
 
         // Generate the host player
-        this.host = generatePlayer();
-        playerList.add(host);
+        this.owner = generatePlayer();
+        playerList.add(owner);
     }
 
     @Override
@@ -77,10 +77,11 @@ public class Lobby implements ILobby {
     @Override
     public Player removePlayer(String token) {
         for(Player player : playerList){
-            if(player.getToken().equals(token)) playerList.remove(player);
-            return player;
+            if(player.getToken().equals(token)) {
+                playerList.remove(player);
+                return player;
+            }
         }
-
         return null;
     }
 
@@ -128,8 +129,8 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player getHost() {
-        return host;
+    public Player getOwner() {
+        return owner;
     }
 
     @Override
