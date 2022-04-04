@@ -20,7 +20,7 @@ public class Lobby implements ILobby {
     private Visibility visibility;
     private Game game;
     private final Player owner;
-    private final List<Player> playerList;
+    private final Map<String, Player> playerMap;
     private String invitationCode;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
@@ -30,11 +30,11 @@ public class Lobby implements ILobby {
         this.name = name;
         this.visibility = visibility;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
-        this.playerList = new LinkedList<>();
+        this.playerMap = new HashMap<>();
 
         // Generate the host player
         this.owner = generatePlayer();
-        playerList.add(owner);
+        playerMap.put(owner.getToken(), owner);
     }
 
     @Override
@@ -47,10 +47,8 @@ public class Lobby implements ILobby {
 
     @Override
     public void changeReadyStatus(String token) {
-        for(Player player : playerList){
-            if(player.getToken().equals(token))
-                player.setReady(!player.isReady());
-        }
+        Player player = playerMap.get(token);
+        player.setReady(!player.isReady());
     }
 
     @Override
@@ -70,19 +68,13 @@ public class Lobby implements ILobby {
     @Override
     public Player addPlayer() {
         Player player = generatePlayer();
-        playerList.add(player);
+        playerMap.put(player.getToken(), player);
         return player;
     }
 
     @Override
     public Player removePlayer(String token) {
-        for(Player player : playerList){
-            if(player.getToken().equals(token)) {
-                playerList.remove(player);
-                return player;
-            }
-        }
-        return null;
+        return playerMap.remove(token);
     }
 
     @Override
@@ -136,11 +128,6 @@ public class Lobby implements ILobby {
         return owner;
     }
 
-    @Override
-    public Iterator<Player> iterator() {
-        return playerList.iterator();
-    }
-
     private Player generatePlayer(){
 
         Map<Team, Integer> numberOfTeamMembers = new HashMap<>();
@@ -151,14 +138,14 @@ public class Lobby implements ILobby {
         long id = 0L;
         // Get all ids currently in use
         // Count the number of players in each team
-        List<Long> idList = new LinkedList<>();
-        for(Player player : playerList){
-            idList.add(player.getId());
+        Set<Long> idSet = new HashSet<>();
+        for(Player player : playerMap.values()){
+            idSet.add(player.getId());
             int teamMembers = numberOfTeamMembers.get(player.getTeam());
             numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
         }
         // if id already in use increase by 1
-        while(idList.contains(id)){++id;}
+        while(idSet.contains(id)){++id;}
 
         String username = "Player-"+id;
 
@@ -173,5 +160,10 @@ public class Lobby implements ILobby {
         }
 
         return new Player(id, username, token, team);
+    }
+
+    @Override
+    public Iterator<Player> iterator() {
+        return playerMap.values().iterator();
     }
 }
