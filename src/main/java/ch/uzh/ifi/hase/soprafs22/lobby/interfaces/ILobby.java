@@ -37,4 +37,8 @@ public interface ILobby extends Iterable<Player>{
     GameType getGameType();
 
     String getInvitationCode();
+
+    void setUserName(String token, String newName);
+
+    void setReady(String token, Boolean ready);
 }

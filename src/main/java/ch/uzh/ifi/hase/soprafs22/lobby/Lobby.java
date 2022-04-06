@@ -7,7 +7,9 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +26,8 @@ public class Lobby implements ILobby {
     private String invitationCode;
     private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
     private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
+
+    private Set<String> userNames = new HashSet<>();
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -69,12 +73,15 @@ public class Lobby implements ILobby {
     public Player addPlayer() {
         Player player = generatePlayer();
         playerMap.put(player.getToken(), player);
+        userNames.add(player.getName());
         return player;
     }
 
     @Override
     public Player removePlayer(String token) {
-        return playerMap.remove(token);
+        Player player = playerMap.remove(token);
+        userNames.add(player.getName());
+        return player;
     }
 
     @Override
@@ -98,6 +105,33 @@ public class Lobby implements ILobby {
     @Override
     public String getInvitationCode() {
         return this.invitationCode;
+    }
+
+    @Override
+    public void setUserName(String token, String newName) {
+        if (userNames.contains(newName))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + newName + " is already taken.");
+        Player player = getPlayer(token);
+        player.setName(newName);
+        userNames.remove(player.getName());
+        userNames.add(newName);
+    }
+
+    @Override
+    public void setReady(String token, Boolean ready) {
+        Player player = getPlayer(token);
+        player.setReady(ready);
+        // Here lobby knows if all players are ready and can inform clients through websocket.
+        // Sum of players that are ready:
+        // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
+    }
+
+    private Player getPlayer(String token) {
+        Player player = playerMap.get(token);
+        if (player == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in lobby.");
+        }
+        return player;
     }
 
     @Override

@@ -211,5 +211,7 @@ public class LobbyServiceIntegrationTests {
 
     }
 
+    // TODO: add integration tests for modify player inside lobby.
+
 
 }

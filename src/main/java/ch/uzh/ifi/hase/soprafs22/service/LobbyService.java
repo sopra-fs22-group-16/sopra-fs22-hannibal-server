@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,4 +143,7 @@ public class LobbyService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
+    public void modifyPlayer(String token, Long lobbyId, PlayerPutDTO playerPutDTO) {
+        lobbyManager.modifyPlayer(token, lobbyId, playerPutDTO);
+    }
 }

@@ -1,18 +1,19 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LobbyManagerUpdateTest {
 
@@ -44,7 +45,7 @@ public class LobbyManagerUpdateTest {
         input.setVisibility("PRIVATE");
 
         lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input);
-
+        
         ILobby result = lobbyManager.getLobbyWithId(0);
         assertEquals(input.getName(), result.getName());
         assertEquals(LOBBY1.getGameMode(), result.getGameMode());
@@ -142,6 +143,45 @@ public class LobbyManagerUpdateTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("400 BAD_REQUEST \"Lobby name should not be empty.\"", exception.getMessage());
+    }
+    
+    @Test
+    public void modifyPlayer_NewNameAndReady() {
+        PlayerPutDTO input = new PlayerPutDTO();
+        input.setName("new name");
+        input.setReady(true);
+        Player host = LOBBY1.getOwner();
+
+        lobbyManager.modifyPlayer(host.getToken(), LOBBY1.getId(), input);
+
+        assertEquals(host.getName(), input.getName());
+        assertEquals(host.isReady(), input.getReady());
+    }
+
+    @Test
+    public void modifyPlayer_NewName() {
+        PlayerPutDTO input = new PlayerPutDTO();
+        input.setName("new name");
+        Player host = LOBBY1.getOwner();
+        LOBBY1.setReady(host.getToken(), true);
+
+        lobbyManager.modifyPlayer(host.getToken(), LOBBY1.getId(), input);
+
+        assertEquals(host.getName(), input.getName());
+        assertTrue(host.isReady());
+    }
+
+    @Test
+    public void modifyPlayer_emptyName() {
+        PlayerPutDTO input = new PlayerPutDTO();
+        input.setName("     ");
+        input.setReady(true);
+        Player host = LOBBY1.getOwner();
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> lobbyManager.modifyPlayer(host.getToken(), LOBBY1.getId(), input));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
 }

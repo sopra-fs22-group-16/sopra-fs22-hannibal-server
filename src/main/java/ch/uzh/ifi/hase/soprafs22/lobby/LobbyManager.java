@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -7,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -139,7 +141,7 @@ public class LobbyManager implements ILobbyManager {
         }
         if (lobbyPutDTO.getName() !=null){
             //if the lobby name is empty(spaces)
-            if (lobbyPutDTO.getName().replaceAll("\\s+","").length() == 0)
+            if (isEmpty(lobbyPutDTO.getName()))
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lobby name should not be empty.");
             if (lobbyNames.contains(lobbyPutDTO.getName())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Lobby Name " + lobbyPutDTO.getName() + " already taken.");
@@ -157,7 +159,26 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public void modifyPlayer(String token, Long lobbyId, PlayerPutDTO playerPutDTO) {
+        ILobby lobby = lobbyList.get(lobbyId);
+        String newName = playerPutDTO.getName();
+        Boolean ready = playerPutDTO.getReady();
+        if (newName != null) {
+            if (isEmpty(newName))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username should not be empty.");
+            lobby.setUserName(token, newName);
+        }
+        if (ready != null) {
+            lobby.setReady(token, ready);
+        }
+    }
+
+    @Override
     public Iterator<ILobby> iterator() {
         return lobbyList.values().iterator();
+    }
+
+    private static boolean isEmpty(String s) {
+        return s.replaceAll("\\s+","").length() == 0;
     }
 }

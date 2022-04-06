@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 
 public interface ILobbyManager extends Iterable<ILobby>{
 
@@ -19,4 +20,6 @@ public interface ILobbyManager extends Iterable<ILobby>{
     boolean isLobbyNameInUse(String lobbyName);
 
     void clear();
+
+    void modifyPlayer(String token, Long lobbyId, PlayerPutDTO playerPutDTO);
 }
