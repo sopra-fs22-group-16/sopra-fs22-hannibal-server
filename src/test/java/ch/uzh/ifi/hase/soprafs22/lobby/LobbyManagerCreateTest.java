@@ -25,7 +25,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void createLobby_emptyLobbyList() {
+    void createLobby_emptyLobbyList() {
         try {
             // Create a new lobby
             ILobby lobby = lobbyManager.createLobby("LobbyName", Visibility.PRIVATE);
@@ -42,7 +42,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void createLobby_idIncreases() {
+    void createLobby_idIncreases() {
         try {
             // Fill lobby list
             lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
@@ -62,7 +62,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void createLobby_notContinuousIds_inList() {
+    void createLobby_notContinuousIds_inList() {
         try {
             // Fill lobby list
             lobbyManager.createLobby("lobbyName0", Visibility.PRIVATE); // id = 0
@@ -87,7 +87,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void removeLobbyWithId_removed(){
+    void removeLobbyWithId_removed(){
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
@@ -106,7 +106,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void getLobbyWithId(){
+    void getLobbyWithId(){
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0

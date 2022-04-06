@@ -88,7 +88,6 @@ public class LobbyService {
         try {
             newLobby = lobbyManager.createLobby(lobbyName, visibility);
         }catch(SmallestIdNotCreatable e){
-           e.printStackTrace();
            String errorMessage = "The server could not generate a unique id";
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
         }

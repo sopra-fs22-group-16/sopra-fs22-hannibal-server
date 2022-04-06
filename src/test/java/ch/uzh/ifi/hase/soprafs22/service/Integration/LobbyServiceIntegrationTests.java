@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @WebAppConfiguration
 @SpringBootTest
-public class LobbyServiceIntegrationTests {
+class LobbyServiceIntegrationTests {
 
     @Autowired
     private LobbyService lobbyService;
@@ -48,8 +48,8 @@ public class LobbyServiceIntegrationTests {
 
         assertEquals(0L, createdLobby.getId());
         assertEquals(lobbyName, createdLobby.getName());
-        assertEquals(gameMode, gameMode);
-        assertEquals(gameType, gameType);
+        assertEquals(gameMode, createdLobby.getGameMode());
+        assertEquals(gameType, createdLobby.getGameType());
         assertNotNull(createdLobby.getOwner());
         assertEquals(createdLobby.getOwner(), createdLobby.iterator().next());
         assertNotNull(createdLobby.getOwner().getTeam());

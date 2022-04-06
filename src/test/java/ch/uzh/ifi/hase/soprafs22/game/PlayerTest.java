@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class PlayerTest {
 
     @Test
-    public void linkRegisteredUser(){
+    void linkRegisteredUser(){
 
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
-        Player player = new Player(0L, "username", "token", Team.Red);
+        Player player = new Player(0L, "username", "token", Team.RED);
 
         // when
         player.linkRegisteredUser(registeredUser);
@@ -25,11 +25,11 @@ class PlayerTest {
     }
 
     @Test
-    public void setUsername_registeredUser_noChange(){
+    void setUsername_registeredUser_noChange(){
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
-        Player player = new Player(0L, "username", "token", Team.Red);
+        Player player = new Player(0L, "username", "token", Team.RED);
         player.linkRegisteredUser(registeredUser);
 
         // when

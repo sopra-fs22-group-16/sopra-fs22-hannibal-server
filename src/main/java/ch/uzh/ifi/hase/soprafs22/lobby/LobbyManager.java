@@ -20,7 +20,7 @@ import java.util.*;
 
 public class LobbyManager implements ILobbyManager {
 
-    private volatile static LobbyManager uniqueInstance;
+    private static final LobbyManager uniqueInstance = new LobbyManager();
 
     private final HashMap<Long, ILobby> lobbyList;
     private final Set<String> lobbyNames;
@@ -31,13 +31,6 @@ public class LobbyManager implements ILobbyManager {
     }
 
     public static LobbyManager getInstance() {
-        if (uniqueInstance == null) {
-            synchronized (LobbyManager.class) {
-                if (uniqueInstance == null) {
-                    uniqueInstance = new LobbyManager();
-                }
-            }
-        }
         return uniqueInstance;
     }
 
