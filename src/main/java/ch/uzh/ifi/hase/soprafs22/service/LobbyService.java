@@ -89,7 +89,7 @@ public class LobbyService {
             newLobby = lobbyManager.createLobby(lobbyName, visibility);
         }catch(SmallestIdNotCreatableException e){
            String errorMessage = "The server could not generate a unique id";
-           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, e);
         }
 
         // Set the gameType and gameMode of the lobby
