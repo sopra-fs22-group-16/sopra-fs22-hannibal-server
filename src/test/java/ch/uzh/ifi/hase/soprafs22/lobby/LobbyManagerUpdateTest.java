@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -28,7 +28,7 @@ class LobbyManagerUpdateTest {
 
 
     @BeforeEach
-    public void before() throws SmallestIdNotCreatable {
+    public void before() throws SmallestIdNotCreatableException {
         //new Lobby("Lobby 1", LobbyMode.PRIVATE, /*host=*/ USER1);
         lobbyManager.clear();
         LOBBY1 = lobbyManager.createLobby("Lobby 1", Visibility.PUBLIC);

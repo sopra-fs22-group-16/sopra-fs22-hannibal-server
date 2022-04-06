@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
@@ -55,7 +55,7 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName2", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
@@ -80,7 +80,7 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName1", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
@@ -99,7 +99,7 @@ class LobbyManagerCreateTest {
             assertFalse(LobbyManager.getInstance().iterator().hasNext());
 
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
@@ -118,7 +118,7 @@ class LobbyManagerCreateTest {
             assertEquals(lobby, result);
 
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
