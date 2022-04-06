@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(LobbyController.class)
-public class LobbyControllerTest {
+class LobbyControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,7 +42,7 @@ public class LobbyControllerTest {
     private LobbyService lobbyService;
 
     @Test
-    public void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
+    void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -75,7 +75,7 @@ public class LobbyControllerTest {
     }
 
     @Test
-    public void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
+    void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -117,7 +117,7 @@ public class LobbyControllerTest {
     }
 
     @Test
-    public void  registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
+    void  registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);

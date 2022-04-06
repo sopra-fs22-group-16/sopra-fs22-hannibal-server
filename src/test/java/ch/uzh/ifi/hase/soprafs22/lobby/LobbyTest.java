@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LobbyTest {
 
     @Test
-    public void createLobby_hostSet(){
+    void createLobby_hostSet(){
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
@@ -21,7 +21,7 @@ class LobbyTest {
     }
 
     @Test
-    public void createLobby_hostInformationSet(){
+    void createLobby_hostInformationSet(){
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 

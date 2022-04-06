@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -20,7 +20,7 @@ import java.util.*;
 
 public class LobbyManager implements ILobbyManager {
 
-    private volatile static LobbyManager uniqueInstance;
+    private static final LobbyManager uniqueInstance = new LobbyManager();
 
     private final HashMap<Long, ILobby> lobbyList;
     private final Set<String> lobbyNames;
@@ -31,13 +31,6 @@ public class LobbyManager implements ILobbyManager {
     }
 
     public static LobbyManager getInstance() {
-        if (uniqueInstance == null) {
-            synchronized (LobbyManager.class) {
-                if (uniqueInstance == null) {
-                    uniqueInstance = new LobbyManager();
-                }
-            }
-        }
         return uniqueInstance;
     }
 
@@ -65,7 +58,7 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatable {
+    public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatableException {
         if(this.lobbyNames.contains(lobbyName)) throw new IllegalArgumentException("The specified lobby name is already in use!");
 
         long id = generateSmallestUniqueId();
@@ -80,9 +73,9 @@ public class LobbyManager implements ILobbyManager {
     /**
      * Generates the smallest id that is not yet in use [0,Long.MAX_VALUE]
      * @return smallest id not yet in use
-     * @throws SmallestIdNotCreatable if we could not generate a unique id
+     * @throws SmallestIdNotCreatableException if we could not generate a unique id
      */
-    private long generateSmallestUniqueId() throws SmallestIdNotCreatable {
+    private long generateSmallestUniqueId() throws SmallestIdNotCreatableException {
         // Create smallest unique id
 
         // Get all ids and store them additionally save the largest id
@@ -107,7 +100,7 @@ public class LobbyManager implements ILobbyManager {
         // Remove all elements that already exist
         // Get smallest from them
         OptionalLong optionalId = LongStream.range(lowerRange, upperRange).filter(value -> (!idList.contains(value))).min();
-        return optionalId.orElseThrow(SmallestIdNotCreatable::new);
+        return optionalId.orElseThrow(() -> new SmallestIdNotCreatableException("LobbyManager could not generate smallest id - no valid id left"));
     }
 
     @Override
