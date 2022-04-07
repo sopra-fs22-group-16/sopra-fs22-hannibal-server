@@ -36,7 +36,7 @@ public abstract class DTOMapper {
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
-        lobbyGetDTO.setOwnerId(lobby.getOwner().getId());
+        lobbyGetDTO.setOwnerId(lobby.getHost().getId());
 
         // Set the member list by creating playerGetDTOs
         // and storing them in the list

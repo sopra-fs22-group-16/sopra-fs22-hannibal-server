@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
@@ -25,14 +24,14 @@ import java.util.Map;
 
 @RestController
 public class LobbyController {
-
+    private final static String API_VERSION = "v1";
     private final LobbyService lobbyService;
 
     LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
     }
 
-    @PostMapping("/v1/game/lobby")
+    @PostMapping("/{API_VERSION}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
@@ -52,12 +51,12 @@ public class LobbyController {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         if(token == null || token.isEmpty())
-            returnMap.put("token", lobby.getOwner().getToken());
+            returnMap.put("token", lobby.getHost().getToken());
 
         return returnMap;
     }
 
-    @GetMapping("/v1/game/lobby/{id}")
+    @GetMapping("/{API_VERSION}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO getLobby(@RequestHeader("token") String token, @PathVariable Long id) {
@@ -67,10 +66,10 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
-    @PutMapping("/v1/game/lobby/{id}")
+    @PutMapping("/{API_VERSION}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPutDTO lobbyPutDTO) {
+    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPostDTO lobbyPutDTO) {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
@@ -79,6 +78,8 @@ public class LobbyController {
         Visibility visibility = lobbyPutDTO.getVisibility();
         GameMode gameMode = lobbyPutDTO.getGameMode();
         GameType gameType= lobbyPutDTO.getGameType();
+
+        lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
     }
 
 }
