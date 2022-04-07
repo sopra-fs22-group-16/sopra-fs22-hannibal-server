@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,20 @@ public class LobbyController {
         ILobby lobby = lobbyService.getLobby(token, id);
 
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+    }
+
+    @PutMapping("/v1/game/lobby/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPutDTO lobbyPutDTO) {
+
+        ILobby lobby = lobbyService.getLobby(token, id);
+
+        // Get data from LobbyPostDTO
+        String name = lobbyPutDTO.getName();
+        Visibility visibility = lobbyPutDTO.getVisibility();
+        GameMode gameMode = lobbyPutDTO.getGameMode();
+        GameType gameType= lobbyPutDTO.getGameType();
     }
 
 }

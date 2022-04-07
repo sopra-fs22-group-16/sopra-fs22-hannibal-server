@@ -111,22 +111,22 @@ public class LobbyManager implements ILobbyManager {
         // Not null, value was provided by DTO.
         if (lobbyPutDTO.getVisibility() != null) {
             switch (lobbyPutDTO.getVisibility()) {
-                case "PUBLIC" -> lobby.setVisibility(Visibility.PUBLIC);
-                case "PRIVATE" -> lobby.setVisibility(Visibility.PRIVATE);
+                case PUBLIC -> lobby.setVisibility(Visibility.PUBLIC);
+                case PRIVATE -> lobby.setVisibility(Visibility.PRIVATE);
                 default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Visibility cannot be:" + lobbyPutDTO.getVisibility());
             }
         }
         if (lobbyPutDTO.getGameType() != null){
             switch (lobbyPutDTO.getGameType()) {
-                case "RANKED" -> lobby.setGameType(GameType.RANKED);
-                case "UNRANKED" -> lobby.setGameType(GameType.UNRANKED);
+                case RANKED -> lobby.setGameType(GameType.RANKED);
+                case UNRANKED -> lobby.setGameType(GameType.UNRANKED);
                 default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "GameType cannot be:" + lobbyPutDTO.getGameType());
             }
         }
         if (lobbyPutDTO.getGameMode() !=null){
             switch (lobbyPutDTO.getGameMode()) {
-                case "ONE_VS_ONE" -> lobby.setGameMode(GameMode.ONE_VS_ONE);
-                case "TWO_VS_TWO" -> lobby.setGameMode(GameMode.TWO_VS_TWO);
+                case ONE_VS_ONE -> lobby.setGameMode(GameMode.ONE_VS_ONE);
+                case TWO_VS_TWO -> lobby.setGameMode(GameMode.TWO_VS_TWO);
                 default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mode cannot be:" + lobbyPutDTO.getGameMode());
             }
         }

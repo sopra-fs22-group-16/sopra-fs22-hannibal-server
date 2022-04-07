@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
@@ -39,9 +40,9 @@ class LobbyManagerUpdateTest {
     void updateLobby_full1() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name");
-        input.setGameMode("TWO_VS_TWO");
-        input.setGameType("RANKED");
-        input.setVisibility("PRIVATE");
+        input.setGameMode(GameMode.TWO_VS_TWO);
+        input.setGameType(GameType.RANKED);
+        input.setVisibility(Visibility.PRIVATE);
 
         lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input);
 
@@ -56,15 +57,15 @@ class LobbyManagerUpdateTest {
     void updateLobby_full2() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name2");
-        input.setGameMode("ONE_VS_ONE");
-        input.setGameType("UNRANKED");
-        input.setVisibility("PUBLIC");
+        input.setGameMode(GameMode.ONE_VS_ONE);
+        input.setGameType(GameType.UNRANKED);
+        input.setVisibility(Visibility.PUBLIC);
 
         lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input);
 
         ILobby result = lobbyManager.getLobbyWithId(0);
         assertEquals(input.getName(), result.getName());
-        assertEquals(GameMode.valueOf(input.getGameMode()), result.getGameMode());
+        assertEquals(input.getGameMode(), result.getGameMode());
         assertEquals(LOBBY1.getGameType(), result.getGameType());
         assertEquals(LOBBY1.getVisibility(), result.getVisibility());
     }
@@ -73,9 +74,9 @@ class LobbyManagerUpdateTest {
     void updateLobby_noHost() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name2");
-        input.setGameMode("ONE_VS_ONE");
-        input.setGameType("RANKED");
-        input.setVisibility("PUBLIC");
+        input.setGameMode(GameMode.ONE_VS_ONE);
+        input.setGameType(GameType.RANKED);
+        input.setVisibility(Visibility.PUBLIC);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> lobbyManager.updateLobby(LOBBY1.getOwner().getId()+1L, 0, input));
@@ -88,54 +89,54 @@ class LobbyManagerUpdateTest {
     void updateLobby_wrongVisibility() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name2");
-        input.setGameMode("TWO_VS_TWO");
-        input.setGameType("UNRANKED");
-        input.setVisibility("badvisibility");
+        input.setGameMode(GameMode.TWO_VS_TWO);
+        input.setGameType(GameType.UNRANKED);
+        input.setVisibility(null);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("400 BAD_REQUEST \"Visibility cannot be:badvisibility\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Visibility cannot be:null\"", exception.getMessage());
     }
 
     @Test
     void updateLobby_wrongGameType() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name2");
-        input.setGameMode("TWO_VS_TWO");
-        input.setGameType("wrongRANKED");
-        input.setVisibility("PUBLIC");
+        input.setGameMode(GameMode.TWO_VS_TWO);
+        input.setGameType(null);
+        input.setVisibility(Visibility.PUBLIC);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("400 BAD_REQUEST \"GameType cannot be:wrongRANKED\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"GameType cannot be:null\"", exception.getMessage());
     }
 
     @Test
     void updateLobby_wrongGameMode() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("new Name2");
-        input.setGameMode("TWO_VS_ONE");
-        input.setGameType("RANKED");
-        input.setVisibility("PUBLIC");
+        input.setGameMode(null);
+        input.setGameType(GameType.RANKED);
+        input.setVisibility(Visibility.PUBLIC);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("400 BAD_REQUEST \"Mode cannot be:TWO_VS_ONE\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Mode cannot be:null\"", exception.getMessage());
     }
 
     @Test
     void updateLobby_emptyName() {
         LobbyPutDTO input = new LobbyPutDTO();
         input.setName("   ");
-        input.setGameMode("TWO_VS_TWO");
-        input.setGameType("RANKED");
-        input.setVisibility("PUBLIC");
+        input.setGameMode(GameMode.TWO_VS_TWO);
+        input.setGameType(GameType.RANKED);
+        input.setVisibility(Visibility.PUBLIC);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> lobbyManager.updateLobby(LOBBY1.getOwner().getId(), 0, input));
