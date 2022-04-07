@@ -162,7 +162,7 @@ public class LobbyService {
 
         // Check if lobby name already exists
         if (lobbyManager.getLobbyWithName(lobbyName) != null && !lobbyManager.getLobbyWithName(lobbyName).equals(lobby)) {
-            String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be created!";
+            String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be updated!";
             throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
         }
 
