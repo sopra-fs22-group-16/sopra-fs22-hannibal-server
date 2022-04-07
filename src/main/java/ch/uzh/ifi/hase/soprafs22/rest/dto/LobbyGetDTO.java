@@ -63,7 +63,7 @@ public class LobbyGetDTO {
         return players;
     }
 
-    public void setPlayers(LinkedList<PlayerGetDTO> players) {
+    public void setPlayers(List<PlayerGetDTO> players) {
         this.players = players;
     }
 

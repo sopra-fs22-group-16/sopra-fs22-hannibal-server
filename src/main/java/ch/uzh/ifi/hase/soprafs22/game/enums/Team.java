@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.game.enums;
 
 public enum Team {
-    Red(0),
-    Blue(1);
+    RED(0),
+    BLUE(1);
 
     // continuous number in [0,Team.values().length)
     private final int teamNumber;

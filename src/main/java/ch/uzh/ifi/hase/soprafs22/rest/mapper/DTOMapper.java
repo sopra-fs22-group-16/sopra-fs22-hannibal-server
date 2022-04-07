@@ -24,7 +24,7 @@ import java.util.LinkedList;
 @Mapper
 public abstract class DTOMapper {
 
-    public static DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+    public static final DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
