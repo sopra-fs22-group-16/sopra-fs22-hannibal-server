@@ -160,6 +160,12 @@ public class LobbyService {
         checkEnumConfigNull(gameMode, "game mode", "updated");
         checkEnumConfigNull(gameType, "game type", "updated");
 
+        // Check if lobby name already exists
+        if (lobbyManager.getLobbyWithName(lobbyName) != null && !lobbyManager.getLobbyWithName(lobbyName).equals(lobby)) {
+            String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
+        }
+
         if (!lobbyName.equals(lobby.getName())) {
             lobby.setName(lobbyName);
         }
