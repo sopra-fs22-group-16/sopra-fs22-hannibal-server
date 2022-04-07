@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -35,49 +36,52 @@ public class LobbyService {
     private final LobbyManager lobbyManager;
 
     @Autowired
-    public LobbyService(UserRepository userRepository){
+    public LobbyService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.lobbyManager = LobbyManager.getInstance();
     }
 
     /**
      * Create a new lobby and add it to the LobbyManager
+     *
      * @return the created lobby
      * @throws ResponseStatusException with HttpStatus.INTERNAL_SERVER_ERROR if the lobbyManager wasn't able to generate a new id
      * @throws ResponseStatusException with HttpStatus.CONFLICT if the provided lobby name is not unique
      * @throws ResponseStatusException with HttpStatus.BAD_REQUEST if the provided information is incomplete
      * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no registered user was found with the provided token
-     *
      */
-    public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType){
+    public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        if(lobbyName == null || lobbyName.isEmpty()){
+        if (lobbyName == null || lobbyName.isEmpty()) {
             String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }else if(visibility == null){
+        }
+        else if (visibility == null) {
             String errorMessage = "The lobby mode provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }else if(gameMode == null){
+        }
+        else if (gameMode == null) {
             String errorMessage = "The game mode provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }else if(gameType == null){
+        }
+        else if (gameType == null) {
             String errorMessage = "The game type provided is empty. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
 
         RegisteredUser registeredUser = null;
         // Check if token is set, then find user with token and link him to the host player
-        if(token != null && !token.isEmpty()){
+        if (token != null && !token.isEmpty()) {
             registeredUser = userRepository.findRegisteredUserByToken(token);
-            if(registeredUser == null){
+            if (registeredUser == null) {
                 String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be created!";
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
             }
         }
 
         // Check if lobby name already exists
-        if(lobbyManager.isLobbyNameInUse(lobbyName)){
+        if (lobbyManager.isLobbyNameInUse(lobbyName)) {
             String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
         }
@@ -87,10 +91,11 @@ public class LobbyService {
         // Try to create a new lobby
         try {
             newLobby = lobbyManager.createLobby(lobbyName, visibility);
-        }catch(SmallestIdNotCreatable e){
-           e.printStackTrace();
-           String errorMessage = "The server could not generate a unique id";
-           throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+        }
+        catch (SmallestIdNotCreatable e) {
+            e.printStackTrace();
+            String errorMessage = "The server could not generate a unique id";
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
         }
 
         // Set the gameType and gameMode of the lobby
@@ -98,8 +103,8 @@ public class LobbyService {
         newLobby.setGameType(gameType);
 
         // Link the host to the registered user
-        if(registeredUser != null){
-           newLobby.getOwner().linkRegisteredUser(registeredUser);
+        if (registeredUser != null) {
+            newLobby.getOwner().linkRegisteredUser(registeredUser);
         }
 
         log.debug("Created Information for Lobby: {}", newLobby);
@@ -108,33 +113,23 @@ public class LobbyService {
 
     /**
      * Find and return lobby with specified id using the LobbyManager
+     *
      * @param lobbyId the id of the lobby to look up
      * @return the lobby with the specified id
      * @throws ResponseStatusException with HttpStatus.NOT_FOUND if there is no lobby with the specified lobbyId
      * @throws ResponseStatusException with HttpStatus.UNAUTHORIZED if no authentication was provided
      * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no player was found in the lobby with the provided token
      */
-    public ILobby getLobby(String token, Long lobbyId){
+    public ILobby getLobby(String token, Long lobbyId) {
 
-        // Check if authentication was provided
-        if(token == null || token.isEmpty()){
-            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
-        }
+        checkIfAuthenticationWasProvided(token);
 
-        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
-
-        // Check if lobby exists else throw an error
-        if(lobby == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
-        }
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         // Check if user is in lobby
-        for(Player player: lobby){
+        if(checkUserIsInLobby(lobby, token)){
             // If tokens match return the lobby
-            if(player.getToken().equals(token)){
-                return lobby;
-            }
+            return lobby;
         }
 
         // If no user was found matching the token throw an error
@@ -142,4 +137,60 @@ public class LobbyService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId) {
+
+        checkIfAuthenticationWasProvided(token);
+
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+        if(!checkUserIsInLobby(lobby, token)){
+            // If no user was found matching the token throw an error
+            String errorMessage = "The provided authentication was incorrect.";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+        }
+
+        byte[] qrCode = lobby.getQrCode();
+
+        // If the QRCode is not already set generate it
+        if(qrCode == null){
+            try{
+                lobby.generateQrCode();
+            }catch (RestClientException e){
+                String errorMessage = "The server received an invalid response from the upstream server.";
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
+            }
+            qrCode = lobby.getQrCode();
+        }
+
+        return qrCode;
+    }
+
+    private void checkIfAuthenticationWasProvided(String token) {
+        // Check if authentication was provided
+        if (token == null || token.isEmpty()) {
+            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
+        }
+    }
+
+    private ILobby getLobbyByIdElseThrowNotFound(long lobbyId){
+        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+        // Check if lobby exists else throw an error
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        }
+        return lobby;
+    }
+
+    private boolean checkUserIsInLobby(ILobby lobby, String token){
+        // Check if user is in lobby
+        for (Player player : lobby) {
+            // If tokens match return true
+            if (player.getToken().equals(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+

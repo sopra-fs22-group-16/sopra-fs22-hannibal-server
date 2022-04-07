@@ -11,6 +11,9 @@ import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +67,21 @@ public class LobbyController {
         ILobby lobby = lobbyService.getLobby(token, id);
 
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+    }
+
+    @GetMapping("/v1/game/lobby/{id}/qrcode")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Map<String, Object> getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
+
+        byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
+        byte[] qrCodeEncoded = Base64.getEncoder().encode(qrCode);
+        String qrCodeEncodedString = new String(qrCodeEncoded);
+
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("QRCode", qrCode);
+
+        return returnMap;
     }
 
 }
