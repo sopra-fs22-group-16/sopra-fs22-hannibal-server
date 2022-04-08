@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
+
 /**
  * Lobby Service
  * This class is the "worker" and responsible for all functionality related to
@@ -179,4 +181,9 @@ public class LobbyService {
             lobby.setGameType(gameType);
         }
     }
+
+    public Collection<ILobby> getLobbies() {
+        return lobbyManager.getLobbies();
+    }
+
 }

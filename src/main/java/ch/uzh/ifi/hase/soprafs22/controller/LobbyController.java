@@ -11,8 +11,7 @@ import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Lobby Controller
@@ -80,6 +79,23 @@ public class LobbyController {
         GameType gameType= lobbyPutDTO.getGameType();
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
+    }
+    @GetMapping("/v1/game/lobby")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getLobbies() {
+
+        Collection<ILobby> lobbies = lobbyService.getLobbies();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        Iterator var4 = lobbies.iterator();
+
+        while(var4.hasNext()) {
+            ILobby lobby = (ILobby) var4.next();
+            lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
+        }
+
+        return lobbiesGetDTOs;
+
     }
 
 }

@@ -39,7 +39,7 @@ public class LobbyManager implements ILobbyManager {
 
     @Override
     public Collection<ILobby> getLobbies() {
-        return lobbyList.values();
+        return lobbyMap.values();
     }
 
     @Override
