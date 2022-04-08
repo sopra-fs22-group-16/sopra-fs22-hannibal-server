@@ -75,7 +75,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
@@ -94,7 +94,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.CONFLICT.value());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
     @Test
@@ -113,7 +113,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("token", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
     @Test
@@ -140,7 +140,6 @@ class LobbyServiceIntegrationTests {
         assertEquals(createdLobby.getGameMode(), lobby.getGameMode());
         assertEquals(createdLobby.getGameType(), lobby.getGameType());
         assertEquals(createdLobby.getHost(), lobby.getHost());
-
     }
 
     @ParameterizedTest
@@ -163,8 +162,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby(token, id));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.UNAUTHORIZED.value());
-
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
 
     @Test
@@ -185,8 +183,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby("token", 1L));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.NOT_FOUND.value());
-
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
     @Test
@@ -208,8 +205,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby("wrongToken", id));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
-
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
     @Test
@@ -254,7 +250,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "", visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
@@ -276,7 +272,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, null, null, null));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
@@ -298,6 +294,6 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.updateLobby(createdLobby, "wrongToken", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.UNAUTHORIZED.value());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 }

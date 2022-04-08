@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +40,16 @@ public class LobbyService {
         this.lobbyManager = LobbyManager.getInstance();
     }
 
-    private void checkLobbyNameNullOrEmpty(String lobbyName, String errorMessageEnding) {
-        if (lobbyName == null || lobbyName.isEmpty()) {
-            String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+    private void checkStringConfigNullOrEmpty(String s, String errorMessageEnding, boolean isToken) {
+        if (s == null || s.trim().isEmpty()) {
+            if (isToken) {
+                String errorMessage = "The user needs to provide authentication to retrieve lobby information. Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
+            }
+            else {
+                String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
         }
     }
 
@@ -67,7 +72,7 @@ public class LobbyService {
     public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        checkLobbyNameNullOrEmpty(lobbyName, "created");
+        checkStringConfigNullOrEmpty(lobbyName, "created", false);
         checkEnumConfigNull(visibility, "visibility", "created");
         checkEnumConfigNull(gameMode, "game mode", "created");
         checkEnumConfigNull(gameType, "game type", "created");
@@ -123,11 +128,7 @@ public class LobbyService {
      */
     public ILobby getLobby(String token, Long lobbyId) {
 
-        // Check if authentication was provided
-        if (token == null || token.isEmpty()) {
-            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
-        }
+        checkStringConfigNullOrEmpty(token, "accessed", true);
 
         ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
 
@@ -150,12 +151,11 @@ public class LobbyService {
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
+        checkStringConfigNullOrEmpty(token, "updated", true);
         if (!token.equals(lobby.getHost().getToken())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not the host of the lobby.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
-
-        // Check if values are valid
-        checkLobbyNameNullOrEmpty(lobbyName, "updated");
+        checkStringConfigNullOrEmpty(lobbyName, "updated", false);
         checkEnumConfigNull(visibility, "visibility", "updated");
         checkEnumConfigNull(gameMode, "game mode", "updated");
         checkEnumConfigNull(gameType, "game type", "updated");
