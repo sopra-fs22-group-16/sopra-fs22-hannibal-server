@@ -20,7 +20,7 @@ public class Lobby implements ILobby {
     private String name;
     private Visibility visibility;
     private Game game;
-    private final Player owner;
+    private final Player host;
     private final Map<String, Player> playerMap;
     private String invitationCode;
     private byte[] qrCode;
@@ -34,8 +34,11 @@ public class Lobby implements ILobby {
         this.playerMap = new HashMap<>();
 
         // Generate the host player
-        this.owner = generatePlayer();
-        playerMap.put(owner.getToken(), owner);
+        this.host = generatePlayer();
+        playerMap.put(host.getToken(), host);
+
+        // Generate the invitation code
+        this.invitationCode = generateInvitationCode();
     }
 
     @Override
@@ -105,6 +108,22 @@ public class Lobby implements ILobby {
     @Override
     public GameType getGameType(){return this.game.getGameType();}
 
+    private String generateInvitationCode() {
+        //set limits for including only alphanumeric values
+        int lowerLimit = 48;
+        int upperLimit = 123;
+
+        //set limit for the string length
+        int lengthLimit = 10;
+
+        Random random = new Random();
+        return random.ints(lowerLimit, upperLimit)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(lengthLimit)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString().toUpperCase();
+    }
+
     @Override
     public String getInvitationCode() {
         return this.invitationCode;
@@ -134,10 +153,11 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player getOwner() {
-        return owner;
+    public Player getHost() {
+        return host;
     }
 
+    //TODO: This method does not belong here
     private Player generatePlayer(){
 
         Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);
