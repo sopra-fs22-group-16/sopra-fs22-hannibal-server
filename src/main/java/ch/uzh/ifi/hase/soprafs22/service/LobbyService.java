@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Lobby Service
  * This class is the "worker" and responsible for all functionality related to
@@ -140,6 +143,10 @@ public class LobbyService {
         // If no user was found matching the token throw an error
         String errorMessage = "The provided authentication was incorrect.";
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+    }
+
+    public Collection<ILobby> getLobbies() {
+        return lobbyManager.getLobbies();
     }
 
 }

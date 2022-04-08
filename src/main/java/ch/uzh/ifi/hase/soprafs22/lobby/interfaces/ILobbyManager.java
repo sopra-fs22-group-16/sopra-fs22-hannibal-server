@@ -4,11 +4,15 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPutDTO;
 
+import java.util.Collection;
+
 public interface ILobbyManager extends Iterable<ILobby>{
 
     ILobby removeLobbyWithId(long id);
 
     ILobby getLobbyWithId(long id);
+
+    Collection<ILobby> getLobbies();
 
     void updateLobby(long userId, long lobbyId, LobbyPutDTO lobbyPutDTO);
 

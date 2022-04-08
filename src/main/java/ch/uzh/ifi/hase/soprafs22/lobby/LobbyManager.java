@@ -52,6 +52,11 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public Collection<ILobby> getLobbies() {
+        return lobbyList.values();
+    }
+
+    @Override
     public ILobby getLobbyWithName(String name) {
         for(ILobby lobby: lobbyList.values()){
             if(lobby.getName().equals(name)) return lobby;
