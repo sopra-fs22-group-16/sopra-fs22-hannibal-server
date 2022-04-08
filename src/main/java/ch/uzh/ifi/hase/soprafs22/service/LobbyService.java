@@ -41,39 +41,19 @@ public class LobbyService {
         this.lobbyManager = LobbyManager.getInstance();
     }
 
-    private void checkStringConfigNullOrEmpty(String s, String errorMessageEnding, boolean isToken) {
-        if (s == null || s.trim().isEmpty()) {
-            if (isToken) {
-                String errorMessage = "The user needs to provide authentication to retrieve lobby information. Therefore, the lobby could not be " + errorMessageEnding + "!";
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
-            }
-            else {
-                String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-            }
-        }
-    }
-
-    private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
-        if (config == null) {
-            String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
-    }
-
     /**
      * Create a new lobby and add it to the LobbyManager
+     *
      * @return the created lobby
      * @throws ResponseStatusException with HttpStatus.INTERNAL_SERVER_ERROR if the lobbyManager wasn't able to generate a new id
      * @throws ResponseStatusException with HttpStatus.CONFLICT if the provided lobby name is not unique
      * @throws ResponseStatusException with HttpStatus.BAD_REQUEST if the provided information is incomplete
      * @throws ResponseStatusException with HttpStatus.FORBIDDEN if no registered user was found with the provided token
-     *
      */
-    public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType){
+    public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        checkStringConfigNullOrEmpty(lobbyName, "created", false);
+        checkStringConfigNullOrEmpty(lobbyName, "name","created");
         checkEnumConfigNull(visibility, "visibility", "created");
         checkEnumConfigNull(gameMode, "game mode", "created");
         checkEnumConfigNull(gameType, "game type", "created");
@@ -120,6 +100,7 @@ public class LobbyService {
 
     /**
      * Find and return lobby with specified id using the LobbyManager
+     *
      * @param lobbyId the id of the lobby to look up
      * @return the lobby with the specified id
      * @throws ResponseStatusException with HttpStatus.NOT_FOUND if there is no lobby with the specified lobbyId
@@ -133,7 +114,7 @@ public class LobbyService {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         // Check if user is in lobby
-        if(checkUserIsInLobby(lobby, token)){
+        if (checkUserIsInLobby(lobby, token)) {
             // If tokens match return the lobby
             return lobby;
         }
@@ -143,41 +124,12 @@ public class LobbyService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
-    private void checkIfAuthenticationWasProvided(String token) {
-        // Check if authentication was provided
-        if (token == null || token.isEmpty()) {
-            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
-        }
-    }
-
-    private ILobby getLobbyByIdElseThrowNotFound(long lobbyId){
-        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
-        // Check if lobby exists else throw an error
-        if (lobby == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
-        }
-        return lobby;
-    }
-
-    private boolean checkUserIsInLobby(ILobby lobby, String token){
-        // Check if user is in lobby
-        for (Player player : lobby) {
-            // If tokens match return true
-            if (player.getToken().equals(token)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
-        checkStringConfigNullOrEmpty(token, "updated", true);
+        checkIfAuthenticationWasProvided(token);
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
-        checkStringConfigNullOrEmpty(lobbyName, "updated", false);
+        checkStringConfigNullOrEmpty(lobbyName, "name","updated");
         checkEnumConfigNull(visibility, "visibility", "updated");
         checkEnumConfigNull(gameMode, "game mode", "updated");
         checkEnumConfigNull(gameType, "game type", "updated");
@@ -200,5 +152,74 @@ public class LobbyService {
         if (gameType != lobby.getGameType()) {
             lobby.setGameType(gameType);
         }
+    }
+
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId) {
+        checkIfAuthenticationWasProvided(token);
+
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+        if(!checkUserIsInLobby(lobby, token)){
+            // If no user was found matching the token throw an error
+            String errorMessage = "The provided authentication was incorrect.";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+        }
+
+        byte[] qrCode = lobby.getQrCode();
+
+        // If the QRCode is not already set generate it
+        if(qrCode == null){
+            try{
+                lobby.generateQrCode();
+            }catch (RestClientException e){
+                String errorMessage = "The server received an invalid response from the upstream server.";
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
+            }
+            qrCode = lobby.getQrCode();
+        }
+
+        return qrCode;
+    }
+
+    private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
+        if (config == null) {
+            String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+    }
+
+    private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
+        if (s == null || s.trim().isEmpty()) {
+            String errorMessage = "The lobby " + fieldName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+    }
+
+    private void checkIfAuthenticationWasProvided(String token) {
+        // Check if authentication was provided
+        if (token == null || token.isEmpty()) {
+            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
+        }
+    }
+
+    private ILobby getLobbyByIdElseThrowNotFound(long lobbyId) {
+        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+        // Check if lobby exists else throw an error
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        }
+        return lobby;
+    }
+
+    private boolean checkUserIsInLobby(ILobby lobby, String token) {
+        // Check if user is in lobby
+        for (Player player : lobby) {
+            // If tokens match return true
+            if (player.getToken().equals(token)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

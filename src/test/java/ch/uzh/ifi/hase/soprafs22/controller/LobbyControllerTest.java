@@ -19,14 +19,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Base64;
-
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * LobbyControllerTest
@@ -160,7 +157,7 @@ class LobbyControllerTest {
     }
 
     @Test
-    void  validInput_getLobbyQRCode_thenReturnJsonArray() throws Exception {
+    void  validInput_getLobbyQRCode_thenReturnMediaTypeIMAGE_PNG() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -179,9 +176,6 @@ class LobbyControllerTest {
             qrCode[i] = (byte)val;
         }
 
-        // Encode qrCode in base64
-        String expected = Base64.getEncoder().encodeToString(qrCode);
-
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
         given(lobbyService.getQRCodeFromLobby("registeredUserToken", lobby.getId())).willReturn(qrCode);
@@ -194,7 +188,8 @@ class LobbyControllerTest {
         // then
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.QRCode", is(expected)));
+                .andExpect(result -> asJsonString(qrCode))
+                .andExpect(content().contentType(MediaType.IMAGE_PNG));
 
     }
 
