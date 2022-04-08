@@ -19,7 +19,7 @@ public class Lobby implements ILobby {
     private String name;
     private Visibility visibility;
     private Game game;
-    private final Player owner;
+    private final Player host;
     private final Map<String, Player> playerMap;
     private final String invitationCode;
     private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
@@ -33,12 +33,11 @@ public class Lobby implements ILobby {
         this.playerMap = new HashMap<>();
 
         // Generate the host player
-        this.owner = generatePlayer();
-        playerMap.put(owner.getToken(), owner);
+        this.host = generatePlayer();
+        playerMap.put(host.getToken(), host);
 
         // Generate the invitation code
         this.invitationCode = generateInvitationCode();
-
     }
 
     @Override
@@ -144,10 +143,11 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player getOwner() {
-        return owner;
+    public Player getHost() {
+        return host;
     }
 
+    //TODO: This method does not belong here
     private Player generatePlayer(){
 
         Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);

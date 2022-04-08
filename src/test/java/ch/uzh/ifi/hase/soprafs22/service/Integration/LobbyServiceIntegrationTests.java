@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_unregisteredUser_validInputs_success(){
+    void createLobby_unregisteredUser_validInputs_success() {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -50,9 +51,9 @@ class LobbyServiceIntegrationTests {
         assertEquals(lobbyName, createdLobby.getName());
         assertEquals(gameMode, createdLobby.getGameMode());
         assertEquals(gameType, createdLobby.getGameType());
-        assertNotNull(createdLobby.getOwner());
-        assertEquals(createdLobby.getOwner(), createdLobby.iterator().next());
-        assertNotNull(createdLobby.getOwner().getTeam());
+        assertNotNull(createdLobby.getHost());
+        assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
+        assertNotNull(createdLobby.getHost().getTeam());
     }
 
     public static Stream<Arguments> provideDataForCreateLobbyNullAndEmptyParameters() {
@@ -74,7 +75,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.BAD_REQUEST.value());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
@@ -93,7 +94,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.CONFLICT.value());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
     @Test
@@ -112,7 +113,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.createLobby("token", lobbyName, visibility, gameMode, gameType));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
     @Test
@@ -130,7 +131,7 @@ class LobbyServiceIntegrationTests {
         Long id = createdLobby.getId();
 
         // Attempt to get lobby with id
-        ILobby lobby = lobbyService.getLobby(createdLobby.getOwner().getToken(), id);
+        ILobby lobby = lobbyService.getLobby(createdLobby.getHost().getToken(), id);
 
         // Check
         assertEquals(createdLobby.getId(), lobby.getId());
@@ -138,8 +139,7 @@ class LobbyServiceIntegrationTests {
         assertEquals(createdLobby.getVisibility(), lobby.getVisibility());
         assertEquals(createdLobby.getGameMode(), lobby.getGameMode());
         assertEquals(createdLobby.getGameType(), lobby.getGameType());
-        assertEquals(createdLobby.getOwner(), lobby.getOwner());
-
+        assertEquals(createdLobby.getHost(), lobby.getHost());
     }
 
     @ParameterizedTest
@@ -162,8 +162,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby(token, id));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.UNAUTHORIZED.value());
-
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
 
     @Test
@@ -184,8 +183,7 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby("token", 1L));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.NOT_FOUND.value());
-
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
     @Test
@@ -207,9 +205,95 @@ class LobbyServiceIntegrationTests {
                 () -> lobbyService.getLobby("wrongToken", id));
 
         // Check https status code
-        assertEquals(exception.getRawStatusCode(), HttpStatus.FORBIDDEN.value());
-
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
+    @Test
+    void updateLobby_name_visibility_gameMode_gameType_success() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
 
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED);
+
+        assertEquals(createdLobby.getId(), id);
+        assertEquals(createdLobby.getName(), "newLobbyName");
+        assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
+        assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
+        assertEquals(createdLobby.getGameType(), GameType.RANKED);
+    }
+
+    @Test
+    void updateLobby_emptyName_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "", visibility, gameMode, gameType));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    @Test
+    void updateLobby_nullConfig_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, null, null, null));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    @Test
+    void updateLobby_wrongToken_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.updateLobby(createdLobby, "wrongToken", lobbyName, visibility, gameMode, gameType));
+
+        // Check https status code
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
 }
