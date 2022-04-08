@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    public void createLobby_emptyLobbyList() {
+    void createLobby_emptyLobbyList() {
         try {
             // Create a new lobby
             ILobby lobby = lobbyManager.createLobby("LobbyName", Visibility.PRIVATE);
@@ -35,14 +35,14 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void createLobby_idIncreases() {
+    void createLobby_idIncreases() {
         try {
             // Fill lobby list
             lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
@@ -55,14 +55,14 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName2", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void createLobby_notContinuousIds_inList() {
+    void createLobby_notContinuousIds_inList() {
         try {
             // Fill lobby list
             lobbyManager.createLobby("lobbyName0", Visibility.PRIVATE); // id = 0
@@ -80,14 +80,14 @@ class LobbyManagerCreateTest {
             assertEquals("LobbyName1", lobby.getName());
             assertEquals(Visibility.PRIVATE, lobby.getVisibility());
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void removeLobbyWithId_removed(){
+    void removeLobbyWithId_removed(){
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
@@ -99,14 +99,14 @@ class LobbyManagerCreateTest {
             assertFalse(LobbyManager.getInstance().iterator().hasNext());
 
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void getLobbyWithId(){
+    void getLobbyWithId(){
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
@@ -118,7 +118,7 @@ class LobbyManagerCreateTest {
             assertEquals(lobby, result);
 
         }
-        catch (SmallestIdNotCreatable e) {
+        catch (SmallestIdNotCreatableException e) {
             e.printStackTrace();
             fail();
         }

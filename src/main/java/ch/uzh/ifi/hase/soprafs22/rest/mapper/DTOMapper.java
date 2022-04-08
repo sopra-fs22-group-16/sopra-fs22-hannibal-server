@@ -24,7 +24,7 @@ import java.util.LinkedList;
 @Mapper
 public abstract class DTOMapper {
 
-    public static DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
+    public static final DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
@@ -36,7 +36,7 @@ public abstract class DTOMapper {
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
-        lobbyGetDTO.setOwnerId(lobby.getOwner().getId());
+        lobbyGetDTO.setHostId(lobby.getHost().getId());
 
         // Set the member list by creating playerGetDTOs
         // and storing them in the list
@@ -50,7 +50,6 @@ public abstract class DTOMapper {
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
-
 
         return lobbyGetDTO;
     }

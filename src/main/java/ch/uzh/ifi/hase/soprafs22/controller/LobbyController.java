@@ -11,7 +11,8 @@ import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Lobby Controller
@@ -23,14 +24,14 @@ import java.util.*;
 
 @RestController
 public class LobbyController {
-
+    private final static String API_VERSION = "v1";
     private final LobbyService lobbyService;
 
     LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
     }
 
-    @PostMapping("/v1/game/lobby")
+    @PostMapping("/{API_VERSION}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
@@ -50,12 +51,12 @@ public class LobbyController {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         if(token == null || token.isEmpty())
-            returnMap.put("token", lobby.getOwner().getToken());
+            returnMap.put("token", lobby.getHost().getToken());
 
         return returnMap;
     }
 
-    @GetMapping("/v1/game/lobby/{id}")
+    @GetMapping("/{API_VERSION}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO getLobby(@RequestHeader("token") String token, @PathVariable Long id) {
@@ -65,22 +66,20 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
-    @GetMapping("/v1/game/lobby")
-    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{API_VERSION}/game/lobby/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public List<LobbyGetDTO> getLobbies() {
+    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPostDTO lobbyPutDTO) {
 
-        Collection<ILobby> lobbies = lobbyService.getLobbies();
-        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
-        Iterator var4 = lobbies.iterator();
+        ILobby lobby = lobbyService.getLobby(token, id);
 
-        while(var4.hasNext()) {
-            ILobby lobby = (ILobby) var4.next();
-            lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
-        }
+        // Get data from LobbyPostDTO
+        String name = lobbyPutDTO.getName();
+        Visibility visibility = lobbyPutDTO.getVisibility();
+        GameMode gameMode = lobbyPutDTO.getGameMode();
+        GameType gameType= lobbyPutDTO.getGameType();
 
-        return lobbiesGetDTOs;
-
+        lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
     }
 
 }

@@ -6,7 +6,6 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class LobbyGetDTO {
@@ -15,7 +14,7 @@ public class LobbyGetDTO {
 
     private String name;
 
-    private Long ownerId;
+    private Long hostId;
 
     private List<PlayerGetDTO> players;
 
@@ -51,19 +50,19 @@ public class LobbyGetDTO {
         this.invitationCode = invitationCode;
     }
 
-    public Long getOwnerId() {
-        return ownerId;
+    public Long getHostId() {
+        return hostId;
     }
 
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
+    public void setHostId(Long hostId) {
+        this.hostId = hostId;
     }
 
     public List<PlayerGetDTO> getPlayers() {
         return players;
     }
 
-    public void setPlayers(LinkedList<PlayerGetDTO> players) {
+    public void setPlayers(List<PlayerGetDTO> players) {
         this.players = players;
     }
 

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class DTOMapperTest {
     @Test
-    public void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
+    void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
 
         // create Lobby
         ILobby lobby = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
@@ -31,7 +31,7 @@ public class DTOMapperTest {
         // check content
         assertEquals(lobbyGetDTO.getId(), lobby.getId());
         assertEquals(lobbyGetDTO.getName(), lobby.getName());
-        assertEquals(lobbyGetDTO.getOwnerId(), lobby.getOwner().getId());
+        assertEquals(lobbyGetDTO.getHostId(), lobby.getHost().getId());
 
         int counter = 0;
         for (Player player : lobby) {
@@ -53,9 +53,9 @@ public class DTOMapperTest {
     }
 
     @Test
-    public void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
+    void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
         // create Lobby
-        Player player = new Player(1L, "username", "token", Team.Red);
+        Player player = new Player(1L, "username", "token", Team.RED);
 
         // MAP -> LobbyGetDTO
         PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(player);

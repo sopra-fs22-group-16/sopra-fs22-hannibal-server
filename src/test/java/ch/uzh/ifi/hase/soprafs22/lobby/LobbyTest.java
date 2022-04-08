@@ -10,23 +10,23 @@ import static org.junit.jupiter.api.Assertions.*;
 class LobbyTest {
 
     @Test
-    public void createLobby_hostSet(){
+    void createLobby_hostSet(){
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         assertNotNull(host);
         assertEquals(host, lobby.iterator().next());
     }
 
     @Test
-    public void createLobby_hostInformationSet(){
+    void createLobby_hostInformationSet(){
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         assertNotNull(host);
         assertNotNull(host.getToken());
         assertNotNull(host.getName());
