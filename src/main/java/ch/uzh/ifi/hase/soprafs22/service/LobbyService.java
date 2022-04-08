@@ -42,6 +42,16 @@ public class LobbyService {
     }
 
     /**
+     * LobbyService constructor used for testing, to inject a mocked lobbyManager
+     * @param userRepository the user repository
+     * @param lobbyManager the mocked lobby manager
+     */
+    public LobbyService(UserRepository userRepository, LobbyManager lobbyManager) {
+        this.userRepository = userRepository;
+        this.lobbyManager = lobbyManager;
+    }
+
+    /**
      * Create a new lobby and add it to the LobbyManager
      *
      * @return the created lobby
@@ -154,7 +164,7 @@ public class LobbyService {
         }
     }
 
-    public byte[] getQRCodeFromLobby(String token, Long lobbyId) {
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId){
         checkIfAuthenticationWasProvided(token);
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);

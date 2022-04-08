@@ -43,7 +43,7 @@ public class Lobby implements ILobby {
 
     @Override
     public void generateQrCode() throws RestClientException {
-        String data = URLEncoder.encode(HANNIBAL_URL, StandardCharsets.UTF_8);
+        String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
         RestTemplate restTemplate = new RestTemplate();
         String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
         String url = QR_API_URL + "/?data=" + data + "&size=100x100";
