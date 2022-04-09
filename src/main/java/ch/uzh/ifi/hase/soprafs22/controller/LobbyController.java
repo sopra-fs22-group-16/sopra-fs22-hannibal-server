@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Lobby Controller
@@ -96,5 +93,24 @@ public class LobbyController {
         byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
 
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCode);
+    }
+
+    @GetMapping("/{API_VERSION}/game/lobby")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getLobby() {
+        Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        Iterator<ILobby> iteratorLobbies = lobbiesCollection.iterator();
+
+        while(iteratorLobbies.hasNext()) {
+            ILobby lobby = iteratorLobbies.next();
+            if(lobby.getVisibility()== Visibility.PUBLIC) {
+                lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
+            }
+        }
+
+        return lobbiesGetDTOs;
+
     }
 }

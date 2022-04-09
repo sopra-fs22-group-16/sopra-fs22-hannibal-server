@@ -16,7 +16,7 @@ public interface ILobbyManager extends Iterable<ILobby>{
 
     ILobby createLobby(String name, Visibility visibility) throws SmallestIdNotCreatableException;
 
-    Collection<ILobby> getLobbies();
+    Collection<ILobby> getLobbiesCollection();
 
     void clear();
 }

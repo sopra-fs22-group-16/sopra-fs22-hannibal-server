@@ -38,7 +38,7 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public Collection<ILobby> getLobbies() {
+    public Collection<ILobby> getLobbiesCollection() {
         return lobbyMap.values();
     }
 
@@ -103,4 +103,6 @@ public class LobbyManager implements ILobbyManager {
     public Iterator<ILobby> iterator() {
         return lobbyMap.values().iterator();
     }
+
+
 }
