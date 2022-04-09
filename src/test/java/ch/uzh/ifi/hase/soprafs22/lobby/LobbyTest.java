@@ -89,6 +89,7 @@ class LobbyTest {
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         Player host = lobby.getHost();
         Player newPlayer = lobby.generatePlayer();
+        lobby.addPlayer(newPlayer);
 
         assertHttpError(HttpStatus.CONFLICT, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
     }

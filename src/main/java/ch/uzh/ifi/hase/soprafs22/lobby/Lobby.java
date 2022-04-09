@@ -171,7 +171,7 @@ public class Lobby implements ILobby {
     }
 
     //TODO: This method does not belong here
-    // This is currently the only way to add players to test lobbies!
+    // This is currently the only way to add players to test lobbies! We need visibility for testing.
     public Player generatePlayer(){
 
         Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);
@@ -204,6 +204,11 @@ public class Lobby implements ILobby {
         }
 
         return new Player(generatedId, username, token, team);
+    }
+
+    // TODO: Only for testing, feel free to reimplement with corresponding story.
+    public void addPlayer(Player player) {
+        playerMap.put(player.getToken(), player);
     }
 
     @Override
