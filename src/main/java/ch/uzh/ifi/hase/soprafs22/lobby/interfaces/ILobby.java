@@ -8,17 +8,13 @@ import org.springframework.web.client.RestClientException;
 
 public interface ILobby extends Iterable<Player>{
 
-    void generateQrCode() throws RestClientException;
-
-    byte[] getQrCode();
+    byte[] getQrCode() throws RestClientException;
 
     void changeReadyStatus(String token);
 
     Visibility getVisibility();
 
     void setVisibility(Visibility visibility);
-
-    Player addPlayer();
 
     Player removePlayer(String token);
 

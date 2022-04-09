@@ -119,23 +119,33 @@ public class LobbyService {
      */
     public ILobby getLobby(String token, Long lobbyId) {
 
-        checkIfAuthenticationWasProvided(token);
+        checkStringConfigNullOrEmpty(token, "token", "accessed");
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        // Check if user is in lobby
-        if (checkUserIsInLobby(lobby, token)) {
-            // If tokens match return the lobby
-            return lobby;
+        checkUserIsInLobby(lobby, token, "accessed");
+
+        return lobby;
+    }
+
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId){
+        checkStringConfigNullOrEmpty(token, "token", "accessed");
+
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+        checkUserIsInLobby(lobby, token, "accessed");
+
+        try{
+            return lobby.getQrCode();
+        }catch (RestClientException e){
+            String errorMessage = "The server received an invalid response from the upstream server.";
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
         }
 
-        // If no user was found matching the token throw an error
-        String errorMessage = "The provided authentication was incorrect.";
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
-        checkIfAuthenticationWasProvided(token);
+        checkStringConfigNullOrEmpty(token, "token", "updated");
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
@@ -164,52 +174,38 @@ public class LobbyService {
         }
     }
 
-    public byte[] getQRCodeFromLobby(String token, Long lobbyId){
-        checkIfAuthenticationWasProvided(token);
-
-        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
-
-        if(!checkUserIsInLobby(lobby, token)){
-            // If no user was found matching the token throw an error
-            String errorMessage = "The provided authentication was incorrect.";
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
-        }
-
-        byte[] qrCode = lobby.getQrCode();
-
-        // If the QRCode is not already set generate it
-        if(qrCode == null){
-            try{
-                lobby.generateQrCode();
-            }catch (RestClientException e){
-                String errorMessage = "The server received an invalid response from the upstream server.";
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
+    private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
+        if(fieldName.equals("token")){
+            if (s == null || s.isEmpty()) {
+                String errorMessage = "The user needs to provide authentication to retrieve lobby information."
+                        + "Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
             }
-            qrCode = lobby.getQrCode();
+        }else{
+            if (s == null || s.trim().isEmpty()) {
+                String errorMessage = "The lobby " + fieldName + " provided is empty."
+                        + "Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
         }
+    }
 
-        return qrCode;
+    private void checkUserIsInLobby(ILobby lobby, String token, String errorMessageEnding) {
+        // Check if user is in lobby
+        for (Player player : lobby) {
+            // If tokens match return true
+            if (player.getToken().equals(token)) {
+                return;
+            }
+        }
+        String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be " + errorMessageEnding  + "!";
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
     private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
         if (config == null) {
             String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
-    }
-
-    private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
-        if (s == null || s.trim().isEmpty()) {
-            String errorMessage = "The lobby " + fieldName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
-    }
-
-    private void checkIfAuthenticationWasProvided(String token) {
-        // Check if authentication was provided
-        if (token == null || token.isEmpty()) {
-            String errorMessage = "The user needs to provide authentication to retrieve lobby information.";
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
         }
     }
 
@@ -220,16 +216,5 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
         }
         return lobby;
-    }
-
-    private boolean checkUserIsInLobby(ILobby lobby, String token) {
-        // Check if user is in lobby
-        for (Player player : lobby) {
-            // If tokens match return true
-            if (player.getToken().equals(token)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

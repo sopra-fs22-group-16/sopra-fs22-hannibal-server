@@ -22,9 +22,9 @@ public class Lobby implements ILobby {
     private Game game;
     private final Player host;
     private final Map<String, Player> playerMap;
-    private String invitationCode;
+    private final String invitationCode;
     private byte[] qrCode;
-    private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
+    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -42,16 +42,14 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void generateQrCode() throws RestClientException {
-        String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
-        RestTemplate restTemplate = new RestTemplate();
-        String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
-        String url = QR_API_URL + "/?data=" + data + "&size=100x100";
-        this.qrCode = restTemplate.getForObject(url, byte[].class);
-    }
-
-    @Override
-    public byte[] getQrCode(){
+    public byte[] getQrCode() throws RestClientException{
+        if(this.qrCode == null){
+            String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
+            RestTemplate restTemplate = new RestTemplate();
+            final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
+            String url = QR_API_URL + "/?data=" + data + "&size=100x100";
+            this.qrCode = restTemplate.getForObject(url, byte[].class);
+        }
         return this.qrCode;
     }
 
@@ -69,20 +67,6 @@ public class Lobby implements ILobby {
     @Override
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
-    }
-
-    /**
-     *
-     * Create and add a new player
-     * @return The created player
-     * @deprecated Use generatePlayer!
-     */
-    @Override
-    @Deprecated
-    public Player addPlayer() {
-        Player player = generatePlayer();
-        playerMap.put(player.getToken(), player);
-        return player;
     }
 
     @Override

@@ -168,7 +168,7 @@ class LobbyControllerTest {
 
         // Convert hex data into byte array
         byte[] qrCode = new byte[hexByteCodeSampleImage.length() / 2];
-        for (int i = 0; i < qrCode.length; i++) {
+        for (int i = 0; i < qrCode.length; ++i) {
             int index = i * 2;
 
             // Using parseInt() method of Integer class

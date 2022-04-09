@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
@@ -8,14 +7,12 @@ import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LobbyServiceTest {
-
 
     private final LobbyManager lobbyManager;
 
@@ -25,11 +22,6 @@ public class LobbyServiceTest {
         lobbyManager = Mockito.mock(LobbyManager.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
         lobbyService = new LobbyService(userRepository, lobbyManager);
-    }
-
-    @BeforeEach
-    public void setup() {
-
     }
 
     @Test
@@ -64,7 +56,6 @@ public class LobbyServiceTest {
         createdLobby = Mockito.spy(createdLobby);
 
         // override generateQRCode() method
-        Mockito.doNothing().when(createdLobby).generateQrCode();
         Mockito.when(createdLobby.getQrCode()).thenReturn(qrCode);
 
         // mock lobbyManager that it returns the mocked lobby
