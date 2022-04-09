@@ -6,13 +6,13 @@ import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -243,7 +243,6 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
-        Long id = createdLobby.getId();
 
         // Attempt to update lobby with empty name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -265,7 +264,6 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
-        Long id = createdLobby.getId();
 
         // Attempt to update lobby with empty name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -287,7 +285,6 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
-        Long id = createdLobby.getId();
 
         // Attempt to update lobby with empty name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -296,4 +293,76 @@ class LobbyServiceIntegrationTests {
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void getQRCode_nullOrEmptyToken_throwsException(String token) throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getQRCodeFromLobby(token, id));
+
+        // Check https status code
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    void getQRCode_lobbyNotFound_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        long id = createdLobby.getId();
+
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getQRCodeFromLobby("token", id+1L));
+
+        // Check https status code
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    void getQRCode_tokenNotInLobby_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        long id = createdLobby.getId();
+
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getQRCodeFromLobby("tokenNotInLobby", id));
+
+        // Check https status code
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+
 }
