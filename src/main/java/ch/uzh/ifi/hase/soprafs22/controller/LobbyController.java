@@ -9,9 +9,15 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import jdk.jfr.ContentType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,4 +96,15 @@ public class LobbyController {
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
     }
+
+    @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<byte[]> getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
+
+        byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCode);
+    }
+
 }

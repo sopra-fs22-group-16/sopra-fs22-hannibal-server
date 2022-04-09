@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-// TODO: Add QR_Code or create own endpoint
-
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;

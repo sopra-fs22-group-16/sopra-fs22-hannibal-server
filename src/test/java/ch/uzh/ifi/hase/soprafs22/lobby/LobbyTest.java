@@ -86,9 +86,9 @@ class LobbyTest {
 
     @Test
     public void updateLobbyPlayer_userNameNotUnique_conflict() {
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         Player host = lobby.getHost();
-        Player newPlayer = lobby.addPlayer();
+        Player newPlayer = lobby.generatePlayer();
 
         assertHttpError(HttpStatus.CONFLICT, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
     }

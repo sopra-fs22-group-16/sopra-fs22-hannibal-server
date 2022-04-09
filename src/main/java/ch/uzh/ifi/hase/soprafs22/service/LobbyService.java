@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -41,24 +42,14 @@ public class LobbyService {
         this.lobbyManager = LobbyManager.getInstance();
     }
 
-    private void checkStringConfigNullOrEmpty(String s, String errorMessageEnding, boolean isToken) {
-        if (s == null || s.trim().isEmpty()) {
-            if (isToken) {
-                String errorMessage = "The user needs to provide authentication to retrieve lobby information. Therefore, the lobby could not be " + errorMessageEnding + "!";
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
-            }
-            else {
-                String errorMessage = "The lobby name provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-            }
-        }
-    }
-
-    private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
-        if (config == null) {
-            String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
+    /**
+     * LobbyService constructor used for testing, to inject a mocked lobbyManager
+     * @param userRepository the user repository
+     * @param lobbyManager the mocked lobby manager
+     */
+    public LobbyService(UserRepository userRepository, LobbyManager lobbyManager) {
+        this.userRepository = userRepository;
+        this.lobbyManager = lobbyManager;
     }
 
     /**
@@ -73,7 +64,7 @@ public class LobbyService {
     public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        checkStringConfigNullOrEmpty(lobbyName, "created", false);
+        checkStringConfigNullOrEmpty(lobbyName, "name","created");
         checkEnumConfigNull(visibility, "visibility", "created");
         checkEnumConfigNull(gameMode, "game mode", "created");
         checkEnumConfigNull(gameType, "game type", "created");
@@ -129,26 +120,29 @@ public class LobbyService {
      */
     public ILobby getLobby(String token, Long lobbyId) {
 
-        checkStringConfigNullOrEmpty(token, "accessed", true);
+        checkStringConfigNullOrEmpty(token, "token", "accessed");
 
-        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        // Check if lobby exists else throw an error
-        if (lobby == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        checkUserIsInLobby(lobby, token, "accessed");
+
+        return lobby;
+    }
+
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId){
+        checkStringConfigNullOrEmpty(token, "token", "accessed");
+
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+        checkUserIsInLobby(lobby, token, "accessed");
+
+        try{
+            return lobby.getQrCode();
+        }catch (RestClientException e){
+            String errorMessage = "The server received an invalid response from the upstream server.";
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
         }
 
-        // Check if user is in lobby
-        for (Player player : lobby) {
-            // If tokens match return the lobby
-            if (player.getToken().equals(token)) {
-                return lobby;
-            }
-        }
-
-        // If no user was found matching the token throw an error
-        String errorMessage = "The provided authentication was incorrect.";
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
 
@@ -157,11 +151,11 @@ public class LobbyService {
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
-        checkStringConfigNullOrEmpty(token, "updated", true);
+        checkStringConfigNullOrEmpty(token, "token", "updated");
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
-        checkStringConfigNullOrEmpty(lobbyName, "updated", false);
+        checkStringConfigNullOrEmpty(lobbyName, "name","updated");
         checkEnumConfigNull(visibility, "visibility", "updated");
         checkEnumConfigNull(gameMode, "game mode", "updated");
         checkEnumConfigNull(gameType, "game type", "updated");
@@ -184,5 +178,49 @@ public class LobbyService {
         if (gameType != lobby.getGameType()) {
             lobby.setGameType(gameType);
         }
+    }
+
+    private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
+        if(fieldName.equals("token")){
+            if (s == null || s.isEmpty()) {
+                String errorMessage = "The user needs to provide authentication to retrieve lobby information."
+                        + "Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
+            }
+        }else{
+            if (s == null || s.trim().isEmpty()) {
+                String errorMessage = "The lobby " + fieldName + " provided is empty."
+                        + "Therefore, the lobby could not be " + errorMessageEnding + "!";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
+        }
+    }
+
+    private void checkUserIsInLobby(ILobby lobby, String token, String errorMessageEnding) {
+        // Check if user is in lobby
+        for (Player player : lobby) {
+            // If tokens match return true
+            if (player.getToken().equals(token)) {
+                return;
+            }
+        }
+        String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be " + errorMessageEnding  + "!";
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+    }
+
+    private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
+        if (config == null) {
+            String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+    }
+
+    private ILobby getLobbyByIdElseThrowNotFound(long lobbyId) {
+        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+        // Check if lobby exists else throw an error
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        }
+        return lobby;
     }
 }
