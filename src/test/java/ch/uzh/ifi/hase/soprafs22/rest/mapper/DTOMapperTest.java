@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests if the mapping between the internal and the external/API representation
  * works.
  */
-public class DTOMapperTest {
+class DTOMapperTest {
     @Test
     void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
 

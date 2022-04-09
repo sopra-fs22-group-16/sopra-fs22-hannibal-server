@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
@@ -22,8 +23,8 @@ public class Lobby implements ILobby {
     private final Player host;
     private final Map<String, Player> playerMap;
     private final String invitationCode;
+    private byte[] qrCode;
     private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
-    private final static String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -41,11 +42,15 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public byte[] generateQrCode(String code) {
-        String data = URLEncoder.encode(HANNIBAL_URL + code, StandardCharsets.UTF_8);
-        RestTemplate restTemplate = new RestTemplate();
-        String url = QR_API_URL + "/?data=" + data + "&size=100x100";
-        return restTemplate.getForObject(url, byte[].class);
+    public byte[] getQrCode() throws RestClientException{
+        if(this.qrCode == null){
+            String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
+            RestTemplate restTemplate = new RestTemplate();
+            final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
+            String url = QR_API_URL + "/?data=" + data + "&size=100x100";
+            this.qrCode = restTemplate.getForObject(url, byte[].class);
+        }
+        return this.qrCode;
     }
 
     @Override
@@ -62,17 +67,6 @@ public class Lobby implements ILobby {
     @Override
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
-    }
-
-    /**
-     * Create and add a new player
-     * @return The created player
-     */
-    @Override
-    public Player addPlayer() {
-        Player player = generatePlayer();
-        playerMap.put(player.getToken(), player);
-        return player;
     }
 
     @Override

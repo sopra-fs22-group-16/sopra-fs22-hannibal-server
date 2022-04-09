@@ -4,17 +4,17 @@ import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
+import org.springframework.web.client.RestClientException;
 
 public interface ILobby extends Iterable<Player>{
-    byte[] generateQrCode(String code);
+
+    byte[] getQrCode() throws RestClientException;
 
     void changeReadyStatus(String token);
 
     Visibility getVisibility();
 
     void setVisibility(Visibility visibility);
-
-    Player addPlayer();
 
     Player removePlayer(String token);
 

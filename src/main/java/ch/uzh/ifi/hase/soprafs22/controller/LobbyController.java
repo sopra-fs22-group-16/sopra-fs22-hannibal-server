@@ -8,10 +8,17 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import jdk.jfr.ContentType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Lobby Controller
@@ -80,22 +87,14 @@ public class LobbyController {
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
     }
-    @GetMapping("/v1/game/lobby")
+
+    @GetMapping("/v1/game/lobby/{id}/qrcode")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<LobbyGetDTO> getLobbies() {
+    public ResponseEntity<byte[]> getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
 
-        Collection<ILobby> lobbies = lobbyService.getLobbies();
-        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
-        Iterator var4 = lobbies.iterator();
+        byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
 
-        while(var4.hasNext()) {
-            ILobby lobby = (ILobby) var4.next();
-            lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
-        }
-
-        return lobbiesGetDTOs;
-
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCode);
     }
-
 }
