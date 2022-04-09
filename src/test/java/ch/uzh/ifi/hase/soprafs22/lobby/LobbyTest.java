@@ -18,7 +18,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         assertNotNull(host);
         assertEquals(host, lobby.iterator().next());
     }
@@ -29,7 +29,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         assertNotNull(host);
         assertNotNull(host.getToken());
         assertNotNull(host.getName());
@@ -40,7 +40,7 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_userName_OK() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
 
         lobby.setUserName(host.getToken(), "new username");
 
@@ -51,7 +51,7 @@ class LobbyTest {
     public void updateLobbyPlayer_userNameDouble_OK() {
         // Test that old names are available for usage.
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         String oldUsername = host.getName();
 
         lobby.setUserName(host.getToken(), "new username");
@@ -63,7 +63,7 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_ready_OK() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
 
         lobby.setReady(host.getToken(), true);
 
@@ -87,7 +87,7 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_userNameNotUnique_conflict() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getOwner();
+        Player host = lobby.getHost();
         Player newPlayer = lobby.addPlayer();
 
         assertHttpError(HttpStatus.CONFLICT, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
