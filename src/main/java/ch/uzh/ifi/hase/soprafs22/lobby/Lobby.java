@@ -24,10 +24,8 @@ public class Lobby implements ILobby {
     private final Player owner;
     private final Map<String, Player> playerMap;
     private String invitationCode;
-    private final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
-    private final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
-
-    private Set<String> userNames = new HashSet<>();
+    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
+    private final static String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -73,14 +71,12 @@ public class Lobby implements ILobby {
     public Player addPlayer() {
         Player player = generatePlayer();
         playerMap.put(player.getToken(), player);
-        userNames.add(player.getName());
         return player;
     }
 
     @Override
     public Player removePlayer(String token) {
         Player player = playerMap.remove(token);
-        userNames.add(player.getName());
         return player;
     }
 
@@ -109,12 +105,11 @@ public class Lobby implements ILobby {
 
     @Override
     public void setUserName(String token, String newName) {
-        if (userNames.contains(newName))
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + newName + " is already taken.");
+        for (Player player: playerMap.values())
+            if (player.getName().equals(newName))
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + newName + " is already taken.");
         Player player = getPlayer(token);
         player.setName(newName);
-        userNames.remove(player.getName());
-        userNames.add(newName);
     }
 
     @Override
@@ -164,12 +159,12 @@ public class Lobby implements ILobby {
 
     private Player generatePlayer(){
 
-        Map<Team, Integer> numberOfTeamMembers = new HashMap<>();
+        Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);
         for(Team t : Team.values()){
             numberOfTeamMembers.put(t, 0);
         }
 
-        long id = 0L;
+        long generatedId = 0L;
         // Get all ids currently in use
         // Count the number of players in each team
         Set<Long> idSet = new HashSet<>();
@@ -179,9 +174,9 @@ public class Lobby implements ILobby {
             numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
         }
         // if id already in use increase by 1
-        while(idSet.contains(id)){++id;}
+        while(idSet.contains(generatedId)){++generatedId;}
 
-        String username = "Player-"+id;
+        String username = "Player-"+generatedId;
 
         String token = UUID.randomUUID().toString();
 
@@ -193,7 +188,7 @@ public class Lobby implements ILobby {
                 team = t;
         }
 
-        return new Player(id, username, token, team);
+        return new Player(generatedId, username, token, team);
     }
 
     @Override

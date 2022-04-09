@@ -4,7 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatable;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @WebAppConfiguration
 @SpringBootTest
-public class LobbyServiceIntegrationTests {
+class LobbyServiceIntegrationTests {
 
     @Autowired
     private LobbyService lobbyService;
@@ -48,8 +48,8 @@ public class LobbyServiceIntegrationTests {
 
         assertEquals(0L, createdLobby.getId());
         assertEquals(lobbyName, createdLobby.getName());
-        assertEquals(gameMode, gameMode);
-        assertEquals(gameType, gameType);
+        assertEquals(gameMode, createdLobby.getGameMode());
+        assertEquals(gameType, createdLobby.getGameType());
         assertNotNull(createdLobby.getOwner());
         assertEquals(createdLobby.getOwner(), createdLobby.iterator().next());
         assertNotNull(createdLobby.getOwner().getTeam());
@@ -78,7 +78,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestIdNotCreatable {
+    void createLobby_unregisteredUser_conflictLobbyName_throwsException() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -97,7 +97,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_withToken_registeredUserNotFound_throwsException() throws SmallestIdNotCreatable {
+    void createLobby_withToken_registeredUserNotFound_throwsException() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -116,7 +116,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_validInputs_success() throws SmallestIdNotCreatable {
+    void getLobby_validInputs_success() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -144,7 +144,7 @@ public class LobbyServiceIntegrationTests {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void getLobby_emptyToken_throwException(String token) throws SmallestIdNotCreatable {
+    void getLobby_emptyToken_throwException(String token) throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -167,7 +167,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_noLobbyWithId_throwException() throws SmallestIdNotCreatable {
+    void getLobby_noLobbyWithId_throwException() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
@@ -189,7 +189,7 @@ public class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void getLobby_wrongToken_throwException() throws SmallestIdNotCreatable {
+    void getLobby_wrongToken_throwException() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
         Visibility visibility = Visibility.PRIVATE;
