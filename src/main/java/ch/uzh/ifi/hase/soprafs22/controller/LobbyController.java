@@ -9,15 +9,10 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import jdk.jfr.ContentType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,7 +73,7 @@ public class LobbyController {
     // TODO add tests.
     public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
         //lobby id --> id
-        lobbyService.modifyPlayer(token, id, playerPutDTO);
+        lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
     }
 
     @PutMapping("/{API_VERSION}/game/lobby/{id}")

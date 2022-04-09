@@ -1,11 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +38,7 @@ class LobbyTest {
     }
     
     @Test
-    public void updateLobbyPlayer_userName_OK() {
+    public void updateLobbyPlayer_userName_OK() throws Exception {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         Player host = lobby.getHost();
 
@@ -48,7 +48,7 @@ class LobbyTest {
     }
 
     @Test
-    public void updateLobbyPlayer_userNameDouble_OK() {
+    public void updateLobbyPlayer_userNameDouble_OK() throws Exception  {
         // Test that old names are available for usage.
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         Player host = lobby.getHost();
@@ -61,7 +61,7 @@ class LobbyTest {
     }
 
     @Test
-    public void updateLobbyPlayer_ready_OK() {
+    public void updateLobbyPlayer_ready_OK() throws Exception  {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         Player host = lobby.getHost();
 
@@ -74,14 +74,14 @@ class LobbyTest {
     public void updateLobbyPlayer_ready_notFound() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
-        assertHttpError(HttpStatus.NOT_FOUND, () -> lobby.setReady("invalid token", true));
+        assertThrows(PlayerNotFoundException.class, () -> lobby.setReady("invalid token", true));
     }
 
     @Test
     public void updateLobbyPlayer_userName_notFound() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
-        assertHttpError(HttpStatus.NOT_FOUND, () -> lobby.setUserName("invalid token", "new username"));
+        assertThrows(PlayerNotFoundException.class, () -> lobby.setUserName("invalid token", "new username"));
     }
 
     @Test
@@ -91,12 +91,6 @@ class LobbyTest {
         Player newPlayer = lobby.generatePlayer();
         lobby.addPlayer(newPlayer);
 
-        assertHttpError(HttpStatus.CONFLICT, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
+        assertThrows(DuplicateUserNameInLobbyException.class,  () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
     }
-
-    private static void assertHttpError(HttpStatus expectedStatus, org.junit.jupiter.api.function.Executable executable) {
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, executable);
-        assertEquals(expectedStatus, exception.getStatus());
-    }
-
 }

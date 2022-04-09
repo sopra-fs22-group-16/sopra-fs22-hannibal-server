@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -7,10 +9,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -73,8 +73,7 @@ public class Lobby implements ILobby {
 
     @Override
     public Player removePlayer(String token) {
-        Player player = playerMap.remove(token);
-        return player;
+        return playerMap.remove(token);
     }
 
     @Override
@@ -117,16 +116,16 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void setUserName(String token, String newName) {
+    public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException {
         for (Player player: playerMap.values())
             if (player.getName().equals(newName))
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + newName + " is already taken.");
+                throw new DuplicateUserNameInLobbyException(newName);
         Player player = getPlayer(token);
         player.setName(newName);
     }
 
     @Override
-    public void setReady(String token, Boolean ready) {
+    public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
         Player player = getPlayer(token);
         player.setReady(ready);
         // Here lobby knows if all players are ready and can inform clients through websocket.
@@ -134,10 +133,10 @@ public class Lobby implements ILobby {
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
     }
 
-    private Player getPlayer(String token) {
+    private Player getPlayer(String token) throws PlayerNotFoundException {
         Player player = playerMap.get(token);
         if (player == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in lobby.");
+            throw new PlayerNotFoundException(token);
         }
         return player;
     }

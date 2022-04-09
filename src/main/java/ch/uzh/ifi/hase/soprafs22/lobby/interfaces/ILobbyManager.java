@@ -1,9 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 
 public interface ILobbyManager extends Iterable<ILobby>{
 
@@ -17,5 +18,5 @@ public interface ILobbyManager extends Iterable<ILobby>{
 
     void clear();
 
-    void modifyPlayer(String token, Long lobbyId, PlayerPutDTO playerPutDTO);
+    void modifyPlayer(String token, Long lobbyId, String newName, Boolean ready) throws EmptyUsernameException, PlayerNotFoundException, DuplicateUserNameInLobbyException;
 }

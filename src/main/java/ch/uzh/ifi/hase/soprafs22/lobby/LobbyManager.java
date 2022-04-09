@@ -1,13 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -99,13 +98,11 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
-    public void modifyPlayer(String token, Long lobbyId, PlayerPutDTO playerPutDTO) {
+    public void modifyPlayer(String token, Long lobbyId, String newName, Boolean ready) throws EmptyUsernameException, PlayerNotFoundException, DuplicateUserNameInLobbyException {
         ILobby lobby = lobbyMap.get(lobbyId);
-        String newName = playerPutDTO.getName();
-        Boolean ready = playerPutDTO.getReady();
         if (newName != null) {
             if (isEmpty(newName))
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username should not be empty.");
+                throw new EmptyUsernameException();
             lobby.setUserName(token, newName);
         }
         if (ready != null) {
