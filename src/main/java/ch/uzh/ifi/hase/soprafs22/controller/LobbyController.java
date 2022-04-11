@@ -12,9 +12,13 @@ import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Lobby Controller
@@ -102,4 +106,22 @@ public class LobbyController {
         return Base64.getEncoder().encodeToString(qrCode);
     }
 
+    @GetMapping("/{API_VERSION}/game/lobby")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getLobby() {
+        Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        Iterator<ILobby> iteratorLobbies = lobbiesCollection.iterator();
+
+        while(iteratorLobbies.hasNext()) {
+            ILobby lobby = iteratorLobbies.next();
+            if(lobby.getVisibility()== Visibility.PUBLIC) {
+                lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
+            }
+        }
+
+        return lobbiesGetDTOs;
+
+    }
 }

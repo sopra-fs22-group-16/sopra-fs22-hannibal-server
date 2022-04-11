@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Lobby Service
  * This class is the "worker" and responsible for all functionality related to
@@ -235,4 +239,11 @@ public class LobbyService {
         }
         return lobby;
     }
+
+    public Collection<ILobby> getLobbiesCollection() {
+        Collection<ILobby> lobbiesCollection = lobbyManager.getLobbiesCollection();
+        return lobbiesCollection;
+
+    }
+
 }

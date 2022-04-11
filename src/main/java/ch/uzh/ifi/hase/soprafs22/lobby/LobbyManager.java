@@ -41,6 +41,11 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public Collection<ILobby> getLobbiesCollection() {
+        return lobbyMap.values();
+    }
+
+    @Override
     public ILobby getLobbyWithName(String name) {
         for (ILobby lobby : lobbyMap.values()) {
             if (lobby.getName().equals(name)) return lobby;
@@ -114,6 +119,7 @@ public class LobbyManager implements ILobbyManager {
     public Iterator<ILobby> iterator() {
         return lobbyMap.values().iterator();
     }
+
 
     private static boolean isEmpty(String s) {
         return s.replaceAll("\\s+","").length() == 0;
