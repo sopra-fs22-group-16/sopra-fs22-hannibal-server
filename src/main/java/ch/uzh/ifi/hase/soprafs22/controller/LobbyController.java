@@ -10,9 +10,9 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,11 +95,11 @@ public class LobbyController {
     @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<byte[]> getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
+    public String getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
 
         byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
 
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCode);
+        return Base64.getEncoder().encodeToString(qrCode);
     }
 
 }

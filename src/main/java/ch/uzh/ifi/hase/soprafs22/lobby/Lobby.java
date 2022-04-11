@@ -26,7 +26,7 @@ public class Lobby implements ILobby {
     private final Map<String, Player> playerMap;
     private final String invitationCode;
     private byte[] qrCode;
-    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
+    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -46,7 +46,7 @@ public class Lobby implements ILobby {
     @Override
     public byte[] getQrCode() throws RestClientException{
         if(this.qrCode == null){
-            String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
+            String data = HANNIBAL_URL+invitationCode;
             RestTemplate restTemplate = new RestTemplate();
             final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
             String url = QR_API_URL + "/?data=" + data + "&size=100x100";
