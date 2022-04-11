@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -24,7 +26,7 @@ public class Lobby implements ILobby {
     private final Map<String, Player> playerMap;
     private final String invitationCode;
     private byte[] qrCode;
-    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?=";
+    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -41,10 +43,11 @@ public class Lobby implements ILobby {
         this.invitationCode = generateInvitationCode();
     }
 
+    //TODO outsource to QrCodeGenerator
     @Override
     public byte[] getQrCode() throws RestClientException{
         if(this.qrCode == null){
-            String data = URLEncoder.encode(HANNIBAL_URL+invitationCode, StandardCharsets.UTF_8);
+            String data = HANNIBAL_URL+invitationCode;
             RestTemplate restTemplate = new RestTemplate();
             final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
             String url = QR_API_URL + "/?data=" + data + "&size=100x100";
@@ -114,6 +117,32 @@ public class Lobby implements ILobby {
     }
 
     @Override
+    public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException {
+        for (Player player: playerMap.values())
+            if (player.getName().equals(newName))
+                throw new DuplicateUserNameInLobbyException(newName);
+        Player player = getPlayer(token);
+        player.setName(newName);
+    }
+
+    @Override
+    public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
+        Player player = getPlayer(token);
+        player.setReady(ready);
+        // Here lobby knows if all players are ready and can inform clients through websocket.
+        // Sum of players that are ready:
+        // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
+    }
+
+    private Player getPlayer(String token) throws PlayerNotFoundException {
+        Player player = playerMap.get(token);
+        if (player == null) {
+            throw new PlayerNotFoundException(token);
+        }
+        return player;
+    }
+
+    @Override
     public void startGame() {
         // How about creating a game with the stored parameters and starting it?
         // It seems easier than the game dealing
@@ -142,7 +171,8 @@ public class Lobby implements ILobby {
     }
 
     //TODO: This method does not belong here
-    private Player generatePlayer(){
+    // This is currently the only way to add players to test lobbies! We need visibility for testing.
+    public Player generatePlayer(){
 
         Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);
         for(Team t : Team.values()){
@@ -174,6 +204,11 @@ public class Lobby implements ILobby {
         }
 
         return new Player(generatedId, username, token, team);
+    }
+
+    // TODO: Only for testing, feel free to reimplement with corresponding story.
+    public void addPlayer(Player player) {
+        playerMap.put(player.getToken(), player);
     }
 
     @Override

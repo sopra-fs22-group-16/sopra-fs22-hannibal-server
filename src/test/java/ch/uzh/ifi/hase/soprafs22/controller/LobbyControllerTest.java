@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.Charset;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -153,11 +155,10 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
-
     }
 
     @Test
-    void  validInput_getLobbyQRCode_thenReturnMediaTypeIMAGE_PNG() throws Exception {
+    void  validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -189,7 +190,7 @@ class LobbyControllerTest {
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
                 .andExpect(result -> asJsonString(qrCode))
-                .andExpect(content().contentType(MediaType.IMAGE_PNG));
+                .andExpect(content().contentType(MediaType.valueOf("TEXT/PLAIN;CHARSET=UTF-8")));
 
     }
 

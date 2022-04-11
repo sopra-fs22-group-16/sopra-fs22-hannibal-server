@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -100,9 +103,25 @@ public class LobbyManager implements ILobbyManager {
     }
 
     @Override
+    public void modifyPlayer(String token, Long lobbyId, String newName, Boolean ready) throws EmptyUsernameException, PlayerNotFoundException, DuplicateUserNameInLobbyException {
+        ILobby lobby = lobbyMap.get(lobbyId);
+        if (newName != null) {
+            if (isEmpty(newName))
+                throw new EmptyUsernameException();
+            lobby.setUserName(token, newName);
+        }
+        if (ready != null) {
+            lobby.setReady(token, ready);
+        }
+    }
+
+    @Override
     public Iterator<ILobby> iterator() {
         return lobbyMap.values().iterator();
     }
 
 
+    private static boolean isEmpty(String s) {
+        return s.replaceAll("\\s+","").length() == 0;
+    }
 }
