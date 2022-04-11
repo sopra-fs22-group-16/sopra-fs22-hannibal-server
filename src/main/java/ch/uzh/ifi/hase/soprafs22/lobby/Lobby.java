@@ -43,6 +43,7 @@ public class Lobby implements ILobby {
         this.invitationCode = generateInvitationCode();
     }
 
+    //TODO outsource to QrCodeGenerator
     @Override
     public byte[] getQrCode() throws RestClientException{
         if(this.qrCode == null){
