@@ -153,7 +153,6 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
-
     }
 
     @Test

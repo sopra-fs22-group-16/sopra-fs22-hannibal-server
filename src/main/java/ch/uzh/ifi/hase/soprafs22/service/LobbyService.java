@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -142,6 +145,21 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
         }
 
+    }
+
+    public void modifyPlayer(String token, Long lobbyId, String newName, Boolean ready) {
+        try {
+            lobbyManager.modifyPlayer(token, lobbyId, newName, ready);
+        }
+        catch (EmptyUsernameException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username should not be empty.", e);
+        }
+        catch (PlayerNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found in lobby.", e);
+        }
+        catch (DuplicateUserNameInLobbyException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + e.userName() + " is already taken.");
+        }
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {

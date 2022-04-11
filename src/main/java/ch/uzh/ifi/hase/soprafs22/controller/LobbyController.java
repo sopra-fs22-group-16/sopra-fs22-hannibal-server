@@ -6,17 +6,13 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
-import jdk.jfr.ContentType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +68,14 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
+    @PutMapping("/{API_VERSION}/game/lobby/{id}/player")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    // TODO add tests.
+    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
+        //lobby id --> id
+        lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
+    }
+
     @PutMapping("/{API_VERSION}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
@@ -88,7 +92,7 @@ public class LobbyController {
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
     }
 
-    @GetMapping("/v1/game/lobby/{id}/qrcode")
+    @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<byte[]> getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
@@ -97,4 +101,5 @@ public class LobbyController {
 
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCode);
     }
+
 }

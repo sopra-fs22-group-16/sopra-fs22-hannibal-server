@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -37,4 +39,8 @@ public interface ILobby extends Iterable<Player>{
     GameType getGameType();
 
     String getInvitationCode();
+
+    void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException;
+
+    void setReady(String token, Boolean ready) throws PlayerNotFoundException;
 }
