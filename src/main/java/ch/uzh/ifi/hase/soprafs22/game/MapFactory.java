@@ -5,6 +5,6 @@ import ch.uzh.ifi.hase.soprafs22.game.interfaces.IMap;
 
 public class MapFactory extends AbstractMapFactory {
     public IMap createMap() {
-        return new Map();
+        return new Map(32, 32);
     }
 }
