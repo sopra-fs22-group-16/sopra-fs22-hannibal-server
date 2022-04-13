@@ -23,7 +23,6 @@ public class Lobby implements ILobby {
     private final Map<String, Player> playerMap;
     private String invitationCode;
     private byte[] qrCode;
-    private final InvitationCodeGenerator invitationCodeGenerator;
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -31,7 +30,6 @@ public class Lobby implements ILobby {
         this.visibility = visibility;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.playerMap = new HashMap<>();
-        this.invitationCodeGenerator = new InvitationCodeGenerator();
         // Generate the host player
         this.host = generatePlayer();
         playerMap.put(host.getToken(), host);
@@ -41,7 +39,7 @@ public class Lobby implements ILobby {
     public byte[] getQrCode() {
         if (this.qrCode == null) {
             //TODO resolve the highly coupled design
-            this.qrCode = this.invitationCodeGenerator.getQr(invitationCode);
+            this.qrCode = InvitationCodeGenerator.getQr(invitationCode);
         }
         return this.qrCode;
     }
@@ -90,7 +88,7 @@ public class Lobby implements ILobby {
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = invitationCodeGenerator.getAlphanumeric();
+            this.invitationCode = InvitationCodeGenerator.getAlphanumeric();
         }
         return this.invitationCode;
     }

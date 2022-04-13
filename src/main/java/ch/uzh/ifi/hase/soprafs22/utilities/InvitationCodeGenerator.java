@@ -8,21 +8,17 @@ import java.util.Random;
  *
  */
 public class InvitationCodeGenerator {
-    private byte[] qr;
     private static final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
     private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
 
-    public byte[] getQr(String alphanumeric) {
-        if (this.qr == null) {
+    public static byte[] getQr( String alphanumeric) {
             String data = HANNIBAL_URL + alphanumeric;
             RestTemplate restTemplate = new RestTemplate();
             String url = QR_API_URL + "/?data=" + data + "&size=100x100";
-            this.qr = restTemplate.getForObject(url, byte[].class);
-        }
-        return this.qr;
+            return restTemplate.getForObject(url, byte[].class);
     }
 
-    public String getAlphanumeric() {
+    public static String getAlphanumeric() {
         //set limits for including only alphanumeric values
         int lowerLimit = 48;
         int upperLimit = 123;
