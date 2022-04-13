@@ -9,11 +9,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
 
-import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Lobby implements ILobby {
@@ -21,12 +18,12 @@ public class Lobby implements ILobby {
     private final long id;
     private String name;
     private Visibility visibility;
-    private Game game;
+    private final Game game;
     private final Player host;
     private final Map<String, Player> playerMap;
-    private final String invitationCode;
+    private String invitationCode;
     private byte[] qrCode;
-    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
+    private final InvitationCodeGenerator invitationCodeGenerator;
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -34,24 +31,17 @@ public class Lobby implements ILobby {
         this.visibility = visibility;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.playerMap = new HashMap<>();
-
+        this.invitationCodeGenerator = new InvitationCodeGenerator();
         // Generate the host player
         this.host = generatePlayer();
         playerMap.put(host.getToken(), host);
-
-        // Generate the invitation code
-        this.invitationCode = generateInvitationCode();
     }
 
-    //TODO outsource to QrCodeGenerator
     @Override
-    public byte[] getQrCode() throws RestClientException{
-        if(this.qrCode == null){
-            String data = HANNIBAL_URL+invitationCode;
-            RestTemplate restTemplate = new RestTemplate();
-            final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
-            String url = QR_API_URL + "/?data=" + data + "&size=100x100";
-            this.qrCode = restTemplate.getForObject(url, byte[].class);
+    public byte[] getQrCode() {
+        if (this.qrCode == null) {
+            //TODO resolve the highly coupled design
+            this.qrCode = this.invitationCodeGenerator.getQr(invitationCode);
         }
         return this.qrCode;
     }
@@ -83,7 +73,7 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public GameMode getGameMode(){
+    public GameMode getGameMode() {
         return this.game.getGameMode();
     }
 
@@ -93,32 +83,21 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public GameType getGameType(){return this.game.getGameType();}
-
-    private String generateInvitationCode() {
-        //set limits for including only alphanumeric values
-        int lowerLimit = 48;
-        int upperLimit = 123;
-
-        //set limit for the string length
-        int lengthLimit = 10;
-
-        Random random = new Random();
-        return random.ints(lowerLimit, upperLimit)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(lengthLimit)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString().toUpperCase();
+    public GameType getGameType() {
+        return this.game.getGameType();
     }
 
     @Override
     public String getInvitationCode() {
+        if (invitationCode == null) {
+            this.invitationCode = invitationCodeGenerator.getAlphanumeric();
+        }
         return this.invitationCode;
     }
 
     @Override
     public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException {
-        for (Player player: playerMap.values())
+        for (Player player : playerMap.values())
             if (player.getName().equals(newName))
                 throw new DuplicateUserNameInLobbyException(newName);
         Player player = getPlayer(token);
@@ -129,7 +108,7 @@ public class Lobby implements ILobby {
     public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
         Player player = getPlayer(token);
         player.setReady(ready);
-        // Here lobby knows if all players are ready and can inform clients through websocket.
+        // Here lobby knows if all players are ready and can inform clients through web socket.
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
     }
@@ -172,10 +151,10 @@ public class Lobby implements ILobby {
 
     //TODO: This method does not belong here
     // This is currently the only way to add players to test lobbies! We need visibility for testing.
-    public Player generatePlayer(){
+    public Player generatePlayer() {
 
         Map<Team, Integer> numberOfTeamMembers = new EnumMap<>(Team.class);
-        for(Team t : Team.values()){
+        for (Team t : Team.values()) {
             numberOfTeamMembers.put(t, 0);
         }
 
@@ -183,23 +162,25 @@ public class Lobby implements ILobby {
         // Get all ids currently in use
         // Count the number of players in each team
         Set<Long> idSet = new HashSet<>();
-        for(Player player : playerMap.values()){
+        for (Player player : playerMap.values()) {
             idSet.add(player.getId());
             int teamMembers = numberOfTeamMembers.get(player.getTeam());
             numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
         }
         // if id already in use increase by 1
-        while(idSet.contains(generatedId)){++generatedId;}
+        while (idSet.contains(generatedId)) {
+            ++generatedId;
+        }
 
-        String username = "Player-"+generatedId;
+        String username = "Player-" + generatedId;
 
         String token = UUID.randomUUID().toString();
 
         // Find team with the lowest number of players
         Team team = Team.values()[0];
-        for(Team t : Team.values()){
+        for (Team t : Team.values()) {
             int teamMembers = numberOfTeamMembers.get(t);
-            if(teamMembers < numberOfTeamMembers.get(team))
+            if (teamMembers < numberOfTeamMembers.get(team))
                 team = t;
         }
 
