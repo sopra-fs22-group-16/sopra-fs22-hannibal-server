@@ -99,7 +99,7 @@ public class LobbyController {
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/update/" + id, "");
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
     }
 
     @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
