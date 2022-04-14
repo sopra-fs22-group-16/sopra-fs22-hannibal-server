@@ -3,8 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.game.interfaces.IMap;
 
 public class Map implements IMap {
-    private int length;
-    private int width;
+    private final int length;
+    private final int width;
 
     public Map(int length, int width) {
         this.length = length;

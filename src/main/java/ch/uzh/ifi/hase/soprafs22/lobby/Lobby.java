@@ -12,8 +12,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Lobby implements ILobby {
@@ -21,7 +19,7 @@ public class Lobby implements ILobby {
     private final long id;
     private String name;
     private Visibility visibility;
-    private Game game;
+    private final Game game;
     private final Player host;
     private final Map<String, Player> playerMap;
     private final String invitationCode;
@@ -129,7 +127,7 @@ public class Lobby implements ILobby {
     public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
         Player player = getPlayer(token);
         player.setReady(ready);
-        // Here lobby knows if all players are ready and can inform clients through websocket.
+        // Here lobby knows if all players are ready and can inform clients through web socket.
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
     }
