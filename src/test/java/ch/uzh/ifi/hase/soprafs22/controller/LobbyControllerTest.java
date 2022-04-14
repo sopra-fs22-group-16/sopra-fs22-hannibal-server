@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
@@ -73,6 +74,7 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.players[0].self", is(true)))
                 .andExpect(jsonPath("$.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.gameType", is(lobby.getGameType().toString())))
@@ -113,6 +115,7 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.lobby.players[0].self", is(true)))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
@@ -127,6 +130,10 @@ class LobbyControllerTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
+        String token = "";
+        for (Player player : lobby) {
+            token = player.getToken();
+        }
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
@@ -137,13 +144,13 @@ class LobbyControllerTest {
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.createLobby("registeredUserToken", lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
+        given(lobbyService.createLobby(token, lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
 
         // when
         MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lobbyPostDTO))
-                .header("token", "registeredUserToken");
+                .header("token", token);
 
         // then
         mockMvc.perform(postRequest)
@@ -155,6 +162,7 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
+                .andExpect(jsonPath("$.lobby.players[0].self", is(true)))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))

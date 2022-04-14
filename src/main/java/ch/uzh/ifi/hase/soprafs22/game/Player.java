@@ -8,7 +8,7 @@ public class Player {
 
     private String name;
 
-    private final String token;
+    private String token;
 
     private boolean ready;
 
@@ -61,9 +61,10 @@ public class Player {
         return registeredUser;
     }
 
-    public void linkRegisteredUser(RegisteredUser registeredUser){
+    public void linkRegisteredUser(RegisteredUser registeredUser, String token){
         this.registeredUser = registeredUser;
         this.name = registeredUser.getUsername();
+        this.token = token;
     }
 
 }

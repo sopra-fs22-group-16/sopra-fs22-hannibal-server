@@ -54,13 +54,16 @@ public class LobbyController {
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
 
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        // We need to update the users token before DTOMapper, so we have a valid one when building self.
+        if(token == null || token.isEmpty())
+            token = lobby.getHost().getToken();
+
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
 
         // Construct return value
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
-        if(token == null || token.isEmpty())
-            returnMap.put("token", lobby.getHost().getToken());
+        returnMap.put("token", token);
 
         return returnMap;
     }
@@ -72,7 +75,7 @@ public class LobbyController {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
-        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
     }
 
     @PutMapping("/{API_VERSION}/game/lobby/{id}/player")
@@ -117,7 +120,7 @@ public class LobbyController {
     @ResponseBody
     public List<LobbyGetDTO> getLobby() {
         Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
-        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList<>();
         Iterator<ILobby> iteratorLobbies = lobbiesCollection.iterator();
 
         while(iteratorLobbies.hasNext()) {

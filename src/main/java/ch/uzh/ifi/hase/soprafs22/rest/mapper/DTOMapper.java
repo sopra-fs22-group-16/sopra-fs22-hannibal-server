@@ -30,9 +30,17 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    //This mapping only makes sense with a token.
+    @Mapping(target="self", ignore = true)
     public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
 
-    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
+    public PlayerGetDTO convertPlayerToPlayerGetDTO(Player player, String token) {
+        PlayerGetDTO result = convertPlayerToPlayerGetDTO(player);
+        result.setSelf(token.equals(player.getToken()));
+        return result;
+    }
+
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
@@ -42,7 +50,7 @@ public abstract class DTOMapper {
         // and storing them in the list
         LinkedList<PlayerGetDTO> members = new LinkedList<>();
         for (Player player : lobby) {
-            members.add(convertPlayerToPlayerGetDTO(player));
+            members.add(convertPlayerToPlayerGetDTO(player, token));
         }
         lobbyGetDTO.setPlayers(members);
 
@@ -50,9 +58,15 @@ public abstract class DTOMapper {
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
-
         return lobbyGetDTO;
     }
+
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
+        // Used in getting list for all lobbies, where user does not have a token.
+        // For example, when user sees the list of all public lobbies, they don't have a token.
+        return convertILobbyToLobbyGetDTO(lobby, "");
+    }
+
 
     int convertTeamToTeamNumber(Team team){
         return team.getTeamNumber();
