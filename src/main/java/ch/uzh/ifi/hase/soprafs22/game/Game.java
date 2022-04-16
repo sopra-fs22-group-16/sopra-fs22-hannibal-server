@@ -12,21 +12,46 @@ public class Game {
     private final GameType gameType;
     private final Map<String, PlayerAdapter> playerMap;
     private final IMap map;
-    private int turn;
+    private int turnNumber;
+    private String[] turnOrder;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, Player> playerMap){
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
+        this.turnNumber = 0;
+        this.turnOrder = new String[playerMap.size()];
 
         // Convert players to PlayerAdapter's
         for(Player player: playerMap.values()){
             this.playerMap.put(player.getToken(), new PlayerAdapter(player));
         }
 
-        // This should probably be static, MapFactory still in development
+        for(Player player: playerMap.values()){
+            int teamNumber = player.getTeam().getTeamNumber();
+            if(turnOrder[teamNumber] == null){
+                turnOrder[teamNumber] = player.getToken();
+            }else{
+                turnOrder[teamNumber+2] = player.getToken();
+            }
+        }
+
+        // TODO: Update with correct call
         map = new MapFactory().createMap();
+
     }
 
+    public int nextTurn(){
+        return ++turnNumber;
+    }
+
+    public boolean hasEnded(){
+        // TODO: Check if game has finished
+        return false;
+    }
+
+    public boolean isPlayersTurn(String token){
+        return turnOrder[turnNumber % turnOrder.length].equals(token);
+    }
 }
