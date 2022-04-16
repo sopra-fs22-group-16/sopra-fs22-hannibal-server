@@ -21,6 +21,8 @@ public class Lobby implements ILobby {
     private final Game game;
     private final Player host;
     private final Map<String, Player> playerMap;
+    private GameMode gameMode;
+    private GameType gameType;
     private String invitationCode;
     private byte[] qrCode;
 
@@ -67,22 +69,22 @@ public class Lobby implements ILobby {
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.game.setGameMode(gameMode);
+        this.gameMode = gameMode;
     }
 
     @Override
     public GameMode getGameMode() {
-        return this.game.getGameMode();
+        return this.gameMode;
     }
 
     @Override
     public void setGameType(GameType gameType) {
-        this.game.setGameType(gameType);
+        this.gameType = gameType;
     }
 
     @Override
     public GameType getGameType() {
-        return this.game.getGameType();
+        return this.gameType;
     }
 
     @Override
