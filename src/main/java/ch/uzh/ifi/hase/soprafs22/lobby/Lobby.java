@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.GameAlreadyRunningException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
@@ -18,7 +19,7 @@ public class Lobby implements ILobby {
     private final long id;
     private String name;
     private Visibility visibility;
-    private final Game game;
+    private Game game;
     private final Player host;
     private final Map<String, Player> playerMap;
     private GameMode gameMode;
@@ -30,7 +31,6 @@ public class Lobby implements ILobby {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
-        this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.playerMap = new HashMap<>();
         // Generate the host player
         this.host = generatePlayer();
@@ -122,11 +122,12 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void startGame() {
-        // How about creating a game with the stored parameters and starting it?
-        // It seems easier than the game dealing
-        // with updates whenever the lobby changes. (+1)
-        // this.game.start();
+    public Game startGame() throws GameAlreadyRunningException {
+        // Check if a game is already running for this lobby
+        if(game != null) throw new GameAlreadyRunningException();
+
+        this.game = new Game(this.gameMode, this.gameType, this.playerMap);
+        return this.game;
     }
 
     @Override

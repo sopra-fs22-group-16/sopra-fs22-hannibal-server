@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.GameAlreadyRunningException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -24,7 +26,7 @@ public interface ILobby extends Iterable<Player>{
 
     void setGameType(GameType gameType);
 
-    void startGame();
+    Game startGame() throws GameAlreadyRunningException;
 
     long getId();
 
