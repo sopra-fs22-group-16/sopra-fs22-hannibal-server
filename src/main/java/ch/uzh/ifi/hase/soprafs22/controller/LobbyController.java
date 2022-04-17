@@ -19,7 +19,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Lobby Controller
  * This class is responsible for handling all REST request that are related to
@@ -49,7 +48,7 @@ public class LobbyController {
         String name = lobbyPostDTO.getName();
         Visibility visibility = lobbyPostDTO.getVisibility();
         GameMode gameMode = lobbyPostDTO.getGameMode();
-        GameType gameType= lobbyPostDTO.getGameType();
+        GameType gameType = lobbyPostDTO.getGameType();
 
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
@@ -59,7 +58,7 @@ public class LobbyController {
         // Construct return value
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
-        if(token == null || token.isEmpty())
+        if (token == null || token.isEmpty())
             returnMap.put("token", lobby.getHost().getToken());
 
         return returnMap;
@@ -94,7 +93,7 @@ public class LobbyController {
         String name = lobbyPutDTO.getName();
         Visibility visibility = lobbyPutDTO.getVisibility();
         GameMode gameMode = lobbyPutDTO.getGameMode();
-        GameType gameType= lobbyPutDTO.getGameType();
+        GameType gameType = lobbyPutDTO.getGameType();
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
 
@@ -105,7 +104,7 @@ public class LobbyController {
     @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id){
+    public String getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id) {
 
         byte[] qrCode = lobbyService.getQRCodeFromLobby(token, id);
 
@@ -118,11 +117,9 @@ public class LobbyController {
     public List<LobbyGetDTO> getLobby() {
         Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
         List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
-        Iterator<ILobby> iteratorLobbies = lobbiesCollection.iterator();
 
-        while(iteratorLobbies.hasNext()) {
-            ILobby lobby = iteratorLobbies.next();
-            if(lobby.getVisibility()== Visibility.PUBLIC) {
+        for (ILobby lobby : lobbiesCollection) {
+            if (lobby.getVisibility() == Visibility.PUBLIC) {
                 lobbiesGetDTOs.add(DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby));
             }
         }

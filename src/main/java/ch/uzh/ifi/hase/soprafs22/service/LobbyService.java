@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Lobby Service
@@ -241,9 +239,7 @@ public class LobbyService {
     }
 
     public Collection<ILobby> getLobbiesCollection() {
-        Collection<ILobby> lobbiesCollection = lobbyManager.getLobbiesCollection();
-        return lobbiesCollection;
-
+        return lobbyManager.getLobbiesCollection();
     }
 
 }
