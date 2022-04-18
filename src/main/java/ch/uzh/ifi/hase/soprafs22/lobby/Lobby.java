@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -121,7 +122,7 @@ public class Lobby implements ILobby {
         return player;
     }
 
-    private void startGame() {
+    private void startGame() throws UnbalancedTeamCompositionException {
         // Todo: call to client that the game started
         this.game = new Game(this.gameMode, this.gameType, this.playerMap);
     }

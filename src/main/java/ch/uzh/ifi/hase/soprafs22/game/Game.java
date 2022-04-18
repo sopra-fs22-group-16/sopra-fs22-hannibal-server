@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.interfaces.IMap;
@@ -17,7 +18,7 @@ public class Game {
     private boolean running;
 
 
-    public Game(GameMode gameMode, GameType gameType, Map<String, Player> playerMap){
+    public Game(GameMode gameMode, GameType gameType, Map<String, Player> playerMap) throws UnbalancedTeamCompositionException {
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
@@ -34,8 +35,10 @@ public class Game {
             int teamNumber = player.getTeam().getTeamNumber();
             if(turnOrder[teamNumber] == null){
                 turnOrder[teamNumber] = player.getToken();
-            }else{
+            }else if( turnOrder.length > 2 && turnOrder[teamNumber+2] == null ){
                 turnOrder[teamNumber+2] = player.getToken();
+            }else{
+                throw new UnbalancedTeamCompositionException();
             }
         }
 
