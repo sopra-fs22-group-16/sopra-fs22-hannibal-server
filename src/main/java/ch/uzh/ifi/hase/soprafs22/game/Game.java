@@ -14,6 +14,7 @@ public class Game {
     private final IMap map;
     private int turnNumber;
     private String[] turnOrder;
+    private boolean running;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, Player> playerMap){
@@ -22,6 +23,7 @@ public class Game {
         this.playerMap = new HashMap<>();
         this.turnNumber = 0;
         this.turnOrder = new String[playerMap.size()];
+        this.running = true;
 
         // Convert players to PlayerAdapter's
         for(Player player: playerMap.values()){
@@ -47,8 +49,7 @@ public class Game {
     }
 
     public boolean hasEnded(){
-        // TODO: Check if game has finished
-        return false;
+        return !running;
     }
 
     public boolean isPlayersTurn(String token){

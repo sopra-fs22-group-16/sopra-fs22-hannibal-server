@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.GameAlreadyRunningException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
@@ -111,6 +110,7 @@ public class Lobby implements ILobby {
         // Here lobby knows if all players are ready and can inform clients through web socket.
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
+        // startGame();
     }
 
     private Player getPlayer(String token) throws PlayerNotFoundException {
@@ -121,12 +121,13 @@ public class Lobby implements ILobby {
         return player;
     }
 
-    @Override
-    public Game startGame() throws GameAlreadyRunningException {
-        // Check if a game is already running for this lobby
-        if(game != null) throw new GameAlreadyRunningException();
-
+    private void startGame() {
+        // Todo: call to client that the game started
         this.game = new Game(this.gameMode, this.gameType, this.playerMap);
+    }
+
+    @Override
+    public Game getGame() {
         return this.game;
     }
 
