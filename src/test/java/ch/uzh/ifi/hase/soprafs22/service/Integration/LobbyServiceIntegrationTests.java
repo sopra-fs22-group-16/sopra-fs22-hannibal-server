@@ -362,4 +362,27 @@ class LobbyServiceIntegrationTests {
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
+
+    @Test
+    void getLobby_removeHostPlayer_success() {
+        // given
+        String lobbyName = "lobbyName";
+        String token = "";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby lobby = lobbyService.createLobby("",lobbyName,visibility,gameMode,gameType);
+
+        // remove host of the lobby (there are no more players)
+        lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
+
+        // check that there are no player in the lobby
+        assertEquals(0, lobby.getNumberPlayers());
+
+        // the lobby has been removed from the map
+        Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getLobby(token,lobby.getId()));
+    }
 }
