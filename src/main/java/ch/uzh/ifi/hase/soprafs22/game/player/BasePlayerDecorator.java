@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game.player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 
-public class BasePlayerDecorator implements IPlayer {
+public abstract class BasePlayerDecorator implements IPlayer {
 
     private final IPlayer player;
 
