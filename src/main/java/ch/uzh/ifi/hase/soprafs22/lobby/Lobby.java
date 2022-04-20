@@ -19,7 +19,7 @@ public class Lobby implements ILobby {
     private String name;
     private Visibility visibility;
     private final Game game;
-    private final Player host;
+    private Player host;
     private final Map<String, Player> playerMap;
     private String invitationCode;
     private byte[] qrCode;
@@ -109,6 +109,22 @@ public class Lobby implements ILobby {
         // Here lobby knows if all players are ready and can inform clients through web socket.
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
+    }
+
+    @Override
+    public long getNumberPlayers() {
+        return playerMap.size();
+    }
+
+    @Override
+    public void assignNewHost() {
+        // the first available player is assigned as host
+        for (Player player : playerMap.values()){
+            if(player != this.host){
+                this.host = player;
+                break;
+            }
+        }
     }
 
     private Player getPlayer(String token) throws PlayerNotFoundException {

@@ -127,4 +127,15 @@ public class LobbyController {
         return lobbiesGetDTOs;
 
     }
+
+    @DeleteMapping("/{API_VERSION}/game/lobby/{id}/player")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void leaveLobby(@RequestHeader("token") String token, @PathVariable Long id) {
+
+        lobbyService.removePlayerFromLobby(token, id);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+
+    }
 }
