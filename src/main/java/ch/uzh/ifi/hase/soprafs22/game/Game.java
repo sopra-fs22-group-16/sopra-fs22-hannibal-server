@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.interfaces.IMap;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,14 +13,14 @@ import java.util.Map;
 public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
-    private final Map<String, PlayerAdapter> playerMap;
+    private final Map<String, PlayerDecorator> playerMap;
     private final IMap map;
     private int turnNumber;
     private String[] turnOrder;
     private boolean running;
 
 
-    public Game(GameMode gameMode, GameType gameType, Map<String, Player> playerMap) throws UnbalancedTeamCompositionException {
+    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) throws UnbalancedTeamCompositionException {
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
@@ -27,11 +29,11 @@ public class Game {
         this.running = true;
 
         // Convert players to PlayerAdapter's
-        for(Player player: playerMap.values()){
-            this.playerMap.put(player.getToken(), new PlayerAdapter(player));
+        for(IPlayer player: playerMap.values()){
+            this.playerMap.put(player.getToken(), new PlayerDecorator(player));
         }
 
-        for(Player player: playerMap.values()){
+        for(IPlayer player: playerMap.values()){
             int teamNumber = player.getTeam().getTeamNumber();
             if(turnOrder[teamNumber] == null){
                 turnOrder[teamNumber] = player.getToken();

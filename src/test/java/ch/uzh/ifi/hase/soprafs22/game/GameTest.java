@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -17,7 +19,7 @@ class GameTest {
 
     @Test
     void gameRunningAtStart() throws UnbalancedTeamCompositionException {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", Team.BLUE));
 
@@ -28,7 +30,7 @@ class GameTest {
 
     @Test
     void nextTurn_1v1_nextTurn() throws UnbalancedTeamCompositionException {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", Team.BLUE));
 
@@ -40,7 +42,7 @@ class GameTest {
 
     @Test
     void nextTurn_1v1_continuous() throws UnbalancedTeamCompositionException {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", Team.BLUE));
 
@@ -53,7 +55,7 @@ class GameTest {
 
     @Test
     void isPlayersTurn_true() throws UnbalancedTeamCompositionException {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", Team.BLUE));
 
@@ -64,7 +66,7 @@ class GameTest {
 
     @Test
     void isPlayersTurn_false() throws UnbalancedTeamCompositionException {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", Team.BLUE));
 
@@ -76,7 +78,7 @@ class GameTest {
     @ParameterizedTest
     @EnumSource(Team.class)
     void unbalancedTeamThrowUnbalancedTeamCompositionException(Team team) {
-        Map<String, Player> playerMap = new HashMap<>();
+        Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0" ,new Player(0L, "user0", "token0", team));
         playerMap.put("token1" ,new Player(1L, "user1", "token1", team));
 
