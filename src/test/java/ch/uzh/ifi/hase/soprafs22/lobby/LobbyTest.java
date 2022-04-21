@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getHost();
+        IPlayer host = lobby.getHost();
         assertNotNull(host);
         assertEquals(host, lobby.iterator().next());
     }
@@ -29,7 +29,7 @@ class LobbyTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         // Check
-        Player host = lobby.getHost();
+        IPlayer host = lobby.getHost();
         assertNotNull(host);
         assertNotNull(host.getToken());
         assertNotNull(host.getName());
@@ -40,7 +40,7 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_userName_OK() throws Exception {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getHost();
+        IPlayer host = lobby.getHost();
 
         lobby.setUserName(host.getToken(), "new username");
 
@@ -51,7 +51,7 @@ class LobbyTest {
     public void updateLobbyPlayer_userNameDouble_OK() throws Exception  {
         // Test that old names are available for usage.
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getHost();
+        IPlayer host = lobby.getHost();
         String oldUsername = host.getName();
 
         lobby.setUserName(host.getToken(), "new username");
@@ -63,7 +63,7 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_ready_OK() throws Exception  {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getHost();
+        IPlayer host = lobby.getHost();
 
         lobby.setReady(host.getToken(), true);
 
@@ -87,8 +87,8 @@ class LobbyTest {
     @Test
     public void updateLobbyPlayer_userNameNotUnique_conflict() {
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
-        Player host = lobby.getHost();
-        Player newPlayer = lobby.generatePlayer();
+        IPlayer host = lobby.getHost();
+        IPlayer newPlayer = lobby.generatePlayer();
         lobby.addPlayer(newPlayer);
 
         assertThrows(DuplicateUserNameInLobbyException.class,  () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
