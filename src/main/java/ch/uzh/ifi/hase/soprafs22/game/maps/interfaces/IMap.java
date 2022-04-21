@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.game.interfaces;
+package ch.uzh.ifi.hase.soprafs22.game.maps.interfaces;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.Tile;
