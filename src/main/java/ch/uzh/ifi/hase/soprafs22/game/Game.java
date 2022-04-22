@@ -2,25 +2,29 @@ package ch.uzh.ifi.hase.soprafs22.game;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.game.maps.AmateurMapFactory;
-import ch.uzh.ifi.hase.soprafs22.game.maps.BeginnerMapFactory;
-import ch.uzh.ifi.hase.soprafs22.game.maps.interfaces.IMap;
+import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
+import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 
 public class Game {
     private GameMode gameMode;
     private GameType gameType;
-    private IMap map;
+    private GameMap gameMap;
 
     public Game(GameMode gameMode, GameType gameType) {
         this.gameMode = gameMode;
         this.gameType = gameType;
-        if(gameType==GameType.UNRANKED){
-            map = new BeginnerMapFactory().createMap();
+        //TODO Potential Feature: RANKED games get a harder map
+        if(gameType==GameType.UNRANKED||gameType==GameType.RANKED){
+            this.gameMap = new MapLoader().deserialize("beginner_map.json");
         }
-        if(gameType==GameType.RANKED){
-            map = new AmateurMapFactory().createMap();
-        }
-        this.map = map;
+    }
+
+    public GameMap getGameMap() {
+        return gameMap;
+    }
+
+    public void setGameMap(GameMap gameMap) {
+        this.gameMap = gameMap;
     }
 
     public GameMode getGameMode() {

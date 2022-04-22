@@ -23,15 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class GameService {
     private final Logger log = LoggerFactory.getLogger(GameService.class);
     private final UserRepository userRepository;
-    private final LobbyManager lobbyManager;
 
     @Autowired
     public GameService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.lobbyManager = LobbyManager.getInstance();
     }
 
-    public Game getInitialMatch(GameType gameType, GameMode gameMode){
+    public Game getInitialGame(GameType gameType, GameMode gameMode){
         return new Game(gameMode, gameType);
     }
 }

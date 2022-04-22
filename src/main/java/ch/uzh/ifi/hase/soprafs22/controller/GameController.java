@@ -3,19 +3,14 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Game Controller
@@ -41,14 +36,14 @@ public class GameController {
     @GetMapping("/{apiVersion}/game/match/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Game getInitialMatch(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
-
+    public GameGetDTO getInitialMatch(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
         ILobby lobby = lobbyService.getLobby(token, lobbyId);
 
         GameType gameType = lobby.getGameType();
         GameMode gameMode = lobby.getGameMode();
 
-        Game game = gameService.getInitialMatch(gameType,gameMode);
-        return game;
+        Game game = gameService.getInitialGame(gameType,gameMode);
+
+        return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
 }

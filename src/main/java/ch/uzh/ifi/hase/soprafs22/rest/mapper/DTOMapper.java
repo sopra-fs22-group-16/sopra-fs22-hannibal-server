@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.mapstruct.*;
@@ -58,4 +60,8 @@ public abstract class DTOMapper {
         return team.getTeamNumber();
     }
 
+    @Mapping(source = "gameType", target = "gameType")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "gameMap", target = "gameMap")
+    public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 }
