@@ -20,96 +20,42 @@ public class TileBuilder implements ITileBuilder {
 
     @Override
     public void setTileType(String tileType) {
-        if (tileType.equals("border")) {
-            this.tile.setTileType(TileType.BORDER);
-        }
-        else if (tileType.equals("grass")) {
-            this.tile.setTileType(TileType.GRASS);
-        }
-        else if (tileType.equals("river")) {
-            this.tile.setTileType(TileType.RIVER);
-        }
-        else if (tileType.equals("bridge")) {
-            this.tile.setTileType(TileType.BRIDGE);
+        switch (tileType) {
+            case "border" -> this.tile.setTileType(TileType.BORDER);
+            case "grass" -> this.tile.setTileType(TileType.GRASS);
+            case "river" -> this.tile.setTileType(TileType.RIVER);
+            case "bridge" -> this.tile.setTileType(TileType.BRIDGE);
         }
     }
 
     @Override
     public void setTileVariant(String tileVariant) {
-        if (tileVariant.equals("flat")) {
-            this.tile.setTileVariant(TileVariant.FLAT);
-        }
-        else if (tileVariant.equals("top")) {
-            this.tile.setTileVariant(TileVariant.TOP);
-        }
-        else if (tileVariant.equals("border_left")) {
-            this.tile.setTileVariant(TileVariant.BORDER_LEFT);
-        }
-        else if (tileVariant.equals("border_right")) {
-            this.tile.setTileVariant(TileVariant.BORDER_RIGHT);
-        }
-        else if (tileVariant.equals("grassy")) {
-            this.tile.setTileVariant(TileVariant.GRASSY);
-        }
-        else if (tileVariant.equals("right")) {
-            this.tile.setTileVariant(TileVariant.RIGHT);
-        }
-        else if (tileVariant.equals("leafy_corner_top_left")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_LEFT);
-        }
-        else if (tileVariant.equals("leafy_edge_top")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_TOP);
-        }
-        else if (tileVariant.equals("leafy_edge_bottom")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_BOTTOM);
-        }
-        else if (tileVariant.equals("leafy_corner_top_right")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_RIGHT);
-        }
-        else if (tileVariant.equals("leafy_corner_bottom_left")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_LEFT);
-        }
-        else if (tileVariant.equals("leafy_edge_diagonal_bottom_left")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_LEFT);
-        }
-        else if (tileVariant.equals("leafy_corner_bottom_right")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_RIGHT);
-        }
-        else if (tileVariant.equals("leafy")) {
-            this.tile.setTileVariant(TileVariant.LEAFY);
-        }
-        else if (tileVariant.equals("leafy_edge_right")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_RIGHT);
-        }
-        else if (tileVariant.equals("leafy_edge_left")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_LEFT);
-        }
-        else if (tileVariant.equals("leafy_edge_diagonal_top_right")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_RIGHT);
-        }
-        else if (tileVariant.equals("leafy_edge_diagonal_bottom_right")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_RIGHT);
-        }
-        else if (tileVariant.equals("leafy_edge_diagonal_top_left")) {
-            this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_LEFT);
-        }
-        else if (tileVariant.equals("left")) {
-            this.tile.setTileVariant(TileVariant.LEFT);
-        }
-        else if (tileVariant.equals("corner_inverted_top_right")) {
-            this.tile.setTileVariant(TileVariant.CORNER_INVERTED_TOP_RIGHT);
-        }
-        else if (tileVariant.equals("corner_top_right")) {
-            this.tile.setTileVariant(TileVariant.CORNER_TOP_RIGHT);
-        }
-        else if (tileVariant.equals("corner_bottom_right")) {
-            this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_RIGHT);
-        }
-        else if (tileVariant.equals("bottom")) {
-            this.tile.setTileVariant(TileVariant.BOTTOM);
-        }
-        else if (tileVariant.equals("corner_inverted_bottom_left")) {
-            this.tile.setTileVariant(TileVariant.CORNER_INVERTED_BOTTOM_LEFT);
+        switch (tileVariant) {
+            case "flat" -> this.tile.setTileVariant(TileVariant.FLAT);
+            case "top" -> this.tile.setTileVariant(TileVariant.TOP);
+            case "border_left" -> this.tile.setTileVariant(TileVariant.BORDER_LEFT);
+            case "border_right" -> this.tile.setTileVariant(TileVariant.BORDER_RIGHT);
+            case "grassy" -> this.tile.setTileVariant(TileVariant.GRASSY);
+            case "right" -> this.tile.setTileVariant(TileVariant.RIGHT);
+            case "leafy_corner_top_left" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_LEFT);
+            case "leafy_edge_top" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_TOP);
+            case "leafy_edge_bottom" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_BOTTOM);
+            case "leafy_corner_top_right" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_RIGHT);
+            case "leafy_corner_bottom_left" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_LEFT);
+            case "leafy_edge_diagonal_bottom_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_LEFT);
+            case "leafy_corner_bottom_right" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_RIGHT);
+            case "leafy" -> this.tile.setTileVariant(TileVariant.LEAFY);
+            case "leafy_edge_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_RIGHT);
+            case "leafy_edge_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_LEFT);
+            case "leafy_edge_diagonal_top_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_RIGHT);
+            case "leafy_edge_diagonal_bottom_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_RIGHT);
+            case "leafy_edge_diagonal_top_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_LEFT);
+            case "left" -> this.tile.setTileVariant(TileVariant.LEFT);
+            case "corner_inverted_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_TOP_RIGHT);
+            case "corner_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_TOP_RIGHT);
+            case "corner_bottom_right" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_RIGHT);
+            case "bottom" -> this.tile.setTileVariant(TileVariant.BOTTOM);
+            case "corner_inverted_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_BOTTOM_LEFT);
         }
     }
 
@@ -128,14 +74,10 @@ public class TileBuilder implements ITileBuilder {
     public void setTileUnit(LinkedHashMap<String, Object> unitStream) {
         String unitType = (String) unitStream.get("type");
         Unit unit = new Unit();
-        if(unitType.equals("archer")){
-            unit.setType(UnitType.ARCHER);
-        }
-        else if(unitType.equals("knight")){
-            unit.setType(UnitType.KNIGHT);
-        }
-        else if(unitType.equals("war_elephant")){
-            unit.setType(UnitType.WAR_ELEPHANT);
+        switch (unitType) {
+            case "archer" -> unit.setType(UnitType.ARCHER);
+            case "knight" -> unit.setType(UnitType.KNIGHT);
+            case "war_elephant" -> unit.setType(UnitType.WAR_ELEPHANT);
         }
         unit.setHealth((int) unitStream.get("health"));
         unit.setDefense((List<Integer>)unitStream.get("defense"));
@@ -145,14 +87,10 @@ public class TileBuilder implements ITileBuilder {
         List<String> commandList = (List<String>)unitStream.get("commands");
         List<UnitCommands> unitCommandList = new ArrayList<>();
         for(String c : commandList){
-            if(c.equals("move")){
-                unitCommandList.add(UnitCommands.MOVE);
-            }
-            else if(c.equals("attack")){
-                unitCommandList.add(UnitCommands.ATTACK);
-            }
-            else if(c.equals("wait")){
-                unitCommandList.add(UnitCommands.WAIT);
+            switch (c) {
+                case "move" -> unitCommandList.add(UnitCommands.MOVE);
+                case "attack" -> unitCommandList.add(UnitCommands.ATTACK);
+                case "wait" -> unitCommandList.add(UnitCommands.WAIT);
             }
         }
         unit.setCommands(unitCommandList);

@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
 import java.util.LinkedHashMap;
 
 public class TileDirector {
-    private ITileBuilder tileBuilder;
+    private final ITileBuilder tileBuilder;
 
     public TileDirector(ITileBuilder tileBuilder) {
         this.tileBuilder = tileBuilder;

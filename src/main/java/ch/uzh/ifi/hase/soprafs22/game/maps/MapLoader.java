@@ -3,8 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.game.maps;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.TileBuilder;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.TileDirector;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileType;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileVariant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -19,10 +17,10 @@ import java.util.Map;
 public class MapLoader {
     public GameMap deserialize(String filename) {
         Resource resource = new ClassPathResource(filename);
-        InputStream inputStream = null;
+        InputStream inputStream;
         List<List<Tile>> tileList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, List<List<LinkedHashMap<String, Object>>>> tileListStream = null;
+        Map<String, List<List<LinkedHashMap<String, Object>>>> tileListStream;
         try {
             inputStream = resource.getInputStream();
 
