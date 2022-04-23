@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
@@ -20,7 +21,7 @@ import java.util.*;
 public class Lobby implements ILobby {
 
     private final long id;
-    private final int lobbyCapacity;
+    private int lobbyCapacity;
     private String name;
     private Visibility visibility;
     private Game game;
@@ -35,7 +36,6 @@ public class Lobby implements ILobby {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
-        this.lobbyCapacity = game.getGameMode().equals(GameMode.ONE_VS_ONE)? 2: 4;
         this.playerMap = new HashMap<>();
         // Generate the host player
         this.host = generatePlayer();
@@ -74,6 +74,7 @@ public class Lobby implements ILobby {
     @Override
     public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
+        this.lobbyCapacity = gameMode.equals(GameMode.ONE_VS_ONE)? 2: 4;
     }
 
     @Override
@@ -196,9 +197,9 @@ public class Lobby implements ILobby {
     }
 
 
-    public void addPlayer(IPlayer player) {
+    public void addPlayer(IPlayer player) throws FullLobbyException {
         if (playerMap.size() >= lobbyCapacity) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("This lobby is already complete!"));
+            throw new FullLobbyException();
         }
         playerMap.put(player.getToken(), player);
     }

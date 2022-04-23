@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
@@ -84,13 +86,17 @@ class LobbyTest {
         assertThrows(PlayerNotFoundException.class, () -> lobby.setUserName("invalid token", "new username"));
     }
 
+
     @Test
-    public void updateLobbyPlayer_userNameNotUnique_conflict() {
+    public void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException {
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
         IPlayer host = lobby.getHost();
         IPlayer newPlayer = lobby.generatePlayer();
         lobby.addPlayer(newPlayer);
 
         assertThrows(DuplicateUserNameInLobbyException.class,  () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
     }
+
+
 }

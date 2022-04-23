@@ -33,7 +33,7 @@ public abstract class DTOMapper {
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
     @Mapping(source = "token", target = "token")
-    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(IPlayer player);
+    public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
 
 
@@ -47,7 +47,7 @@ public abstract class DTOMapper {
         // and storing them in the list
         LinkedList<PlayerGetDTO> members = new LinkedList<>();
         for (IPlayer player : lobby) {
-            members.add(convertPlayerToPlayerGetDTO(player));
+            members.add(convertIPlayerToPlayerGetDTO(player));
         }
         lobbyGetDTO.setPlayers(members);
 

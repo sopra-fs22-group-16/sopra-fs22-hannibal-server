@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 
 import java.util.*;
 import java.util.Base64;
@@ -147,6 +147,7 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
 
+
     @PostMapping("{API_VERSION}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -156,7 +157,7 @@ public class LobbyController {
         IPlayer newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
 
         // Construct return value
-        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(newPlayer);
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerGetDTO(newPlayer);
 
         return playerGetDTO;
     }

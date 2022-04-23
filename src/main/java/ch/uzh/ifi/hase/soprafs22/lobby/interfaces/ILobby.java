@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
@@ -51,5 +52,5 @@ public interface ILobby extends Iterable<IPlayer>{
 
     IPlayer generatePlayer();
 
-    void addPlayer(IPlayer player);
+    void addPlayer(IPlayer player) throws FullLobbyException;
 }
