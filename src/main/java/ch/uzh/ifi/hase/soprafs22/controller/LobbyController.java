@@ -113,7 +113,7 @@ public class LobbyController {
     @ResponseBody
     public List<LobbyGetDTO> getLobby() {
         Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
-        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList<>();
 
         for (ILobby lobby : lobbiesCollection) {
             if (lobby.getVisibility() == Visibility.PUBLIC) {

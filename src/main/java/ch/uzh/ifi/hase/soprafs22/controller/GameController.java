@@ -36,13 +36,13 @@ public class GameController {
     @GetMapping("/{apiVersion}/game/match/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public GameGetDTO getInitialMatch(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
+    public GameGetDTO getInitialGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
         ILobby lobby = lobbyService.getLobby(token, lobbyId);
 
         GameType gameType = lobby.getGameType();
         GameMode gameMode = lobby.getGameMode();
 
-        Game game = gameService.getInitialGame(gameType,gameMode);
+        Game game = lobby.getGame();
 
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
