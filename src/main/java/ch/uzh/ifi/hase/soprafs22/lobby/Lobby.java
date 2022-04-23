@@ -41,7 +41,6 @@ public class Lobby implements ILobby {
     @Override
     public byte[] getQrCode() {
         if (this.qrCode == null) {
-            //TODO resolve the highly coupled design
             this.qrCode = InvitationCodeGenerator.getQr(invitationCode);
         }
         return this.qrCode;
