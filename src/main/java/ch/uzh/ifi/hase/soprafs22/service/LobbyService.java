@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
@@ -212,7 +212,7 @@ public class LobbyService {
 
     private void checkUserIsInLobby(ILobby lobby, String token, String errorMessageEnding) {
         // Check if user is in lobby
-        for (Player player : lobby) {
+        for (IPlayer player : lobby) {
             // If tokens match return true
             if (player.getToken().equals(token)) {
                 return;
@@ -222,7 +222,7 @@ public class LobbyService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
-    private <T extends Enum> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
+    private <T extends Enum<T>> void checkEnumConfigNull(T config, String configName, String errorMessageEnding) {
         if (config == null) {
             String errorMessage = "The " + configName + " provided is empty. Therefore, the lobby could not be " + errorMessageEnding + "!";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);

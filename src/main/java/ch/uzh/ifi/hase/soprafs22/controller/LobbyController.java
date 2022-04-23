@@ -10,15 +10,15 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * Lobby Controller
@@ -34,6 +34,9 @@ public class LobbyController {
     private String apiVersion;
 
     private final LobbyService lobbyService;
+
+    @Autowired
+    SimpMessagingTemplate socketMessage;
 
     LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
@@ -96,6 +99,9 @@ public class LobbyController {
         GameType gameType = lobbyPutDTO.getGameType();
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
     }
 
     @GetMapping("/{apiVersion}/game/lobby/{id}/qrcode")
