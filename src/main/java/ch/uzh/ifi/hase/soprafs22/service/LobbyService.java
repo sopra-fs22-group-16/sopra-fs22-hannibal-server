@@ -1,14 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.EmptyUsernameException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
-import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
@@ -35,6 +32,7 @@ import java.util.Collection;
 public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
+    private final int codeLength = 10+1;
 
     private final UserRepository userRepository;
 
@@ -240,6 +238,27 @@ public class LobbyService {
 
     public Collection<ILobby> getLobbiesCollection() {
         return lobbyManager.getLobbiesCollection();
+    }
+
+    public IPlayer addPlayer(String invitationCode, Long lobbyId){
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+
+        if (invitationCode != null) {
+            if (!lobby.getInvitationCode().equals(invitationCode)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
+            }
+        }
+            IPlayer newPlayer = lobby.generatePlayer();
+
+        try {
+            lobby.addPlayer(newPlayer);
+        }
+        catch (FullLobbyException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("This lobby is already full!"));
+        }
+
+        return newPlayer;
     }
 
 }

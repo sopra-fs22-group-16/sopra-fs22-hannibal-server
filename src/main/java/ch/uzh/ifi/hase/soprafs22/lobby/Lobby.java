@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
@@ -12,12 +13,15 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
 public class Lobby implements ILobby {
 
     private final long id;
+    private int lobbyCapacity;
     private String name;
     private Visibility visibility;
     private Game game;
@@ -70,6 +74,7 @@ public class Lobby implements ILobby {
     @Override
     public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
+        this.lobbyCapacity = gameMode.equals(GameMode.ONE_VS_ONE)? 2: 4;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class Lobby implements ILobby {
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = InvitationCodeGenerator.getAlphanumeric();
+            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(this.id);
         }
         return this.invitationCode;
     }
@@ -191,8 +196,11 @@ public class Lobby implements ILobby {
         return new Player(generatedId, username, token, team);
     }
 
-    // TODO: Only for testing, feel free to reimplement with corresponding story.
-    public void addPlayer(IPlayer player) {
+
+    public void addPlayer(IPlayer player) throws FullLobbyException {
+        if (playerMap.size() >= lobbyCapacity) {
+            throw new FullLobbyException();
+        }
         playerMap.put(player.getToken(), player);
     }
 
