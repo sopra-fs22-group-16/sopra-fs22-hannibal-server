@@ -8,8 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +50,7 @@ class DTOMapperTest {
         assertEquals(lobbyGetDTO.getGameType(), LOBBY.getGameType());
         assertEquals(lobbyGetDTO.getInvitationCode(), LOBBY.getInvitationCode());
     }
+
 
     @Test
     void testGetLobby_fromPlayer_toPlayerGetDTO_success() {

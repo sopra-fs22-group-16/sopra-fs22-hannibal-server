@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -63,9 +64,11 @@ public class LobbyController {
         LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
 
         // Construct return value
+        // TODO: We should return DTOs, not custom maps.
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         returnMap.put("token", token);
+        returnMap.put("playerId", lobby.getHost().getId());
 
         return returnMap;
     }

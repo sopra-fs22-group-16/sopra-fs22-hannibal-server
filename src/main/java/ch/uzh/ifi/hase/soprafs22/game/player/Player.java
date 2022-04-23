@@ -71,10 +71,10 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void linkRegisteredUser(RegisteredUser registeredUser, String token){
+    public void linkRegisteredUser(RegisteredUser registeredUser){
         this.registeredUser = registeredUser;
         this.name = registeredUser.getUsername();
-        this.token = token;
+        this.token = registeredUser.getToken();
     }
 
 }

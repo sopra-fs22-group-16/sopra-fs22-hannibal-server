@@ -60,7 +60,6 @@ public abstract class DTOMapper {
         lobbyGetDTO.setVisibility(lobby.getVisibility());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
-
         return lobbyGetDTO;
     }
 

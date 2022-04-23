@@ -44,4 +44,6 @@ public interface ILobby extends Iterable<IPlayer>{
     void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException;
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
+
+    IPlayer getPlayer(String token) throws PlayerNotFoundException;
 }

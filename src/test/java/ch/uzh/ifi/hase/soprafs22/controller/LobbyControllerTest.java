@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
@@ -115,7 +116,8 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
-                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())));
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
 
     }
 
@@ -157,7 +159,9 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
-                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
+                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
     }
 
     @Test
