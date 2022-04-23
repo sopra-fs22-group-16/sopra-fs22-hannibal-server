@@ -1,8 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,5 +30,14 @@ public class GameController {
     GameController(LobbyService lobbyService, GameService gameService) {
         this.lobbyService = lobbyService;
         this.gameService = gameService;
+    }
+
+    @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void attack(@RequestHeader("token") String token, @PathVariable Long id, AttackPostDTO attackPostDTO) {
+        Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getAttacker());
+        Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getDefender());
+
+        gameService.attack(id, token, attacker, defender);
     }
 }

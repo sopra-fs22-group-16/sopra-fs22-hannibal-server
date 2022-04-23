@@ -1,12 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,5 +80,36 @@ public class Game {
 
     public boolean isPlayersTurn(String token){
         return turnOrder[turnNumber % turnOrder.length].equals(token);
+    }
+
+    public void attack(String token, Position attacker, Position defender) throws NotPlayersTurnException, TileOutOfRangeException, AttackOutOfRangeException, NotAMemberOfGameException, GameOverException, UnitNotFoundException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        Unit attackingUnit = gameMap.getTile(attacker).getUnit();
+        if (attackingUnit == null)
+            throw new UnitNotFoundException(attacker);
+        Unit defendingUnit = gameMap.getTile(defender).getUnit();
+        if (defendingUnit == null)
+            throw new UnitNotFoundException(attacker);
+
+        attackingUnit.attack(defendingUnit);
+    }
+
+    private void ensureMember(String token) throws NotAMemberOfGameException {
+        if (playerMap.values().stream().anyMatch(player -> player.getToken().equals(token)))
+            return;
+        throw new NotAMemberOfGameException();
+    }
+
+    private void ensureNotEnded() throws GameOverException {
+        if (hasEnded())
+            throw new GameOverException();
+    }
+
+    private void ensureTurn(String token) throws NotPlayersTurnException {
+        if (!isPlayersTurn(token)) {
+            throw new NotPlayersTurnException();
+        }
     }
 }

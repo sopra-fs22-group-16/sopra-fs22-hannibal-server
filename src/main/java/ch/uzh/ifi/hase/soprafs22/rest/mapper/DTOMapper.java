@@ -1,12 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -66,4 +68,7 @@ public abstract class DTOMapper {
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
+    public Position convertPositionDTOToPosition(PositionDTO position) {
+        return new Position(position.getX(), position.getY());
+    }
 }
