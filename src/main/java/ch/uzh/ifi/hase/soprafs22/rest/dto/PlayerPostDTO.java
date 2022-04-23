@@ -1,14 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class PlayerPostDTO {
-    private String name;
+    private String invitationCode;
 
-    public String getName() {
-        return name;
+    public String getInvitationCode() {
+        return invitationCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setInvitationCode(String code) {
+        this.invitationCode = code;
     }
 
 }

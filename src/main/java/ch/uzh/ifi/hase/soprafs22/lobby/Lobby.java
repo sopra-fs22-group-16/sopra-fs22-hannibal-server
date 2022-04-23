@@ -88,7 +88,7 @@ public class Lobby implements ILobby {
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = InvitationCodeGenerator.getAlphanumeric();
+            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(getId());
         }
         return this.invitationCode;
     }
@@ -185,7 +185,10 @@ public class Lobby implements ILobby {
         return new Player(generatedId, username, token, team);
     }
 
+
     // TODO: Only for testing, feel free to reimplement with corresponding story.
+    // I added an Id here as a parameter because if the lobby has to be gotten from the outside,
+    // then there needs to be a token already
     public void addPlayer(Player player) {
         playerMap.put(player.getToken(), player);
     }

@@ -18,7 +18,7 @@ public class InvitationCodeGenerator {
             return restTemplate.getForObject(url, byte[].class);
     }
 
-    public static String getAlphanumeric() {
+    private static String getAlphanumeric() {
         //set limits for including only alphanumeric values
         int lowerLimit = 48;
         int upperLimit = 123;
@@ -32,5 +32,10 @@ public class InvitationCodeGenerator {
                 .limit(lengthLimit)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString().toUpperCase();
+    }
+
+    public static String getAlphanumericIdCode(Long id) {
+        String alphaNumericPart = getAlphanumeric();
+        return id.toString()+"-"+alphaNumericPart;
     }
 }

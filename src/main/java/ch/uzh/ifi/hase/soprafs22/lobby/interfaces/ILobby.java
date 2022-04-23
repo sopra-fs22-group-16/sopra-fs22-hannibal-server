@@ -43,4 +43,8 @@ public interface ILobby extends Iterable<Player>{
     void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException;
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
+
+    Player generatePlayer();
+
+    void addPlayer(Player player);
 }

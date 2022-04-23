@@ -35,6 +35,7 @@ import java.util.Collection;
 public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
+    private final int codeLength = 10+1;
 
     private final UserRepository userRepository;
 
@@ -240,6 +241,21 @@ public class LobbyService {
 
     public Collection<ILobby> getLobbiesCollection() {
         return lobbyManager.getLobbiesCollection();
+    }
+
+    public Player addPlayer(String invitationCode, Long lobbyId) {
+        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+
+        if (lobby == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
+        }
+
+        if (!lobby.getInvitationCode().equals(invitationCode)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
+        }
+        Player newPlayer = lobby.generatePlayer();
+        lobby.addPlayer(newPlayer);
+        return newPlayer;
     }
 
 }
