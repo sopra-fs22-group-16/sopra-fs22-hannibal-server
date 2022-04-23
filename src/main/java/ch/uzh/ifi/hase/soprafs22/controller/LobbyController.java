@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 
 import java.util.*;
 import java.util.Base64;

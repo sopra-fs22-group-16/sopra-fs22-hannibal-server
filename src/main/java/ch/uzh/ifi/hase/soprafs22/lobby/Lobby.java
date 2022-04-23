@@ -35,7 +35,6 @@ public class Lobby implements ILobby {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
-        this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.lobbyCapacity = game.getGameMode().equals(GameMode.ONE_VS_ONE)? 2: 4;
         this.playerMap = new HashMap<>();
         // Generate the host player
@@ -197,7 +196,7 @@ public class Lobby implements ILobby {
     }
 
 
-    public void addPlayer(Player player) {
+    public void addPlayer(IPlayer player) {
         if (playerMap.size() >= lobbyCapacity) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("This lobby is already complete!"));
         }
