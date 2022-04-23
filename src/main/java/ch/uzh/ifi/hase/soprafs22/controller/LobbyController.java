@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -29,7 +30,9 @@ import java.util.Map;
 
 @RestController
 public class LobbyController {
-    private final static String API_VERSION = "v1";
+    @Value("${api.version}")
+    private String apiVersion;
+
     private final LobbyService lobbyService;
 
     @Autowired
@@ -39,7 +42,7 @@ public class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    @PostMapping("/{API_VERSION}/game/lobby")
+    @PostMapping("/{apiVersion}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
@@ -64,7 +67,7 @@ public class LobbyController {
         return returnMap;
     }
 
-    @GetMapping("/{API_VERSION}/game/lobby/{id}")
+    @GetMapping("/{apiVersion}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO getLobby(@RequestHeader("token") String token, @PathVariable Long id) {
@@ -74,7 +77,7 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
-    @PutMapping("/{API_VERSION}/game/lobby/{id}/player")
+    @PutMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     // TODO add tests.
     public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
@@ -82,7 +85,7 @@ public class LobbyController {
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
     }
 
-    @PutMapping("/{API_VERSION}/game/lobby/{id}")
+    @PutMapping("/{apiVersion}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPostDTO lobbyPutDTO) {
@@ -101,7 +104,7 @@ public class LobbyController {
         socketMessage.convertAndSend("/topic/lobby/" + id, "");
     }
 
-    @GetMapping("/{API_VERSION}/game/lobby/{id}/qrcode")
+    @GetMapping("/{apiVersion}/game/lobby/{id}/qrcode")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getLobbyQRCode(@RequestHeader("token") String token, @PathVariable Long id) {
@@ -111,12 +114,12 @@ public class LobbyController {
         return Base64.getEncoder().encodeToString(qrCode);
     }
 
-    @GetMapping("/{API_VERSION}/game/lobby")
+    @GetMapping("/{apiVersion}/game/lobby")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<LobbyGetDTO> getLobby() {
         Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
-        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList();
+        List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList<>();
 
         for (ILobby lobby : lobbiesCollection) {
             if (lobby.getVisibility() == Visibility.PUBLIC) {
