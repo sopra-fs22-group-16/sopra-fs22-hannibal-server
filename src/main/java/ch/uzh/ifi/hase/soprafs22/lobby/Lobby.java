@@ -114,7 +114,8 @@ public class Lobby implements ILobby {
         // startGame();
     }
 
-    private IPlayer getPlayer(String token) throws PlayerNotFoundException {
+    @Override
+    public IPlayer getPlayer(String token) throws PlayerNotFoundException {
         IPlayer player = playerMap.get(token);
         if (player == null) {
             throw new PlayerNotFoundException(token);

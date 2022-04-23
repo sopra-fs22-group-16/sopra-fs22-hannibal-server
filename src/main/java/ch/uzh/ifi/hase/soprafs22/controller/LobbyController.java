@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -58,13 +59,18 @@ public class LobbyController {
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
 
+        // We need to update the users token before DTOMapper, so we have a valid one when building self.
+        if(token == null || token.isEmpty())
+            token = lobby.getHost().getToken();
+
         LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
 
         // Construct return value
+        // TODO: We should return DTOs, not custom maps.
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
-        if (token == null || token.isEmpty())
-            returnMap.put("token", lobby.getHost().getToken());
+        returnMap.put("token", token);
+        returnMap.put("playerId", lobby.getHost().getId());
 
         return returnMap;
     }

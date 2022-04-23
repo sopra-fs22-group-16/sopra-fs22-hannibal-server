@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
@@ -115,7 +116,8 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
-                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())));
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
 
     }
 
@@ -125,6 +127,10 @@ class LobbyControllerTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
+        String token = "";
+        for (IPlayer player : lobby) {
+            token = player.getToken();
+        }
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
@@ -135,14 +141,14 @@ class LobbyControllerTest {
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.createLobby("registeredUserToken", lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
+        given(lobbyService.createLobby(token, lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
 
         // when
         MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lobbyPostDTO))
-                .header("token", "registeredUserToken");
-
+                .header("token", token);
+        
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
@@ -156,7 +162,9 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
-                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
+                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
     }
 
     @Test

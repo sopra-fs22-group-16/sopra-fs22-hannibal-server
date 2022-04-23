@@ -34,6 +34,8 @@ public abstract class DTOMapper {
     @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
+
+
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
@@ -52,9 +54,9 @@ public abstract class DTOMapper {
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
-
         return lobbyGetDTO;
     }
+
 
     int convertTeamToTeamNumber(Team team){
         return team.getTeamNumber();

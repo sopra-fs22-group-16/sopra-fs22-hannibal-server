@@ -8,7 +8,7 @@ public class Player implements IPlayer {
 
     private String name;
 
-    private final String token;
+    private String token;
 
     private boolean ready;
 
@@ -74,6 +74,7 @@ public class Player implements IPlayer {
     public void linkRegisteredUser(RegisteredUser registeredUser){
         this.registeredUser = registeredUser;
         this.name = registeredUser.getUsername();
+        this.token = registeredUser.getToken();
     }
 
 }
