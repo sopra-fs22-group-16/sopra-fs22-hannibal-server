@@ -11,8 +11,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.junit.jupiter.api.Test;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * DTOMapperTest
@@ -52,6 +51,7 @@ class DTOMapperTest {
         assertEquals(lobbyGetDTO.getGameType(), lobby.getGameType());
         assertEquals(lobbyGetDTO.getInvitationCode(), lobby.getInvitationCode());
     }
+
 
     @Test
     void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
