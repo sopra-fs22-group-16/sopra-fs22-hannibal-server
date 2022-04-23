@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
@@ -128,6 +130,16 @@ public class LobbyController {
         }
 
         return lobbiesGetDTOs;
+    }
 
+    @GetMapping("/{apiVersion}/game/match/{lobbyId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public GameGetDTO getGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
+        ILobby lobby = lobbyService.getLobby(token, lobbyId);
+
+        Game game = lobby.getGame();
+
+        return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
 }
