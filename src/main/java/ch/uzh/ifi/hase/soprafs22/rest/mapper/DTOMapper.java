@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.mapstruct.*;
@@ -30,7 +32,7 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
-    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(IPlayer player);
+    public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
 
 
@@ -44,7 +46,7 @@ public abstract class DTOMapper {
         // and storing them in the list
         LinkedList<PlayerGetDTO> members = new LinkedList<>();
         for (IPlayer player : lobby) {
-            members.add(convertPlayerToPlayerGetDTO(player));
+            members.add(convertIPlayerToPlayerGetDTO(player));
         }
         lobbyGetDTO.setPlayers(members);
 
@@ -60,4 +62,8 @@ public abstract class DTOMapper {
         return team.getTeamNumber();
     }
 
+    @Mapping(source = "gameType", target = "gameType")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "gameMap", target = "gameMap")
+    public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 }

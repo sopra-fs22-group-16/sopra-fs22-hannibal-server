@@ -3,7 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.game.interfaces.IMap;
+import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
+import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 
@@ -14,7 +15,7 @@ public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
     private final Map<String, PlayerDecorator> playerMap;
-    private final IMap map;
+    private GameMap gameMap;
     private int turnNumber;
     private String[] turnOrder;
     private boolean running;
@@ -28,7 +29,7 @@ public class Game {
         this.turnOrder = new String[playerMap.size()];
         this.running = true;
 
-        // Convert players to PlayerAdapter's
+        // Convert players to PlayerDecorators
         for(IPlayer player: playerMap.values()){
             this.playerMap.put(player.getToken(), new PlayerDecorator(player));
         }
@@ -44,9 +45,27 @@ public class Game {
             }
         }
 
-        // TODO: Update with correct call
-        map = new MapFactory().createMap();
+        //TODO Potential Feature: RANKED games get a harder map
+        if(gameType==GameType.UNRANKED||gameType==GameType.RANKED){
+            this.gameMap = new MapLoader().deserialize("beginner_map.json");
+        }
 
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public GameType getGameType() {
+        return gameType;
+    }
+
+    public GameMap getGameMap() {
+        return gameMap;
+    }
+
+    public void setGameMap(GameMap gameMap) {
+        this.gameMap = gameMap;
     }
 
     public int nextTurn(){

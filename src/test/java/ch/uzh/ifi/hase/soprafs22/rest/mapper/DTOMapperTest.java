@@ -59,7 +59,7 @@ class DTOMapperTest {
         IPlayer player = new Player(1L, "username", "token", Team.RED);
 
         // MAP -> LobbyGetDTO
-        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(player);
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerGetDTO(player);
 
         // check content
         assertEquals(player.getId(), playerGetDTO.getId());
