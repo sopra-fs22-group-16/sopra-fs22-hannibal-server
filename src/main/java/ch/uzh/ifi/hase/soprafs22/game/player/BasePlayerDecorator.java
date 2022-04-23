@@ -57,7 +57,7 @@ public abstract class BasePlayerDecorator implements IPlayer {
     }
 
     @Override
-    public void linkRegisteredUser(RegisteredUser registeredUser) {
-        player.linkRegisteredUser(registeredUser);
+    public void linkRegisteredUser(RegisteredUser registeredUser, String token) {
+        player.linkRegisteredUser(registeredUser, token);
     }
 }

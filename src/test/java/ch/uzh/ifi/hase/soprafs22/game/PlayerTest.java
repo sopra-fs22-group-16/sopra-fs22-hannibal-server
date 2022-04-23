@@ -18,7 +18,7 @@ class PlayerTest {
         Player player = new Player(0L, "username", "token", Team.RED);
 
         // when
-        player.linkRegisteredUser(registeredUser);
+        player.linkRegisteredUser(registeredUser, "token");
 
         // then
         assertEquals(registeredUser, player.getRegisteredUser());
@@ -31,7 +31,7 @@ class PlayerTest {
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
         Player player = new Player(0L, "username", "token", Team.RED);
-        player.linkRegisteredUser(registeredUser);
+        player.linkRegisteredUser(registeredUser, "token");
 
         // when
         player.setName("newUsername");

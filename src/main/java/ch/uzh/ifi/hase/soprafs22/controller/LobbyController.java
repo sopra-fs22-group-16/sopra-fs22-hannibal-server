@@ -57,14 +57,15 @@ public class LobbyController {
 
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
+        if (token == null || token.isEmpty())
+            token = lobby.getHost().getToken();
 
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
 
         // Construct return value
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
-        if (token == null || token.isEmpty())
-            returnMap.put("token", lobby.getHost().getToken());
+        returnMap.put("token", token);
 
         return returnMap;
     }
@@ -76,7 +77,7 @@ public class LobbyController {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
-        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
     }
 
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")

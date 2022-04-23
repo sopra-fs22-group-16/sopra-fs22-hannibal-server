@@ -125,6 +125,7 @@ class LobbyControllerTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
+        String token = lobby.getHost().getToken();
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
@@ -135,13 +136,13 @@ class LobbyControllerTest {
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
-        given(lobbyService.createLobby("registeredUserToken", lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
+        given(lobbyService.createLobby(token, lobby.getName(), lobby.getVisibility(), lobby.getGameMode(), lobby.getGameType())).willReturn(lobby);
 
         // when
         MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lobbyPostDTO))
-                .header("token", "registeredUserToken");
+                .header("token", token);
 
         // then
         mockMvc.perform(postRequest)

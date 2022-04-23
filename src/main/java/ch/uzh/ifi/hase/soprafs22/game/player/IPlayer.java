@@ -23,6 +23,6 @@ public interface IPlayer {
 
     RegisteredUser getRegisteredUser();
 
-    void linkRegisteredUser(RegisteredUser registeredUser);
+    void linkRegisteredUser(RegisteredUser registeredUser, String token);
 
 }
