@@ -51,6 +51,15 @@ public class Game {
         }
 
     }
+
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public GameType getGameType() {
+        return gameType;
+    }
+
     public GameMap getGameMap() {
         return gameMap;
     }

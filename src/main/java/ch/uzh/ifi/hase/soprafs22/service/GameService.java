@@ -1,14 +1,19 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Game Service
@@ -28,7 +33,8 @@ public class GameService {
         this.userRepository = userRepository;
     }
 
-    public Game getInitialGame(GameType gameType, GameMode gameMode){
-        return new Game(gameMode, gameType);
+    public Game getInitialGame(GameType gameType, GameMode gameMode) throws UnbalancedTeamCompositionException {
+        Map<String, IPlayer> playerMap = new HashMap<>();
+        return new Game(gameMode, gameType, playerMap);
     }
 }
