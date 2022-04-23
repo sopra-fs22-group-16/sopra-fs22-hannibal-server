@@ -72,7 +72,6 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.players[0].self", is(true)))
                 .andExpect(jsonPath("$.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.gameType", is(lobby.getGameType().toString())))
@@ -113,12 +112,12 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.lobby.players[0].self", is(true)))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
-                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())));
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
 
     }
 
@@ -160,11 +159,12 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().getTeamNumber())))
-                .andExpect(jsonPath("$.lobby.players[0].self", is(true)))
                 .andExpect(jsonPath("$.lobby.visibility", is(lobby.getVisibility().toString())))
                 .andExpect(jsonPath("$.lobby.gameMode", is(lobby.getGameMode().toString())))
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
-                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())));
+                .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
+                .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
+                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
     }
 
     @Test

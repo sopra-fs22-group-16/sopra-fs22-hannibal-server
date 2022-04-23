@@ -54,39 +54,6 @@ class DTOMapperTest {
 
 
     @Test
-    void fromLobby_toLobbyGetDTO_noToken_success() {
-        // create Lobby
-        ILobby lobby = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
-
-        // MAP -> LobbyGetDTO
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
-
-        for (PlayerGetDTO player : lobbyGetDTO.getPlayers())
-            // Not self because no token in the mapper.
-            assertFalse(player.isSelf());
-
-        assertEquals(1, lobbyGetDTO.getPlayers().size());
-    }
-
-    @Test
-    void fromLobby_toLobbyGetDTO_yesToken_success() {
-        // create Lobby
-        ILobby lobby = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
-        String playerToken = "";
-        for (IPlayer player : lobby)
-            playerToken = player.getToken();
-
-
-        // MAP -> LobbyGetDTO
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, playerToken);
-
-        for (PlayerGetDTO player : lobbyGetDTO.getPlayers())
-            assertTrue(player.isSelf());
-
-        assertEquals(1, lobbyGetDTO.getPlayers().size());
-    }
-
-    @Test
     void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
         // create Lobby
         IPlayer player = new Player(1L, "username", "token", Team.RED);

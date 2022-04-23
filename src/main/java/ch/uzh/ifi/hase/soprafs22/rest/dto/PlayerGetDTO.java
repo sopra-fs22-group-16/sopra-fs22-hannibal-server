@@ -6,7 +6,6 @@ public class PlayerGetDTO {
     private String name;
     private boolean ready;
     private int team;
-    private boolean self;
 
     public Long getId() {
         return id;
@@ -38,13 +37,5 @@ public class PlayerGetDTO {
 
     public void setTeam(int team) {
         this.team = team;
-    }
-
-    public boolean isSelf() {
-        return self;
-    }
-
-    public void setSelf(boolean self) {
-        this.self = self;
     }
 }

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
@@ -42,7 +43,7 @@ public class LobbyController {
     @PostMapping("/{API_VERSION}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
+    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) throws PlayerNotFoundException {
 
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
@@ -57,12 +58,14 @@ public class LobbyController {
         if(token == null || token.isEmpty())
             token = lobby.getHost().getToken();
 
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
 
         // Construct return value
+        // TODO: We should return DTOs, not custom maps.
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         returnMap.put("token", token);
+        returnMap.put("playerId", lobby.getPlayer(token).getId());
 
         return returnMap;
     }
@@ -74,7 +77,7 @@ public class LobbyController {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
-        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
     }
 
     @PutMapping("/{API_VERSION}/game/lobby/{id}/player")
