@@ -30,6 +30,7 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    @Mapping(source = "token", target = "token")
     public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){

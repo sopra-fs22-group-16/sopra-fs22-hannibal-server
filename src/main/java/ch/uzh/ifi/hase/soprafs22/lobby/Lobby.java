@@ -92,7 +92,7 @@ public class Lobby implements ILobby {
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(getId());
+            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(this.id);
         }
         return this.invitationCode;
     }

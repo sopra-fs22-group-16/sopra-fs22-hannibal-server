@@ -6,10 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,18 +132,15 @@ public class LobbyController {
     @PostMapping("{API_VERSION}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Map<String, Object> addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
+    public PlayerGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
         //Long id = Long.parseLong(invitationCode.substring(0, invitationCode.length()-(10+1)));
 
         Player newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
 
         // Construct return value
-        Map<String, Object> returnMap = new HashMap<>();
-        returnMap.put("player", newPlayer);
-        if (token == null || token.isEmpty())
-            returnMap.put("token", newPlayer.getToken());
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(newPlayer);
 
-        return returnMap;
+        return playerGetDTO;
     }
 
 }

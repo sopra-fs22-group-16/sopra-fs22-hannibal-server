@@ -244,11 +244,8 @@ public class LobbyService {
     }
 
     public Player addPlayer(String invitationCode, Long lobbyId) {
-        ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        if (lobby == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
-        }
 
         if (invitationCode != null) {
             if (!lobby.getInvitationCode().equals(invitationCode)) {
