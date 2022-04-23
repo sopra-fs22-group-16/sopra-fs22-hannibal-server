@@ -250,12 +250,13 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The lobby with the id %d was not found", lobbyId));
         }
 
-        if (!lobby.getInvitationCode().equals(invitationCode)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
+        if (invitationCode != null) {
+            if (!lobby.getInvitationCode().equals(invitationCode)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
+            }
         }
-        Player newPlayer = lobby.generatePlayer();
-        lobby.addPlayer(newPlayer);
-        return newPlayer;
-    }
-
+            Player newPlayer = lobby.generatePlayer();
+            lobby.addPlayer(newPlayer);
+            return newPlayer;
+        }
 }

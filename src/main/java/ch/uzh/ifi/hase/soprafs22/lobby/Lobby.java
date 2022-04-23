@@ -10,12 +10,15 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
 public class Lobby implements ILobby {
 
     private final long id;
+    private final int lobbyCapacity;
     private String name;
     private Visibility visibility;
     private final Game game;
@@ -29,6 +32,7 @@ public class Lobby implements ILobby {
         this.name = name;
         this.visibility = visibility;
         this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
+        this.lobbyCapacity = game.getGameMode().equals(GameMode.ONE_VS_ONE)? 2: 4;
         this.playerMap = new HashMap<>();
         // Generate the host player
         this.host = generatePlayer();
@@ -186,10 +190,10 @@ public class Lobby implements ILobby {
     }
 
 
-    // TODO: Only for testing, feel free to reimplement with corresponding story.
-    // I added an Id here as a parameter because if the lobby has to be gotten from the outside,
-    // then there needs to be a token already
     public void addPlayer(Player player) {
+        if (playerMap.size() >= lobbyCapacity) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("This lobby is already complete!"));
+        }
         playerMap.put(player.getToken(), player);
     }
 
