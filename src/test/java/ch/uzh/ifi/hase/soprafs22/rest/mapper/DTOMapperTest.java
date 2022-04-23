@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
@@ -34,7 +35,7 @@ class DTOMapperTest {
         assertEquals(lobbyGetDTO.getHostId(), lobby.getHost().getId());
 
         int counter = 0;
-        for (Player player : lobby) {
+        for (IPlayer player : lobby) {
             // Check that there exists an element in the lobbyGetDTO
             assertTrue(counter < lobbyGetDTO.getPlayers().size());
             // Get the next user from the lobby
@@ -55,10 +56,10 @@ class DTOMapperTest {
     @Test
     void testGetLobby_fromPlayer_toPlayerGetDTO_success() {
         // create Lobby
-        Player player = new Player(1L, "username", "token", Team.RED);
+        IPlayer player = new Player(1L, "username", "token", Team.RED);
 
         // MAP -> LobbyGetDTO
-        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertPlayerToPlayerGetDTO(player);
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerGetDTO(player);
 
         // check content
         assertEquals(player.getId(), playerGetDTO.getId());

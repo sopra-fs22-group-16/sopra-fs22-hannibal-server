@@ -2,13 +2,16 @@ package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import org.springframework.web.client.RestClientException;
 
-public interface ILobby extends Iterable<Player>{
+import java.util.Iterator;
+
+public interface ILobby extends Iterable<IPlayer>{
 
     byte[] getQrCode() throws RestClientException;
 
@@ -18,13 +21,13 @@ public interface ILobby extends Iterable<Player>{
 
     void setVisibility(Visibility visibility);
 
-    Player removePlayer(String token);
+    IPlayer removePlayer(String token);
 
     void setGameMode(GameMode gameMode);
 
     void setGameType(GameType gameType);
 
-    void startGame();
+    Game getGame();
 
     long getId();
 
@@ -32,7 +35,7 @@ public interface ILobby extends Iterable<Player>{
 
     void setName(String name);
 
-    Player getHost();
+    IPlayer getHost();
 
     GameMode getGameMode();
 
@@ -44,7 +47,7 @@ public interface ILobby extends Iterable<Player>{
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
 
-    Player generatePlayer();
+    IPlayer generatePlayer();
 
-    void addPlayer(Player player);
+    void addPlayer(IPlayer player);
 }
