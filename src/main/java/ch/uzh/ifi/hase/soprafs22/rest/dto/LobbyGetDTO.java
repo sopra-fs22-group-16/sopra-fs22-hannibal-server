@@ -9,19 +9,12 @@ import java.util.List;
 public class LobbyGetDTO {
 
     private Long id;
-
     private String name;
-
     private Long hostId;
-
     private List<PlayerGetDTO> players;
-
     private Visibility visibility;
-
     private GameMode gameMode;
-
     private GameType gameType;
-
     private String invitationCode;
 
     public Long getId() {
