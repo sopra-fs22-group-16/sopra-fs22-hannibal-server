@@ -148,7 +148,6 @@ class LobbyControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lobbyPostDTO))
                 .header("token", token);
-
         
         // then
         mockMvc.perform(postRequest)
