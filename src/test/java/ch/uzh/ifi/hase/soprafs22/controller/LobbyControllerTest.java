@@ -149,6 +149,7 @@ class LobbyControllerTest {
                 .content(asJsonString(lobbyPostDTO))
                 .header("token", token);
 
+        
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
