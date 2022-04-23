@@ -48,7 +48,7 @@ public class LobbyController {
     @PostMapping("/{apiVersion}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) throws PlayerNotFoundException {
+    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
 
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
@@ -70,7 +70,7 @@ public class LobbyController {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("lobby", lobbyGetDTO);
         returnMap.put("token", token);
-        returnMap.put("playerId", lobby.getPlayer(token).getId());
+        returnMap.put("playerId", lobby.getHost().getId());
 
         return returnMap;
     }
