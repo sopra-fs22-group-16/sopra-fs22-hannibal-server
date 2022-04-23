@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
@@ -32,9 +32,10 @@ public abstract class DTOMapper {
     @Mapping(source = "team", target = "team")
     //This mapping only makes sense with a token.
     @Mapping(target="self", ignore = true)
-    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
+    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(IPlayer player);
 
-    public PlayerGetDTO convertPlayerToPlayerGetDTO(Player player, String token) {
+
+    public PlayerGetDTO convertPlayerToPlayerGetDTO(IPlayer player, String token) {
         PlayerGetDTO result = convertPlayerToPlayerGetDTO(player);
         result.setSelf(token.equals(player.getToken()));
         return result;
@@ -49,7 +50,7 @@ public abstract class DTOMapper {
         // Set the member list by creating playerGetDTOs
         // and storing them in the list
         LinkedList<PlayerGetDTO> members = new LinkedList<>();
-        for (Player player : lobby) {
+        for (IPlayer player : lobby) {
             members.add(convertPlayerToPlayerGetDTO(player, token));
         }
         lobbyGetDTO.setPlayers(members);

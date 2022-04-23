@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Test;
 
