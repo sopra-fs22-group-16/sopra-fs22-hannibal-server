@@ -26,15 +26,13 @@ public class GameController {
     @Value("${api.version}")
     private String apiVersion;
 
-    private final LobbyService lobbyService;
     private final GameService gameService;
 
-    GameController(LobbyService lobbyService, GameService gameService) {
-        this.lobbyService = lobbyService;
+    GameController(GameService gameService) {
         this.gameService = gameService;
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
+    @PostMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void attack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody AttackPostDTO attackPostDTO) {
         Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getAttacker());
@@ -43,7 +41,7 @@ public class GameController {
         gameService.attack(id, token, attacker, defender);
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/move")
+    @PostMapping("/{apiVersion}/game/match/{id}/command/move")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void move(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody MovePostDTO movePostDTO) {
         Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getStart());
@@ -52,7 +50,7 @@ public class GameController {
         gameService.move(id, token, start, end);
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
+    @PostMapping("/{apiVersion}/game/match/{id}/command/wait")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody WaitPostDTO waitPostDTO) {
         Position unitPosition = DTOMapper.INSTANCE.convertPositionDTOToPosition(waitPostDTO.getUnitPosition());
