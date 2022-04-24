@@ -3,9 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
-import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +32,6 @@ public class GameService {
     @Autowired
     public GameService(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    public Game getInitialGame(GameType gameType, GameMode gameMode) throws UnbalancedTeamCompositionException {
-        Map<String, IPlayer> playerMap = new HashMap<>();
-        return new Game(gameMode, gameType, playerMap);
     }
 
     private Game getGameById(Long id) throws GameNotFoundException {

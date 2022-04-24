@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.lobby;
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.Player;
@@ -72,7 +71,7 @@ public class Lobby implements ILobby {
     @Override
     public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
-        this.lobbyCapacity = gameMode.equals(GameMode.ONE_VS_ONE)? 2: 4;
+        this.lobbyCapacity = gameMode.getMaxNumbersOfPlayers();
     }
 
     @Override
@@ -142,8 +141,8 @@ public class Lobby implements ILobby {
         return player;
     }
 
-    private void startGame() throws UnbalancedTeamCompositionException {
-        // Todo: call to client that the game started
+    @Override
+    public void startGame(){
         this.game = new Game(this.gameMode, this.gameType, this.playerMap);
     }
 

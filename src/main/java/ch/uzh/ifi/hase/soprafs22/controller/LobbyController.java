@@ -133,8 +133,18 @@ public class LobbyController {
         return lobbiesGetDTOs;
     }
 
-    @GetMapping("/{apiVersion}/game/match/{lobbyId}")
+    @PostMapping("/{apiVersion}/game/match/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
+    public void createGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
+
+        lobbyService.createGame(token, lobbyId);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + lobbyId, "GameCreated");
+    }
+
+    @GetMapping("/{apiVersion}/game/match/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public GameGetDTO getGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
         ILobby lobby = lobbyService.getLobby(token, lobbyId);
@@ -142,6 +152,7 @@ public class LobbyController {
         Game game = lobby.getGame();
 
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
+
     }
 
     @DeleteMapping("/{apiVersion}/game/lobby/{id}/player")

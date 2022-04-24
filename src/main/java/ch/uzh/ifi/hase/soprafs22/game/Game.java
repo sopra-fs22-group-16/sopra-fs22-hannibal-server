@@ -7,7 +7,6 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class Game {
     private boolean running;
 
 
-    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) throws UnbalancedTeamCompositionException {
+    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap){
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
@@ -42,8 +41,6 @@ public class Game {
                 turnOrder[teamNumber] = player.getToken();
             }else if( turnOrder.length > 2 && turnOrder[teamNumber+2] == null ){
                 turnOrder[teamNumber+2] = player.getToken();
-            }else{
-                throw new UnbalancedTeamCompositionException();
             }
         }
 
