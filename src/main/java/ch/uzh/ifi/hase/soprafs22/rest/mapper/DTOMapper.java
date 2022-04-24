@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.mapstruct.*;
@@ -30,7 +32,10 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
-    public abstract PlayerGetDTO convertPlayerToPlayerGetDTO(Player player);
+    @Mapping(source = "token", target = "token")
+    public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
+
+
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
@@ -41,8 +46,8 @@ public abstract class DTOMapper {
         // Set the member list by creating playerGetDTOs
         // and storing them in the list
         LinkedList<PlayerGetDTO> members = new LinkedList<>();
-        for (Player player : lobby) {
-            members.add(convertPlayerToPlayerGetDTO(player));
+        for (IPlayer player : lobby) {
+            members.add(convertIPlayerToPlayerGetDTO(player));
         }
         lobbyGetDTO.setPlayers(members);
 
@@ -50,12 +55,15 @@ public abstract class DTOMapper {
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
         lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
-
         return lobbyGetDTO;
     }
+
 
     int convertTeamToTeamNumber(Team team){
         return team.getTeamNumber();
     }
-
+    @Mapping(source = "gameType", target = "gameType")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "gameMap", target = "gameMap")
+    public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 }

@@ -1,9 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
-import ch.uzh.ifi.hase.soprafs22.game.Player;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
@@ -16,11 +19,14 @@ import java.util.*;
 public class Lobby implements ILobby {
 
     private final long id;
+    private int lobbyCapacity;
     private String name;
     private Visibility visibility;
-    private final Game game;
-    private Player host;
-    private final Map<String, Player> playerMap;
+    private Game game;
+    private IPlayer host;
+    private final Map<String, IPlayer> playerMap;
+    private GameMode gameMode;
+    private GameType gameType;
     private String invitationCode;
     private byte[] qrCode;
 
@@ -28,7 +34,6 @@ public class Lobby implements ILobby {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
-        this.game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED);
         this.playerMap = new HashMap<>();
         // Generate the host player
         this.host = generatePlayer();
@@ -38,7 +43,6 @@ public class Lobby implements ILobby {
     @Override
     public byte[] getQrCode() {
         if (this.qrCode == null) {
-            //TODO resolve the highly coupled design
             this.qrCode = InvitationCodeGenerator.getQr(invitationCode);
         }
         return this.qrCode;
@@ -46,7 +50,7 @@ public class Lobby implements ILobby {
 
     @Override
     public void changeReadyStatus(String token) {
-        Player player = playerMap.get(token);
+        IPlayer player = playerMap.get(token);
         player.setReady(!player.isReady());
     }
 
@@ -61,54 +65,56 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player removePlayer(String token) {
+    public IPlayer removePlayer(String token) {
         return playerMap.remove(token);
     }
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.game.setGameMode(gameMode);
+        this.gameMode = gameMode;
+        this.lobbyCapacity = gameMode.equals(GameMode.ONE_VS_ONE)? 2: 4;
     }
 
     @Override
     public GameMode getGameMode() {
-        return this.game.getGameMode();
+        return this.gameMode;
     }
 
     @Override
     public void setGameType(GameType gameType) {
-        this.game.setGameType(gameType);
+        this.gameType = gameType;
     }
 
     @Override
     public GameType getGameType() {
-        return this.game.getGameType();
+        return this.gameType;
     }
 
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = InvitationCodeGenerator.getAlphanumeric();
+            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(this.id);
         }
         return this.invitationCode;
     }
 
     @Override
     public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException {
-        for (Player player : playerMap.values())
+        for (IPlayer player : playerMap.values())
             if (player.getName().equals(newName))
                 throw new DuplicateUserNameInLobbyException(newName);
-        Player player = getPlayer(token);
+        IPlayer player = getPlayer(token);
         player.setName(newName);
     }
 
     @Override
     public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
-        Player player = getPlayer(token);
+        IPlayer player = getPlayer(token);
         player.setReady(ready);
         // Here lobby knows if all players are ready and can inform clients through web socket.
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
+        // startGame();
     }
 
     @Override
@@ -119,7 +125,7 @@ public class Lobby implements ILobby {
     @Override
     public void assignNewHost() {
         // the first available player is assigned as host
-        for (Player player : playerMap.values()){
+        for (IPlayer player : playerMap.values()){
             if(player != this.host){
                 this.host = player;
                 break;
@@ -127,20 +133,23 @@ public class Lobby implements ILobby {
         }
     }
 
-    private Player getPlayer(String token) throws PlayerNotFoundException {
-        Player player = playerMap.get(token);
+    @Override
+    public IPlayer getPlayer(String token) throws PlayerNotFoundException {
+        IPlayer player = playerMap.get(token);
         if (player == null) {
             throw new PlayerNotFoundException(token);
         }
         return player;
     }
 
+    private void startGame() throws UnbalancedTeamCompositionException {
+        // Todo: call to client that the game started
+        this.game = new Game(this.gameMode, this.gameType, this.playerMap);
+    }
+
     @Override
-    public void startGame() {
-        // How about creating a game with the stored parameters and starting it?
-        // It seems easier than the game dealing
-        // with updates whenever the lobby changes. (+1)
-        // this.game.start();
+    public Game getGame() {
+        return this.game;
     }
 
     @Override
@@ -159,7 +168,7 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public Player getHost() {
+    public IPlayer getHost() {
         return host;
     }
 
@@ -176,7 +185,7 @@ public class Lobby implements ILobby {
         // Get all ids currently in use
         // Count the number of players in each team
         Set<Long> idSet = new HashSet<>();
-        for (Player player : playerMap.values()) {
+        for (IPlayer player : playerMap.values()) {
             idSet.add(player.getId());
             int teamMembers = numberOfTeamMembers.get(player.getTeam());
             numberOfTeamMembers.put(player.getTeam(), teamMembers + 1);
@@ -201,13 +210,16 @@ public class Lobby implements ILobby {
         return new Player(generatedId, username, token, team);
     }
 
-    // TODO: Only for testing, feel free to reimplement with corresponding story.
-    public void addPlayer(Player player) {
+
+    public void addPlayer(IPlayer player) throws FullLobbyException {
+        if (playerMap.size() >= lobbyCapacity) {
+            throw new FullLobbyException();
+        }
         playerMap.put(player.getToken(), player);
     }
 
     @Override
-    public Iterator<Player> iterator() {
+    public Iterator<IPlayer> iterator() {
         return playerMap.values().iterator();
     }
 }

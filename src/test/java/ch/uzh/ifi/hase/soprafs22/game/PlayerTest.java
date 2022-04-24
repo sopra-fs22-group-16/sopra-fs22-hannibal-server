@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ class PlayerTest {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
+        registeredUser.setToken("registeredToken");
         Player player = new Player(0L, "username", "token", Team.RED);
 
         // when
@@ -22,6 +24,7 @@ class PlayerTest {
         // then
         assertEquals(registeredUser, player.getRegisteredUser());
         assertEquals(registeredUser.getUsername(), player.getName());
+        assertEquals("registeredToken", player.getToken());
     }
 
     @Test
@@ -29,6 +32,7 @@ class PlayerTest {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
+        registeredUser.setToken("registeredToken");
         Player player = new Player(0L, "username", "token", Team.RED);
         player.linkRegisteredUser(registeredUser);
 
@@ -37,6 +41,7 @@ class PlayerTest {
 
         // then no change
         assertEquals(registeredUser.getUsername(), player.getName());
+        assertEquals("registeredToken", player.getToken());
 
     }
 }
