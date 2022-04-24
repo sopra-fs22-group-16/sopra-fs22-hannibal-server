@@ -421,8 +421,7 @@ class LobbyServiceIntegrationTests {
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
-
-
+        
         // set players ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
@@ -451,7 +450,6 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
-
         // set only host ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
 
@@ -475,13 +473,14 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
+        // set gameType to ranked
         createdLobby.setGameType(GameType.RANKED);
 
-        // set only host ready
+        // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
-        // Attempt to create lobby with not ready player
+        // Attempt to create a game with unregistered members
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
 
@@ -500,10 +499,10 @@ class LobbyServiceIntegrationTests {
         // set up a not complete lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
 
-        // set only host ready
+        // set host ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
 
-        // Attempt to create lobby with not ready player
+        // Attempt to create a game with player 2 not ready
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
 
@@ -525,11 +524,11 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
-        // set only host ready
+        // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
-        // Attempt to create lobby with not ready player
+        // Attempt to create a game with null or empty token
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame(token, createdLobby.getId()));
 
@@ -551,11 +550,11 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
-        // set only host ready
+        // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
-        // Attempt to create lobby with not ready player
+        // Attempt to create a game while not being the host
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame(player2.getToken(), createdLobby.getId()));
 
@@ -567,6 +566,7 @@ class LobbyServiceIntegrationTests {
     @Test
     void createGame_1v1_unregisteredUser_lobbyNotFound_throwsException() {
 
+        // Attempt to create a game when to lobby with lobbyId exists
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame("token", 0L));
 
@@ -588,14 +588,14 @@ class LobbyServiceIntegrationTests {
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
-        // set only host ready
+        // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
         // start a game
         lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId());
 
-        // Attempt to create lobby with a game already running
+        // Attempt to create a game with a game already running
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
 
