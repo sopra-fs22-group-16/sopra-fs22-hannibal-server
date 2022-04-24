@@ -3,7 +3,9 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.MovePostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.WaitPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
@@ -34,10 +36,27 @@ public class GameController {
 
     @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void attack(@RequestHeader("token") String token, @PathVariable Long id, AttackPostDTO attackPostDTO) {
+    public void attack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody AttackPostDTO attackPostDTO) {
         Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getAttacker());
         Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getDefender());
 
         gameService.attack(id, token, attacker, defender);
+    }
+
+    @PutMapping("/{apiVersion}/game/match/{id}/command/move")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void move(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody MovePostDTO movePostDTO) {
+        Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getStart());
+        Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getEnd());
+
+        gameService.move(id, token, start, end);
+    }
+
+    @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody WaitPostDTO waitPostDTO) {
+        Position unitPosition = DTOMapper.INSTANCE.convertPositionDTOToPosition(waitPostDTO.getUnitPosition());
+
+        gameService.unitWait(id, token, unitPosition);
     }
 }

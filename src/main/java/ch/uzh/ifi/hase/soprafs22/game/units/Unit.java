@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game.units;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.AttackOutOfRangeException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.TargetUnreachableException;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
@@ -94,7 +95,11 @@ public class Unit {
 
     }
 
-    public void move(Position from, Position to) {
+    public void move(Position from, Position to) throws TargetUnreachableException {
+
+    }
+
+    public void unitWait() {
 
     }
 }

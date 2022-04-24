@@ -87,7 +87,9 @@ public class Game {
             AttackOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
-            UnitNotFoundException {
+            UnitNotFoundException,
+            WrongUnitOwnerException,
+            WrongTargetTeamException {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
@@ -97,14 +99,48 @@ public class Game {
         Unit defendingUnit = gameMap.getTile(defender).getUnit();
         if (defendingUnit == null)
             throw new UnitNotFoundException(attacker);
+        ensureUnitOwner(attackingUnit, token);
+        ensureUnitEnemy(attackingUnit, defendingUnit);
 
         attackingUnit.attack(defendingUnit);
     }
 
+    public void move(String token, Position start, Position end) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException,
+            TargetUnreachableException,
+            WrongUnitOwnerException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        Unit movingUnit = gameMap.getTile(start).getUnit();
+        if (movingUnit == null)
+            throw new UnitNotFoundException(start);
+        ensureUnitOwner(movingUnit, token);
+        movingUnit.move(start, end);
+    }
+
+    public void unitWait(String token, Position position) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException,
+            WrongUnitOwnerException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        Unit waitingUnit = gameMap.getTile(position).getUnit();
+        if (waitingUnit == null)
+            throw new UnitNotFoundException(position);
+        ensureUnitOwner(waitingUnit, token);
+        waitingUnit.unitWait();
+    }
+
     private void ensureMember(String token) throws NotAMemberOfGameException {
-        if (playerMap.values().stream().anyMatch(player -> player.getToken().equals(token)))
-            return;
-        throw new NotAMemberOfGameException();
+        if (!playerMap.containsKey(token))
+            throw new NotAMemberOfGameException();
     }
 
     private void ensureNotEnded() throws GameOverException {
@@ -116,5 +152,15 @@ public class Game {
         if (!isPlayersTurn(token)) {
             throw new NotPlayersTurnException();
         }
+    }
+
+    private void ensureUnitOwner(Unit unit, String token) throws WrongUnitOwnerException {
+        if (playerMap.get(token).getId() != unit.getUserId())
+            throw new WrongUnitOwnerException(unit, playerMap.get(token).getId());
+    }
+
+    private void ensureUnitEnemy(Unit first, Unit second) throws WrongTargetTeamException {
+        if (first.getTeamId() == second.getTeamId())
+            throw new WrongTargetTeamException(first, second);
     }
 }

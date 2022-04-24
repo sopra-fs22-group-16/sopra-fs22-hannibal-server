@@ -76,5 +76,68 @@ public class GameService {
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with id " + e.id() + " not found.", e);
         }
+        catch (WrongUnitOwnerException e) {
+            throw new RuntimeException(e);
+        }
+        catch (WrongTargetTeamException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void move(Long id, String token, Position start, Position end) {
+        try {
+            getGameById(id).move(token, start, end);
+        }
+        catch (NotPlayersTurnException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not player's turn", e);
+        }
+        catch (TileOutOfRangeException e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "Tile " + e.getPosition() + " is out of range.", e);
+        }
+        catch (NotAMemberOfGameException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member of the game.", e);
+        }
+        catch (GameOverException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Game is over.", e);
+        }
+        catch (UnitNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit not found in " + e.getPosition() + ".", e);
+        }
+        catch (GameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with id " + e.id() + " not found.", e);
+        }
+        catch (TargetUnreachableException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit "+e.getUnit().getType().name()+" cannot move from " +e.getStart()+ " to " + e.getEnd(), e);
+        }
+        catch (WrongUnitOwnerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void unitWait(Long id, String token, Position position) {
+        try {
+            getGameById(id).unitWait(token, position);
+        }
+        catch (NotPlayersTurnException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not player's turn", e);
+        }
+        catch (TileOutOfRangeException e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "Tile " + e.getPosition() + " is out of range.", e);
+        }
+        catch (NotAMemberOfGameException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not a member of the game.", e);
+        }
+        catch (GameOverException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Game is over.", e);
+        }
+        catch (UnitNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit not found in " + e.getPosition() + ".", e);
+        }
+        catch (GameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with id " + e.id() + " not found.", e);
+        }
+        catch (WrongUnitOwnerException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
