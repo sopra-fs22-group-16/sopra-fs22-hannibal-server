@@ -137,7 +137,6 @@ public class LobbyController {
 
     @PostMapping("/{apiVersion}/game/match/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public void createGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
 
         lobbyService.createGame(token, lobbyId);
