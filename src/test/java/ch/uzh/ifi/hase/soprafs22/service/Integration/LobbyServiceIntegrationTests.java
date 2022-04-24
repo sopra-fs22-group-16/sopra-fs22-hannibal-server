@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
@@ -335,7 +336,7 @@ class LobbyServiceIntegrationTests {
 
         // Attempt to update lobby with empty name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.getQRCodeFromLobby("token", id+1L));
+                () -> lobbyService.getQRCodeFromLobby("token", id + 1L));
 
         // Check https status code
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -374,7 +375,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby lobby = lobbyService.createLobby("",lobbyName,visibility,gameMode,gameType);
+        ILobby lobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
 
         // remove host of the lobby (there are no more players)
         lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
@@ -384,7 +385,7 @@ class LobbyServiceIntegrationTests {
 
         // the lobby has been removed from the map
         Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.getLobby(token,lobby.getId()));
+                () -> lobbyService.getLobby(token, lobby.getId()));
     }
 
     @Test
@@ -397,7 +398,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby lobby = lobbyService.createLobby("",lobbyName,visibility,gameMode,gameType);
+        ILobby lobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
 
         //add new player
         IPlayer newPlayer = lobbyService.addPlayer(null, lobby.getId());
@@ -407,5 +408,199 @@ class LobbyServiceIntegrationTests {
 
         // the new player is now the host
         assertEquals(newPlayer.getId(), lobby.getHost().getId());
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_validInputs_success() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+
+        // set players ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // try to create a game
+        Game game = lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId());
+
+        assertEquals(createdLobby.getGame(), game);
+        assertEquals(createdLobby.getGameMode(), game.getGameMode());
+        assertEquals(createdLobby.getGameType(), game.getGameType());
+        assertNotNull(game.getGameMap());
+        assertFalse(game.hasEnded());
+        assertTrue(game.isPlayersTurn(createdLobby.getHost().getToken()));
+
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_not_ready_throwsException() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+
+        // Attempt to create lobby with not ready player
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_rankedGame_throwsException() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+        createdLobby.setGameType(GameType.RANKED);
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // Attempt to create lobby with not ready player
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_lobbyNotComplete_throwsException() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a not complete lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+
+        // Attempt to create lobby with not ready player
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void createGame_1v1_unregisteredUser_emptyToken_throwsException(String token) {
+
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // Attempt to create lobby with not ready player
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(token, createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_notHost_throwsException() {
+
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // Attempt to create lobby with not ready player
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(player2.getToken(), createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_lobbyNotFound_throwsException() {
+
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame("token", 0L));
+
+        // Check https status code
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+
+    }
+
+    @Test
+    void createGame_1v1_unregisteredUser_gameAlreadyRunning_throwsException() {
+
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+
+        // set only host ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // start a game
+        lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId());
+
+        // Attempt to create lobby with a game already running
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+
+        // Check https status code
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+
     }
 }

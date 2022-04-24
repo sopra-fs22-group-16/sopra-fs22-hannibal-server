@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -32,7 +33,7 @@ import java.util.Collection;
 public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
-    private final int codeLength = 10+1;
+    private final int codeLength = 10 + 1;
 
     private final UserRepository userRepository;
 
@@ -46,8 +47,9 @@ public class LobbyService {
 
     /**
      * LobbyService constructor used for testing, to inject a mocked lobbyManager
+     *
      * @param userRepository the user repository
-     * @param lobbyManager the mocked lobby manager
+     * @param lobbyManager   the mocked lobby manager
      */
     public LobbyService(UserRepository userRepository, LobbyManager lobbyManager) {
         this.userRepository = userRepository;
@@ -66,7 +68,7 @@ public class LobbyService {
     public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        checkStringConfigNullOrEmpty(lobbyName, "name","created");
+        checkStringConfigNullOrEmpty(lobbyName, "name", "created");
         checkEnumConfigNull(visibility, "visibility", "created");
         checkEnumConfigNull(gameMode, "game mode", "created");
         checkEnumConfigNull(gameType, "game type", "created");
@@ -131,16 +133,17 @@ public class LobbyService {
         return lobby;
     }
 
-    public byte[] getQRCodeFromLobby(String token, Long lobbyId){
+    public byte[] getQRCodeFromLobby(String token, Long lobbyId) {
         checkStringConfigNullOrEmpty(token, "token", "accessed");
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         checkUserIsInLobby(lobby, token, "accessed");
 
-        try{
+        try {
             return lobby.getQrCode();
-        }catch (RestClientException e){
+        }
+        catch (RestClientException e) {
             String errorMessage = "The server received an invalid response from the upstream server.";
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMessage, e);
         }
@@ -167,7 +170,7 @@ public class LobbyService {
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
-        checkStringConfigNullOrEmpty(lobbyName, "name","updated");
+        checkStringConfigNullOrEmpty(lobbyName, "name", "updated");
         checkEnumConfigNull(visibility, "visibility", "updated");
         checkEnumConfigNull(gameMode, "game mode", "updated");
         checkEnumConfigNull(gameType, "game type", "updated");
@@ -192,7 +195,7 @@ public class LobbyService {
         }
     }
 
-    public void removePlayerFromLobby(String token, Long lobbyId){
+    public void removePlayerFromLobby(String token, Long lobbyId) {
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
         checkUserIsInLobby(lobby, token, "modified");
@@ -200,25 +203,82 @@ public class LobbyService {
         IPlayer removedPlayer = lobby.removePlayer(token);
 
         // if there are not more players, remove the lobby
-        if(lobby.getNumberOfPlayers() == 0){
+        if (lobby.getNumberOfPlayers() == 0) {
             lobbyManager.removeLobbyWithId(lobbyId);
-         }
+        }
         // otherwise, check if the player was the host and in that case, assign a new one
-        else{
-            if(lobby.getHost().getId() == removedPlayer.getId()){
+        else {
+            if (lobby.getHost().getId() == removedPlayer.getId()) {
                 lobby.assignNewHost();
             }
         }
     }
 
+    /**
+     * Create a game for a lobby
+     *
+     * @param token token of the user that tries to start a game
+     * @param lobbyId id of the lobby for which a game should be created
+     *
+     * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a game with players that are not ready
+     * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a ranked game with players that are not registered
+     * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a game in a not complete lobby
+     * @throws ResponseStatusException with HttpStatus.Unauthorized If the user did not provide authentication
+     * @throws ResponseStatusException with HttpStatus.Forbidden If the user is not the host of the lobby
+     * @throws ResponseStatusException with HttpStatus.NotFound If the lobby with lobbyId does not exist
+     * @throws ResponseStatusException with HttpStatus.Conflict If there is already a game for the lobby with lobbyId
+     */
+    public Game createGame(String token, long lobbyId) {
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+
+        checkStringConfigNullOrEmpty(token, "token", "updated");
+
+        // Check that the user is the host
+        if (!lobby.getHost().getToken().equals(token)) {
+            String errorMessage = "The provided authentication was incorrect. Therefore, the game could not be created!";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+        }
+
+        // Check if a game is already running
+        if (lobby.getGame() != null) {
+            String errorMessage = "There exists already a game for this lobby. Therefore, the game could not be created!";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
+        }
+
+        // Check that lobby is complete
+        if (lobby.getNumberOfPlayers() != lobby.getGameMode().getMaxNumbersOfPlayers()) {
+            String errorMessage = "The lobby is not complete. Therefore, the game could not be created!";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+
+        // Check for all members that
+        for (IPlayer player : lobby) {
+            // player is ready
+            if (!player.isReady()) {
+                String errorMessage = "Not all players are ready in the lobby. Therefore, the game could not be created!";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
+            // player is the correct type (registered for ranked game)
+            if (lobby.getGameType().equals(GameType.RANKED) && player.getRegisteredUser() == null) {
+                String errorMessage = "Not all players are registered in the lobby. Therefore, the game could not be created!";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
+        }
+
+        lobby.startGame();
+
+        return lobby.getGame();
+    }
+
     private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
-        if(fieldName.equals("token")){
+        if (fieldName.equals("token")) {
             if (s == null || s.isEmpty()) {
                 String errorMessage = "The user needs to provide authentication to retrieve lobby information."
                         + "Therefore, the lobby could not be " + errorMessageEnding + "!";
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
             }
-        }else{
+        }
+        else {
             if (s == null || s.trim().isEmpty()) {
                 String errorMessage = "The lobby " + fieldName + " provided is empty."
                         + "Therefore, the lobby could not be " + errorMessageEnding + "!";
@@ -235,7 +295,7 @@ public class LobbyService {
                 return;
             }
         }
-        String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be " + errorMessageEnding  + "!";
+        String errorMessage = "The provided authentication was incorrect. Therefore, the lobby could not be " + errorMessageEnding + "!";
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
     }
 
@@ -259,7 +319,7 @@ public class LobbyService {
         return lobbyManager.getLobbiesCollection();
     }
 
-    public IPlayer addPlayer(String invitationCode, Long lobbyId){
+    public IPlayer addPlayer(String invitationCode, Long lobbyId) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
 
@@ -268,7 +328,7 @@ public class LobbyService {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
             }
         }
-            IPlayer newPlayer = lobby.generatePlayer();
+        IPlayer newPlayer = lobby.generatePlayer();
 
         try {
             lobby.addPlayer(newPlayer);
