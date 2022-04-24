@@ -48,7 +48,7 @@ public interface ILobby extends Iterable<IPlayer>{
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
 
-    long getNumberPlayers();
+    int getNumberOfPlayers();
 
     void assignNewHost();
 

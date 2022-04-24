@@ -118,7 +118,7 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public long getNumberPlayers() {
+    public int getNumberOfPlayers() {
         return playerMap.size();
     }
 

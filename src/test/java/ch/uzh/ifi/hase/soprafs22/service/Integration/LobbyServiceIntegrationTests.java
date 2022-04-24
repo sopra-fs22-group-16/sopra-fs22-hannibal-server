@@ -380,7 +380,7 @@ class LobbyServiceIntegrationTests {
         lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
 
         // check that there are no player in the lobby
-        assertEquals(0, lobby.getNumberPlayers());
+        assertEquals(0, lobby.getNumberOfPlayers());
 
         // the lobby has been removed from the map
         Assertions.assertThrows(ResponseStatusException.class,

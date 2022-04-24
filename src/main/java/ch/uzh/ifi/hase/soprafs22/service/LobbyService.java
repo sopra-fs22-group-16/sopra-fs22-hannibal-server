@@ -200,7 +200,7 @@ public class LobbyService {
         IPlayer removedPlayer = lobby.removePlayer(token);
 
         // if there are not more players, remove the lobby
-        if(lobby.getNumberPlayers() == 0){
+        if(lobby.getNumberOfPlayers() == 0){
             lobbyManager.removeLobbyWithId(lobbyId);
          }
         // otherwise, check if the player was the host and in that case, assign a new one
