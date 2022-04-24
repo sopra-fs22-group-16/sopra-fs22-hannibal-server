@@ -32,6 +32,7 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    @Mapping(source = "token", target = "token")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
     //add invitation code if token matches
@@ -66,7 +67,6 @@ public abstract class DTOMapper {
     int convertTeamToTeamNumber(Team team){
         return team.getTeamNumber();
     }
-
     @Mapping(source = "gameType", target = "gameType")
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")

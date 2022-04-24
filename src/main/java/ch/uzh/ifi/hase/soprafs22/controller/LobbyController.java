@@ -1,15 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,7 +83,7 @@ public class LobbyController {
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     // TODO add tests.
-    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
+    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPutDTO playerPutDTO) {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
     }
@@ -145,5 +142,29 @@ public class LobbyController {
         Game game = lobby.getGame();
 
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
+    }
+
+    @DeleteMapping("/{apiVersion}/game/lobby/{id}/player")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void leaveLobby(@RequestHeader("token") String token, @PathVariable Long id) {
+
+        lobbyService.removePlayerFromLobby(token, id);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+
+    }
+
+    @PostMapping("{apiVersion}/game/lobby/{id}/player")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public PlayerGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
+
+        IPlayer newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
+
+        // Construct return value
+        PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerGetDTO(newPlayer);
+
+        return playerGetDTO;
     }
 }
