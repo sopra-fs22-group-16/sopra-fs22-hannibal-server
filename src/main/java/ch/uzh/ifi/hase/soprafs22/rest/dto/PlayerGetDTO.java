@@ -6,6 +6,7 @@ public class PlayerGetDTO {
     private String name;
     private boolean ready;
     private int team;
+    private String token;
 
     public Long getId() {
         return id;
@@ -38,4 +39,10 @@ public class PlayerGetDTO {
     public void setTeam(int team) {
         this.team = team;
     }
+
+    public String getToken() {return token;}
+
+    public void setToken(String token) {this.token = token;}
+
+
 }

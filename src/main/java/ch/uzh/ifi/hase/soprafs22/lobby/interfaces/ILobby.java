@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.lobby.interfaces;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
@@ -8,6 +9,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import org.springframework.web.client.RestClientException;
+
+import java.util.Iterator;
 
 public interface ILobby extends Iterable<IPlayer>{
 
@@ -45,5 +48,13 @@ public interface ILobby extends Iterable<IPlayer>{
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
 
+    int getNumberOfPlayers();
+
+    void assignNewHost();
+
     IPlayer getPlayer(String token) throws PlayerNotFoundException;
+
+    IPlayer generatePlayer();
+
+    void addPlayer(IPlayer player) throws FullLobbyException;
 }

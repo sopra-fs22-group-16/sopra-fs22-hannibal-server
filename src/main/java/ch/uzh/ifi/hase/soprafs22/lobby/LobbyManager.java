@@ -53,6 +53,7 @@ public class LobbyManager implements ILobbyManager {
         return null;
     }
 
+
     @Override
     public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatableException {
         long id = generateSmallestUniqueId();

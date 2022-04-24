@@ -34,9 +34,17 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    @Mapping(source = "token", target = "token")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
-
+    //add invitation code if token matches
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token) {
+        LobbyGetDTO lobbyGetDTO = convertILobbyToLobbyGetDTO(lobby);
+        if (lobby.getHost().getToken().equals(token)) {
+            lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
+        }
+        return lobbyGetDTO;
+    }
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
@@ -55,15 +63,12 @@ public abstract class DTOMapper {
         lobbyGetDTO.setVisibility(lobby.getVisibility());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
-        lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
         return lobbyGetDTO;
     }
-
 
     int convertTeamToTeamNumber(Team team){
         return team.getTeamNumber();
     }
-
     @Mapping(source = "gameType", target = "gameType")
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")

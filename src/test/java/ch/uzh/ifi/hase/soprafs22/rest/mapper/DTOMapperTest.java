@@ -10,7 +10,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
 import org.junit.jupiter.api.Test;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -19,22 +18,22 @@ import static org.junit.jupiter.api.Assertions.*;
  * works.
  */
 class DTOMapperTest {
+
+    private static final ILobby LOBBY = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
     @Test
     void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
-
         // create Lobby
-        ILobby lobby = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
 
         // MAP -> LobbyGetDTO
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(LOBBY, LOBBY.getHost().getToken());
 
         // check content
-        assertEquals(lobbyGetDTO.getId(), lobby.getId());
-        assertEquals(lobbyGetDTO.getName(), lobby.getName());
-        assertEquals(lobbyGetDTO.getHostId(), lobby.getHost().getId());
+        assertEquals(lobbyGetDTO.getId(), LOBBY.getId());
+        assertEquals(lobbyGetDTO.getName(), LOBBY.getName());
+        assertEquals(lobbyGetDTO.getHostId(), LOBBY.getHost().getId());
 
         int counter = 0;
-        for (IPlayer player : lobby) {
+        for (IPlayer player : LOBBY) {
             // Check that there exists an element in the lobbyGetDTO
             assertTrue(counter < lobbyGetDTO.getPlayers().size());
             // Get the next user from the lobby
@@ -46,10 +45,10 @@ class DTOMapperTest {
             ++counter;
         }
 
-        assertEquals(lobbyGetDTO.getVisibility(), lobby.getVisibility());
-        assertEquals(lobbyGetDTO.getGameMode(), lobby.getGameMode());
-        assertEquals(lobbyGetDTO.getGameType(), lobby.getGameType());
-        assertEquals(lobbyGetDTO.getInvitationCode(), lobby.getInvitationCode());
+        assertEquals(lobbyGetDTO.getVisibility(), LOBBY.getVisibility());
+        assertEquals(lobbyGetDTO.getGameMode(), LOBBY.getGameMode());
+        assertEquals(lobbyGetDTO.getGameType(), LOBBY.getGameType());
+        assertEquals(lobbyGetDTO.getInvitationCode(), LOBBY.getInvitationCode());
     }
 
 
@@ -66,5 +65,19 @@ class DTOMapperTest {
         assertEquals(player.getName(), playerGetDTO.getName());
         assertEquals(player.isReady(), playerGetDTO.isReady());
         assertEquals(player.getTeam().getTeamNumber(), playerGetDTO.getTeam());
+    }
+
+    @Test
+    void testGetLobby_host() {
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(LOBBY, LOBBY.getHost().getToken());
+
+        assertEquals(LOBBY.getInvitationCode(), lobbyGetDTO.getInvitationCode());
+    }
+
+    @Test
+    void testGetLobby_noHost() {
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(LOBBY, "WrongToken");
+
+        assertNull(lobbyGetDTO.getInvitationCode());
     }
 }

@@ -23,4 +23,5 @@ public interface ILobbyManager extends Iterable<ILobby>{
     void clear();
 
     void modifyPlayer(String token, Long lobbyId, String newName, Boolean ready) throws EmptyUsernameException, PlayerNotFoundException, DuplicateUserNameInLobbyException;
+
 }

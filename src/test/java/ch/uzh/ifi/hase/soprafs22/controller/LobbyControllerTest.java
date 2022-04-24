@@ -23,8 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -127,10 +126,7 @@ class LobbyControllerTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
-        String token = "";
-        for (IPlayer player : lobby) {
-            token = player.getToken();
-        }
+        String token = lobby.getHost().getToken();
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());
@@ -148,7 +144,7 @@ class LobbyControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lobbyPostDTO))
                 .header("token", token);
-        
+
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
@@ -201,6 +197,30 @@ class LobbyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> asJsonString(qrCode))
                 .andExpect(content().contentType(MediaType.valueOf("TEXT/PLAIN;CHARSET=UTF-8")));
+
+    }
+
+    @Test
+    void  createLobby_thenLeaveLobby() throws Exception {
+        // given
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.RANKED);
+
+        LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
+        lobbyPostDTO.setName(lobby.getName());
+        lobbyPostDTO.setVisibility(lobby.getVisibility());
+        lobbyPostDTO.setGameMode(lobby.getGameMode());
+        lobbyPostDTO.setGameType(lobby.getGameType());
+
+        // when
+        MockHttpServletRequestBuilder deleteRequest = delete("/v1/game/lobby/0/player")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "registeredUserToken");
+
+        // then
+        mockMvc.perform(deleteRequest)
+                .andExpect(status().isNoContent());
 
     }
 
