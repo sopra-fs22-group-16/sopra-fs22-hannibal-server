@@ -82,7 +82,12 @@ public class Game {
         return turnOrder[turnNumber % turnOrder.length].equals(token);
     }
 
-    public void attack(String token, Position attacker, Position defender) throws NotPlayersTurnException, TileOutOfRangeException, AttackOutOfRangeException, NotAMemberOfGameException, GameOverException, UnitNotFoundException {
+    public void attack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            AttackOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
