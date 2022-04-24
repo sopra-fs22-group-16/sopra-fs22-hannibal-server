@@ -85,7 +85,7 @@ public class LobbyController {
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     // TODO add tests.
-    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
+    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPutDTO playerPutDTO) {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
     }
