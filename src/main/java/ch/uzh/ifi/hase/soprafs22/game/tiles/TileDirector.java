@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs22.game.tiles;
 
 import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TileDirector {
@@ -12,7 +11,7 @@ public class TileDirector {
         this.tileBuilder = tileBuilder;
     }
 
-    public void make(LinkedHashMap<String, Object> tile) {
+    public void make(Map<String, Object> tile) {
         tileBuilder.setTileType((String) tile.get("type"));
         tileBuilder.setTileVariant((String) tile.get("variant"));
         tileBuilder.setTileTraversability((Boolean) tile.get("traversable"));

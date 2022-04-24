@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,8 @@ public class TileBuilder implements ITileBuilder {
         switch (tileVariant) {
             case "flat" -> this.tile.setTileVariant(TileVariant.FLAT);
             case "top" -> this.tile.setTileVariant(TileVariant.TOP);
+            case "top_left" -> this.tile.setTileVariant(TileVariant.TOP_LEFT);
+            case "top_right" -> this.tile.setTileVariant(TileVariant.TOP_RIGHT);
             case "border_left" -> this.tile.setTileVariant(TileVariant.BORDER_LEFT);
             case "border_right" -> this.tile.setTileVariant(TileVariant.BORDER_RIGHT);
             case "grassy" -> this.tile.setTileVariant(TileVariant.GRASSY);
@@ -55,7 +56,10 @@ public class TileBuilder implements ITileBuilder {
             case "corner_inverted_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_TOP_RIGHT);
             case "corner_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_TOP_RIGHT);
             case "corner_bottom_right" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_RIGHT);
+            case "corner_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_LEFT);
             case "bottom" -> this.tile.setTileVariant(TileVariant.BOTTOM);
+            case "bottom_left" -> this.tile.setTileVariant(TileVariant.BOTTOM_LEFT);
+            case "bottom_right" -> this.tile.setTileVariant(TileVariant.BOTTOM_RIGHT);
             case "corner_inverted_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_BOTTOM_LEFT);
             default -> throw new IllegalArgumentException();
         }
