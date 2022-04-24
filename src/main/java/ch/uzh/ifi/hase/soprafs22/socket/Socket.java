@@ -16,10 +16,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class Socket implements WebSocketMessageBrokerConfigurer{
 
-    private final static String WEBSOCKET_PREFIX = "/topic";
-    private final static String WEBSOCKET_SUFFIX = "/hannibal-websocket";
-    private final static String ORIGIN_LOCALHOST = "http://localhost:3000";
-    private final static String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
+    private static final String WEBSOCKET_PREFIX = "/topic";
+    private static final String WEBSOCKET_SUFFIX = "/hannibal-websocket";
+    private static final String ORIGIN_LOCALHOST = "http://localhost:3000";
+    private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {

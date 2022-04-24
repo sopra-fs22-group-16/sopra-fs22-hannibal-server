@@ -8,8 +8,8 @@ import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TileBuilder implements ITileBuilder {
     private final Tile tile;
@@ -33,6 +33,8 @@ public class TileBuilder implements ITileBuilder {
         switch (tileVariant) {
             case "flat" -> this.tile.setTileVariant(TileVariant.FLAT);
             case "top" -> this.tile.setTileVariant(TileVariant.TOP);
+            case "top_left" -> this.tile.setTileVariant(TileVariant.TOP_LEFT);
+            case "top_right" -> this.tile.setTileVariant(TileVariant.TOP_RIGHT);
             case "border_left" -> this.tile.setTileVariant(TileVariant.BORDER_LEFT);
             case "border_right" -> this.tile.setTileVariant(TileVariant.BORDER_RIGHT);
             case "grassy" -> this.tile.setTileVariant(TileVariant.GRASSY);
@@ -54,8 +56,12 @@ public class TileBuilder implements ITileBuilder {
             case "corner_inverted_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_TOP_RIGHT);
             case "corner_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_TOP_RIGHT);
             case "corner_bottom_right" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_RIGHT);
+            case "corner_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_LEFT);
             case "bottom" -> this.tile.setTileVariant(TileVariant.BOTTOM);
+            case "bottom_left" -> this.tile.setTileVariant(TileVariant.BOTTOM_LEFT);
+            case "bottom_right" -> this.tile.setTileVariant(TileVariant.BOTTOM_RIGHT);
             case "corner_inverted_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_BOTTOM_LEFT);
+            default -> throw new IllegalArgumentException();
         }
     }
 
@@ -71,13 +77,14 @@ public class TileBuilder implements ITileBuilder {
 
     //TODO create a UnitBuilder analogous to the TileBuilder
     @Override
-    public void setTileUnit(LinkedHashMap<String, Object> unitStream) {
+    public void setTileUnit(Map<String, Object> unitStream) {
         String unitType = (String) unitStream.get("type");
         Unit unit = new Unit();
         switch (unitType) {
             case "archer" -> unit.setType(UnitType.ARCHER);
             case "knight" -> unit.setType(UnitType.KNIGHT);
             case "war_elephant" -> unit.setType(UnitType.WAR_ELEPHANT);
+            default -> throw new IllegalArgumentException();
         }
         unit.setHealth((int) unitStream.get("health"));
         unit.setDefense((List<Integer>)unitStream.get("defense"));
@@ -91,6 +98,7 @@ public class TileBuilder implements ITileBuilder {
                 case "move" -> unitCommandList.add(UnitCommands.MOVE);
                 case "attack" -> unitCommandList.add(UnitCommands.ATTACK);
                 case "wait" -> unitCommandList.add(UnitCommands.WAIT);
+                default -> throw new IllegalArgumentException();
             }
         }
         unit.setCommands(unitCommandList);

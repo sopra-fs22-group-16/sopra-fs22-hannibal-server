@@ -2,16 +2,21 @@ package ch.uzh.ifi.hase.soprafs22.utilities;
 
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
- *
+ * Utility class to create the invitation code and get the corresponding QR Code from the external API.
  */
 public class InvitationCodeGenerator {
     private static final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code";
-    private final static String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
+    private static final String HANNIBAL_URL = "https://sopra-fs22-group-16-client.herokuapp.com?data=";
+    private static final Random random = new SecureRandom();
 
-    public static byte[] getQr( String alphanumeric) {
+    private InvitationCodeGenerator() {
+    }
+
+    public static byte[] getQr(String alphanumeric) {
             String data = HANNIBAL_URL + alphanumeric;
             RestTemplate restTemplate = new RestTemplate();
             String url = QR_API_URL + "/?data=" + data + "&size=100x100";
@@ -26,7 +31,6 @@ public class InvitationCodeGenerator {
         //set limit for the string length
         int lengthLimit = 10;
 
-        Random random = new Random();
         return random.ints(lowerLimit, upperLimit)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
                 .limit(lengthLimit)
