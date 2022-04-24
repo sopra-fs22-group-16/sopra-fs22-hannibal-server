@@ -48,6 +48,10 @@ public interface ILobby extends Iterable<IPlayer>{
 
     void setReady(String token, Boolean ready) throws PlayerNotFoundException;
 
+    int getNumberOfPlayers();
+
+    void assignNewHost();
+
     IPlayer getPlayer(String token) throws PlayerNotFoundException;
 
     IPlayer generatePlayer();

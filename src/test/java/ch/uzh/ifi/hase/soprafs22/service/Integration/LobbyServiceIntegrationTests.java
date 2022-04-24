@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
@@ -361,5 +362,50 @@ class LobbyServiceIntegrationTests {
 
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
+    void getLobby_removeHostPlayer_removeLobby_success() {
+        // given
+        String lobbyName = "lobbyName";
+        String token = "";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby lobby = lobbyService.createLobby("",lobbyName,visibility,gameMode,gameType);
+
+        // remove host of the lobby (there are no more players)
+        lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
+
+        // check that there are no player in the lobby
+        assertEquals(0, lobby.getNumberOfPlayers());
+
+        // the lobby has been removed from the map
+        Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.getLobby(token,lobby.getId()));
+    }
+
+    @Test
+    void getLobby_removeHostPlayer_assignNewHost_success() {
+        // given
+        String lobbyName = "lobbyName";
+        String token = "";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby lobby = lobbyService.createLobby("",lobbyName,visibility,gameMode,gameType);
+
+        //add new player
+        IPlayer newPlayer = lobbyService.addPlayer(null, lobby.getId());
+
+        // remove host of the lobby
+        lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
+
+        // the new player is now the host
+        assertEquals(newPlayer.getId(), lobby.getHost().getId());
     }
 }

@@ -13,8 +13,6 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -25,7 +23,7 @@ public class Lobby implements ILobby {
     private String name;
     private Visibility visibility;
     private Game game;
-    private final IPlayer host;
+    private IPlayer host;
     private final Map<String, IPlayer> playerMap;
     private GameMode gameMode;
     private GameType gameType;
@@ -117,6 +115,22 @@ public class Lobby implements ILobby {
         // Sum of players that are ready:
         // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
         // startGame();
+    }
+
+    @Override
+    public int getNumberOfPlayers() {
+        return playerMap.size();
+    }
+
+    @Override
+    public void assignNewHost() {
+        // the first available player is assigned as host
+        for (IPlayer player : playerMap.values()){
+            if(player != this.host){
+                this.host = player;
+                break;
+            }
+        }
     }
 
     @Override

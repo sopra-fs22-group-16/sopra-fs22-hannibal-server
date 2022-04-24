@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -86,7 +85,7 @@ public class LobbyController {
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     // TODO add tests.
-    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, PlayerPutDTO playerPutDTO) {
+    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPutDTO playerPutDTO) {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
     }
@@ -147,12 +146,21 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
 
+    @DeleteMapping("/{apiVersion}/game/lobby/{id}/player")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void leaveLobby(@RequestHeader("token") String token, @PathVariable Long id) {
 
-    @PostMapping("{API_VERSION}/game/lobby/{id}/player")
+        lobbyService.removePlayerFromLobby(token, id);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+
+    }
+
+    @PostMapping("{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public PlayerGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
-        //Long id = Long.parseLong(invitationCode.substring(0, invitationCode.length()-(10+1)));
 
         IPlayer newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
 
@@ -161,5 +169,4 @@ public class LobbyController {
 
         return playerGetDTO;
     }
-
 }

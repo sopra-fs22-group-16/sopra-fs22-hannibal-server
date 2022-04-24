@@ -192,6 +192,25 @@ public class LobbyService {
         }
     }
 
+    public void removePlayerFromLobby(String token, Long lobbyId){
+
+        ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
+        checkUserIsInLobby(lobby, token, "modified");
+
+        IPlayer removedPlayer = lobby.removePlayer(token);
+
+        // if there are not more players, remove the lobby
+        if(lobby.getNumberOfPlayers() == 0){
+            lobbyManager.removeLobbyWithId(lobbyId);
+         }
+        // otherwise, check if the player was the host and in that case, assign a new one
+        else{
+            if(lobby.getHost().getId() == removedPlayer.getId()){
+                lobby.assignNewHost();
+            }
+        }
+    }
+
     private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
         if(fieldName.equals("token")){
             if (s == null || s.isEmpty()) {
