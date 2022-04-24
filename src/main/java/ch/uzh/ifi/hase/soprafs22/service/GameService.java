@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.UnbalancedTeamCompositionException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -33,8 +32,4 @@ public class GameService {
         this.userRepository = userRepository;
     }
 
-    public Game getInitialGame(GameType gameType, GameMode gameMode) throws UnbalancedTeamCompositionException {
-        Map<String, IPlayer> playerMap = new HashMap<>();
-        return new Game(gameMode, gameType, playerMap);
-    }
 }

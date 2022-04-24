@@ -10,8 +10,6 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Iterator;
-
 public interface ILobby extends Iterable<IPlayer>{
 
     byte[] getQrCode() throws RestClientException;
@@ -27,6 +25,8 @@ public interface ILobby extends Iterable<IPlayer>{
     void setGameMode(GameMode gameMode);
 
     void setGameType(GameType gameType);
+
+    void startGame();
 
     Game getGame();
 
