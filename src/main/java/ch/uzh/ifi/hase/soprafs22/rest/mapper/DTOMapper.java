@@ -37,11 +37,11 @@ public abstract class DTOMapper {
 
     //add invitation code if token matches
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token) {
-        LobbyGetDTO ret = convertILobbyToLobbyGetDTO(lobby);
+        LobbyGetDTO lobbyGetDTO = convertILobbyToLobbyGetDTO(lobby);
         if (lobby.getHost().getToken().equals(token)) {
-            ret.setInvitationCode(lobby.getInvitationCode());
+            lobbyGetDTO.setInvitationCode(lobby.getInvitationCode());
         }
-        return ret;
+        return lobbyGetDTO;
     }
 
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
