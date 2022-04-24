@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game.tiles;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TileDirector {
     private final ITileBuilder tileBuilder;
@@ -17,7 +18,7 @@ public class TileDirector {
         tileBuilder.setTileTraversability((Boolean) tile.get("traversable"));
         tileBuilder.setTileTraversingCost((Integer) tile.get("traversingCost"));
         if(tile.get("unit")!=null){
-            tileBuilder.setTileUnit((LinkedHashMap<String, Object>) tile.get("unit"));
+            tileBuilder.setTileUnit((Map<String, Object>) tile.get("unit"));
         }
     }
 }
