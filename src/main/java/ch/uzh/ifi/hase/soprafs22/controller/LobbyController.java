@@ -86,6 +86,9 @@ public class LobbyController {
     public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPutDTO playerPutDTO) {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
     }
 
     @PutMapping("/{apiVersion}/game/lobby/{id}")
@@ -175,6 +178,9 @@ public class LobbyController {
 
         // Construct return value
         PlayerGetDTO playerGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerGetDTO(newPlayer);
+
+        // send message to client via socket
+        socketMessage.convertAndSend("/topic/lobby/" + id, "");
 
         return playerGetDTO;
     }
