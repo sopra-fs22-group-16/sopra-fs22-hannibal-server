@@ -146,7 +146,7 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
     }
 
-    @DeleteMapping("/{API_VERSION}/game/lobby/{id}/player")
+    @DeleteMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void leaveLobby(@RequestHeader("token") String token, @PathVariable Long id) {
 
@@ -157,11 +157,10 @@ public class LobbyController {
 
     }
 
-    @PostMapping("{API_VERSION}/game/lobby/{id}/player")
+    @PostMapping("{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public PlayerGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
-        //Long id = Long.parseLong(invitationCode.substring(0, invitationCode.length()-(10+1)));
 
         IPlayer newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
 
