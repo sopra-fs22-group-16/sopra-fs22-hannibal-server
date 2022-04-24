@@ -126,10 +126,7 @@ class LobbyControllerTest {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
-        String token = "";
-        for (IPlayer player : lobby) {
-            token = player.getToken();
-        }
+        String token = lobby.getHost().getToken();
 
         LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
         lobbyPostDTO.setName(lobby.getName());

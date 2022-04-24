@@ -55,12 +55,10 @@ public class LobbyController {
 
         // Create a new lobby for user with this token
         ILobby lobby = lobbyService.createLobby(token, name, visibility, gameMode, gameType);
-
-        // We need to update the users token before DTOMapper, so we have a valid one when building self.
-        if(token == null || token.isEmpty())
+        if (token == null || token.isEmpty())
             token = lobby.getHost().getToken();
 
-        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
 
         // Construct return value
         // TODO: We should return DTOs, not custom maps.
@@ -79,7 +77,7 @@ public class LobbyController {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
-        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby);
+        return DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token);
     }
 
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")
