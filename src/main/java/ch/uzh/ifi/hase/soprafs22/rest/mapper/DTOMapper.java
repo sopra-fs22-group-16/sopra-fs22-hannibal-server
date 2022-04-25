@@ -35,8 +35,6 @@ public abstract class DTOMapper {
     @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
-<<<<<<< Updated upstream
-=======
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
@@ -44,11 +42,6 @@ public abstract class DTOMapper {
     @Mapping(source = "token", target = "token")
     public abstract PlayerWithTokenGetDTO convertIPlayerToPlayerWithTokenGetDTO(IPlayer player);
 
-    protected int convertTeamToTeamNumber(Team team){
-        return team.ordinal();
-    }
-
->>>>>>> Stashed changes
     //add invitation code if token matches
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token) {
         LobbyGetDTO lobbyGetDTO = convertILobbyToLobbyGetDTO(lobby);
