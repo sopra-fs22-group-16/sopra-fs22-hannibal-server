@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerWithTokenGetDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -32,9 +33,22 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
-    @Mapping(source = "token", target = "token")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
+<<<<<<< Updated upstream
+=======
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "ready", target = "ready")
+    @Mapping(source = "team", target = "team")
+    @Mapping(source = "token", target = "token")
+    public abstract PlayerWithTokenGetDTO convertIPlayerToPlayerWithTokenGetDTO(IPlayer player);
+
+    protected int convertTeamToTeamNumber(Team team){
+        return team.ordinal();
+    }
+
+>>>>>>> Stashed changes
     //add invitation code if token matches
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token) {
         LobbyGetDTO lobbyGetDTO = convertILobbyToLobbyGetDTO(lobby);
