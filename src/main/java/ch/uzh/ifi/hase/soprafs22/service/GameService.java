@@ -69,10 +69,10 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with id " + e.id() + " not found.", e);
         }
         catch (WrongUnitOwnerException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit " + e.getUnit() + " does not belong to the player.", e);
         }
         catch (WrongTargetTeamException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit " + e.getSecond() + " is not a valid target of unit " + e.getFirst() + ".", e);
         }
     }
 
@@ -102,7 +102,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit "+e.getUnit().getType().name()+" cannot move from " +e.getStart()+ " to " + e.getEnd(), e);
         }
         catch (WrongUnitOwnerException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit " + e.getUnit() + " does not belong to the player.", e);
         }
     }
 
@@ -129,7 +129,21 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with id " + e.id() + " not found.", e);
         }
         catch (WrongUnitOwnerException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Unit " + e.getUnit() + " does not belong to the player.", e);
         }
+    }
+
+    /**
+     * Used only for testing, removes all games.
+     */
+    public void clear() {
+        gameMap.clear();
+    }
+
+    /**
+     * Used Only for testing, adds a game to the service.
+     */
+    public void addGame(long id, Game game) {
+        gameMap.put(id, game);
     }
 }

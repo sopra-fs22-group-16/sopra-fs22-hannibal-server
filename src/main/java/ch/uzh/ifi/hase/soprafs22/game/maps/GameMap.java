@@ -27,12 +27,10 @@ public class GameMap {
      * @return
      */
     public Tile getTile(Position position) throws TileOutOfRangeException{
-        List<Tile> columns = tiles.get(position.getX());
-        if (columns == null)
+        try {
+            return tiles.get(position.getX()).get(position.getY());
+        } catch (IndexOutOfBoundsException e) { // catch unchecked exception and throw a checked one.
             throw new TileOutOfRangeException(position);
-        Tile tile = columns.get(position.getY());
-        if (tile == null)
-            throw new TileOutOfRangeException(position);
-        return tile;
+        }
     }
 }
