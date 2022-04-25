@@ -10,8 +10,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,12 +29,7 @@ import java.util.Collection;
 @Service
 @Transactional
 public class LobbyService {
-
-    private final Logger log = LoggerFactory.getLogger(LobbyService.class);
-    private final int codeLength = 10 + 1;
-
     private final UserRepository userRepository;
-
     private final LobbyManager lobbyManager;
 
     @Autowired
@@ -109,7 +102,6 @@ public class LobbyService {
             newLobby.getHost().linkRegisteredUser(registeredUser);
         }
 
-        log.debug("Created Information for Lobby: {}", newLobby);
         return newLobby;
     }
 
@@ -322,7 +314,6 @@ public class LobbyService {
     public IPlayer addPlayer(String invitationCode, Long lobbyId) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-
         if (invitationCode != null) {
             if (!lobby.getInvitationCode().equals(invitationCode)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
@@ -334,7 +325,7 @@ public class LobbyService {
             lobby.addPlayer(newPlayer);
         }
         catch (FullLobbyException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("This lobby is already full!"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby is already full!");
         }
 
         return newPlayer;

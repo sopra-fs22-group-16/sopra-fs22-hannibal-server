@@ -7,7 +7,7 @@ public abstract class BasePlayerDecorator implements IPlayer {
 
     private final IPlayer player;
 
-    public BasePlayerDecorator(IPlayer player){
+    protected BasePlayerDecorator(IPlayer player){
      this.player = player;
     }
 
