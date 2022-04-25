@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game.tiles.enums;
 
-public enum TileVariant {
+public enum Variant {
     FLAT,
     TOP,
     BORDER_LEFT,

@@ -155,7 +155,6 @@ public class LobbyController {
         Game game = lobby.getGame();
 
         return DTOMapper.INSTANCE.convertGameToGameGetDTO(game);
-
     }
 
     @DeleteMapping("/{apiVersion}/game/lobby/{id}/player")

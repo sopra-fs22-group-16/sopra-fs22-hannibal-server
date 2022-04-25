@@ -1,113 +1,74 @@
 package ch.uzh.ifi.hase.soprafs22.game.tiles;
 
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileType;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileVariant;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Type;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Variant;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class TileBuilder implements ITileBuilder {
-    private final Tile tile;
+    private final Tile result;
 
     public TileBuilder() {
-        this.tile = new Tile();
+        this.result = new Tile();
     }
 
     @Override
-    public void setTileType(String tileType) {
+    public void setType(String tileType) {
         switch (tileType) {
-            case "border" -> this.tile.setTileType(TileType.BORDER);
-            case "grass" -> this.tile.setTileType(TileType.GRASS);
-            case "river" -> this.tile.setTileType(TileType.RIVER);
-            case "bridge" -> this.tile.setTileType(TileType.BRIDGE);
+            case "border" -> this.result.setType(Type.BORDER);
+            case "grass" -> this.result.setType(Type.GRASS);
+            case "river" -> this.result.setType(Type.RIVER);
+            case "bridge" -> this.result.setType(Type.BRIDGE);
         }
     }
 
     @Override
-    public void setTileVariant(String tileVariant) {
+    public void setVariant(String tileVariant) {
         switch (tileVariant) {
-            case "flat" -> this.tile.setTileVariant(TileVariant.FLAT);
-            case "top" -> this.tile.setTileVariant(TileVariant.TOP);
-            case "top_left" -> this.tile.setTileVariant(TileVariant.TOP_LEFT);
-            case "top_right" -> this.tile.setTileVariant(TileVariant.TOP_RIGHT);
-            case "border_left" -> this.tile.setTileVariant(TileVariant.BORDER_LEFT);
-            case "border_right" -> this.tile.setTileVariant(TileVariant.BORDER_RIGHT);
-            case "grassy" -> this.tile.setTileVariant(TileVariant.GRASSY);
-            case "right" -> this.tile.setTileVariant(TileVariant.RIGHT);
-            case "leafy_corner_top_left" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_LEFT);
-            case "leafy_edge_top" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_TOP);
-            case "leafy_edge_bottom" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_BOTTOM);
-            case "leafy_corner_top_right" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_TOP_RIGHT);
-            case "leafy_corner_bottom_left" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_LEFT);
-            case "leafy_edge_diagonal_bottom_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_LEFT);
-            case "leafy_corner_bottom_right" -> this.tile.setTileVariant(TileVariant.LEAFY_CORNER_BOTTOM_RIGHT);
-            case "leafy" -> this.tile.setTileVariant(TileVariant.LEAFY);
-            case "leafy_edge_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_RIGHT);
-            case "leafy_edge_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_LEFT);
-            case "leafy_edge_diagonal_top_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_RIGHT);
-            case "leafy_edge_diagonal_bottom_right" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_BOTTOM_RIGHT);
-            case "leafy_edge_diagonal_top_left" -> this.tile.setTileVariant(TileVariant.LEAFY_EDGE_DIAGONAL_TOP_LEFT);
-            case "left" -> this.tile.setTileVariant(TileVariant.LEFT);
-            case "corner_inverted_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_TOP_RIGHT);
-            case "corner_top_right" -> this.tile.setTileVariant(TileVariant.CORNER_TOP_RIGHT);
-            case "corner_bottom_right" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_RIGHT);
-            case "corner_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_BOTTOM_LEFT);
-            case "bottom" -> this.tile.setTileVariant(TileVariant.BOTTOM);
-            case "bottom_left" -> this.tile.setTileVariant(TileVariant.BOTTOM_LEFT);
-            case "bottom_right" -> this.tile.setTileVariant(TileVariant.BOTTOM_RIGHT);
-            case "corner_inverted_bottom_left" -> this.tile.setTileVariant(TileVariant.CORNER_INVERTED_BOTTOM_LEFT);
+            case "flat" -> this.result.setVariant(Variant.FLAT);
+            case "top" -> this.result.setVariant(Variant.TOP);
+            case "top_left" -> this.result.setVariant(Variant.TOP_LEFT);
+            case "top_right" -> this.result.setVariant(Variant.TOP_RIGHT);
+            case "border_left" -> this.result.setVariant(Variant.BORDER_LEFT);
+            case "border_right" -> this.result.setVariant(Variant.BORDER_RIGHT);
+            case "grassy" -> this.result.setVariant(Variant.GRASSY);
+            case "right" -> this.result.setVariant(Variant.RIGHT);
+            case "leafy_corner_top_left" -> this.result.setVariant(Variant.LEAFY_CORNER_TOP_LEFT);
+            case "leafy_edge_top" -> this.result.setVariant(Variant.LEAFY_EDGE_TOP);
+            case "leafy_edge_bottom" -> this.result.setVariant(Variant.LEAFY_EDGE_BOTTOM);
+            case "leafy_corner_top_right" -> this.result.setVariant(Variant.LEAFY_CORNER_TOP_RIGHT);
+            case "leafy_corner_bottom_left" -> this.result.setVariant(Variant.LEAFY_CORNER_BOTTOM_LEFT);
+            case "leafy_edge_diagonal_bottom_left" -> this.result.setVariant(Variant.LEAFY_EDGE_DIAGONAL_BOTTOM_LEFT);
+            case "leafy_corner_bottom_right" -> this.result.setVariant(Variant.LEAFY_CORNER_BOTTOM_RIGHT);
+            case "leafy" -> this.result.setVariant(Variant.LEAFY);
+            case "leafy_edge_right" -> this.result.setVariant(Variant.LEAFY_EDGE_RIGHT);
+            case "leafy_edge_left" -> this.result.setVariant(Variant.LEAFY_EDGE_LEFT);
+            case "leafy_edge_diagonal_top_right" -> this.result.setVariant(Variant.LEAFY_EDGE_DIAGONAL_TOP_RIGHT);
+            case "leafy_edge_diagonal_bottom_right" -> this.result.setVariant(Variant.LEAFY_EDGE_DIAGONAL_BOTTOM_RIGHT);
+            case "leafy_edge_diagonal_top_left" -> this.result.setVariant(Variant.LEAFY_EDGE_DIAGONAL_TOP_LEFT);
+            case "left" -> this.result.setVariant(Variant.LEFT);
+            case "corner_inverted_top_right" -> this.result.setVariant(Variant.CORNER_INVERTED_TOP_RIGHT);
+            case "corner_top_right" -> this.result.setVariant(Variant.CORNER_TOP_RIGHT);
+            case "corner_bottom_right" -> this.result.setVariant(Variant.CORNER_BOTTOM_RIGHT);
+            case "corner_bottom_left" -> this.result.setVariant(Variant.CORNER_BOTTOM_LEFT);
+            case "bottom" -> this.result.setVariant(Variant.BOTTOM);
+            case "bottom_left" -> this.result.setVariant(Variant.BOTTOM_LEFT);
+            case "bottom_right" -> this.result.setVariant(Variant.BOTTOM_RIGHT);
+            case "corner_inverted_bottom_left" -> this.result.setVariant(Variant.CORNER_INVERTED_BOTTOM_LEFT);
             default -> throw new IllegalArgumentException();
         }
     }
 
     @Override
-    public void setTileTraversability(Boolean traversable) {
-        this.tile.setTraversable(traversable);
+    public void setTraversability(Boolean traversable) {
+        this.result.setTraversable(traversable);
     }
 
     @Override
-    public void setTileTraversingCost(int traversingCost) {
-        this.tile.setTraversingCost(traversingCost);
-    }
-
-    //TODO create a UnitBuilder analogous to the TileBuilder
-    @Override
-    public void setTileUnit(Map<String, Object> unitStream) {
-        String unitType = (String) unitStream.get("type");
-        Unit unit = new Unit();
-        switch (unitType) {
-            case "archer" -> unit.setType(UnitType.ARCHER);
-            case "knight" -> unit.setType(UnitType.KNIGHT);
-            case "war_elephant" -> unit.setType(UnitType.WAR_ELEPHANT);
-            default -> throw new IllegalArgumentException();
-        }
-        unit.setHealth((int) unitStream.get("health"));
-        unit.setDefense((List<Integer>)unitStream.get("defense"));
-        unit.setAttackDamage((List<Integer>)unitStream.get("attackDamage"));
-        unit.setAttackRange((int) unitStream.get("attackRange"));
-        unit.setMovementRange((int) unitStream.get("movementRange"));
-        List<String> commandList = (List<String>)unitStream.get("commands");
-        List<UnitCommands> unitCommandList = new ArrayList<>();
-        for(String c : commandList){
-            switch (c) {
-                case "move" -> unitCommandList.add(UnitCommands.MOVE);
-                case "attack" -> unitCommandList.add(UnitCommands.ATTACK);
-                case "wait" -> unitCommandList.add(UnitCommands.WAIT);
-                default -> throw new IllegalArgumentException();
-            }
-        }
-        unit.setCommands(unitCommandList);
-        unit.setTeamId((int)unitStream.get("teamId"));
-        unit.setUserId((int)unitStream.get("userId"));
-        this.tile.setUnit(unit);
+    public void setTraversingCost(int traversingCost) {
+        this.result.setTraversingCost(traversingCost);
     }
 
     public Tile getResult() {
-        return this.tile;
+        return this.result;
     }
 }
