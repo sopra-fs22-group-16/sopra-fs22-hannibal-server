@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.*;
@@ -95,6 +96,8 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
+        ensureWithinRange(attacker);
+        ensureWithinRange(defender);
         Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
         if (attackingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
@@ -109,6 +112,17 @@ public class Game {
         attackingUnit.attack(defendingUnit);
     }
 
+    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
+        List<List<Tile>> tiles = gameMap.getTiles();
+        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
+        int yRange = tiles.size();
+        int xRange = tiles.get(0).size();
+        if (position.getY() >= tiles.size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+        if (position.getX() >= tiles.get(position.getY()).size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+    }
+
     public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
@@ -119,6 +133,8 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
+        ensureWithinRange(start);
+        ensureWithinRange(end);
         Optional<Unit> movingUnitOptional = getUnitAt(start);
         if (movingUnitOptional.isEmpty())
             throw new UnitNotFoundException(start);
@@ -136,6 +152,7 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
+        ensureWithinRange(position);
         Optional<Unit> waitingUnitOptional = getUnitAt(position);
         if (waitingUnitOptional.isEmpty())
             throw new UnitNotFoundException(position);

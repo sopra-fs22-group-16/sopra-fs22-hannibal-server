@@ -17,17 +17,4 @@ public class GameMap {
     public List<List<Tile>> getTiles() {
         return tiles;
     }
-
-    /**
-     * Get a tile from the map.
-     * @param position, the position from which to get the Tile.
-     * @return
-     */
-    public Tile getTile(Position position) throws TileOutOfRangeException{
-        try {
-            return tiles.get(position.getX()).get(position.getY());
-        } catch (IndexOutOfBoundsException e) { // catch unchecked exception and throw a checked one.
-            throw new TileOutOfRangeException(position);
-        }
-    }
 }
