@@ -1,8 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.game.maps;
 
-import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.TileBuilder;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.TileDirector;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.UnitBuilder;
+import ch.uzh.ifi.hase.soprafs22.game.units.UnitDirector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MapLoader {
-    public GameMap deserialize(String filename) {
+public class UnitsLoader {
+    public List<Unit> deserialize(String filename) {
         Resource resource = new ClassPathResource(filename);
         InputStream inputStream;
-        List<List<Tile>> tileList = new ArrayList<>();
+        List<Unit> unitList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, List<List<Map<String, Object>>>> tileListStream;
         try {
@@ -26,13 +26,17 @@ public class MapLoader {
 
             int row = 0;
             for (var tiles : tileListStream.get("tiles")) {
-                tileList.add(new ArrayList<>());
+                int column = 0;
                 for (var t : tiles) {
-                    TileBuilder tileBuilder = new TileBuilder();
-                    TileDirector tileDirector = new TileDirector(tileBuilder);
-                    tileDirector.make(t);
-                    Tile tile = tileBuilder.getResult();
-                    tileList.get(row).add(tile);
+                    if (t.get("unit") != null) {
+                        UnitBuilder unitBuilder = new UnitBuilder();
+                        UnitDirector unitDirector = new UnitDirector(unitBuilder);
+                        Map<String, Object> unitStream = (Map<String, Object>) t.get("unit");
+                        unitDirector.make(unitStream, column, row);
+                        Unit unit = unitBuilder.getResult();
+                        unitList.add(unit);
+                    }
+                    ++column;
                 }
                 ++row;
             }
@@ -41,6 +45,6 @@ public class MapLoader {
             e.printStackTrace();
         }
 
-        return new GameMap(tileList);
+        return unitList;
     }
 }

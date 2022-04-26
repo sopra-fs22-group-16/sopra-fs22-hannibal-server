@@ -7,18 +7,15 @@ import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import java.util.List;
 
 public class GameMap {
-    private List<List<Tile>> tiles;
+    private final List<List<Tile>> tiles;
 
     public GameMap(List<List<Tile>> tiles) {
         this.tiles = tiles;
     }
 
+    // Only used for testing.
     public List<List<Tile>> getTiles() {
         return tiles;
-    }
-
-    public void setTiles(List<List<Tile>> tiles) {
-        this.tiles = tiles;
     }
 
     /**

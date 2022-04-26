@@ -3,14 +3,16 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
+import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game {
     private final GameMode gameMode;
@@ -30,13 +32,8 @@ public class Game {
         this.turnOrder = new String[playerMap.size()];
         this.running = true;
 
-        // Convert players to PlayerDecorators
         for(IPlayer player: playerMap.values()){
-            this.playerMap.put(player.getToken(), new PlayerDecorator(player));
-        }
-
-        for(IPlayer player: playerMap.values()){
-            int teamNumber = player.getTeam().getTeamNumber();
+            int teamNumber = player.getTeam().ordinal();
             if(turnOrder[teamNumber] == null){
                 turnOrder[teamNumber] = player.getToken();
             }else if( turnOrder.length > 2 && turnOrder[teamNumber+2] == null ){
@@ -44,11 +41,23 @@ public class Game {
             }
         }
 
+        List<Unit> unitList = new ArrayList<>();
         //TODO Potential Feature: RANKED games get a harder map
         if(gameType==GameType.UNRANKED||gameType==GameType.RANKED){
             this.gameMap = new MapLoader().deserialize("beginner_map.json");
+            unitList = new UnitsLoader().deserialize("beginner_map.json");
         }
 
+        // Convert players to PlayerDecorators
+        for(IPlayer player: playerMap.values()){
+            List<Unit> filteredUnitList = unitList.stream()
+                    .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
+            this.playerMap.put(player.getToken(), new PlayerDecorator(player, filteredUnitList));
+        }
+    }
+
+    public Map<String, PlayerDecorator> getPlayerMap() {
+        return playerMap;
     }
 
     public GameMode getGameMode() {
@@ -61,10 +70,6 @@ public class Game {
 
     public GameMap getGameMap() {
         return gameMap;
-    }
-
-    public void setGameMap(GameMap gameMap) {
-        this.gameMap = gameMap;
     }
 
     public int nextTurn(){
@@ -90,12 +95,14 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
-        Unit attackingUnit = gameMap.getTile(attacker).getUnit();
-        if (attackingUnit == null)
+        Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
+        if (attackingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
-        Unit defendingUnit = gameMap.getTile(defender).getUnit();
-        if (defendingUnit == null)
+        Unit attackingUnit = attackingUnitOptional.get();
+        Optional<Unit> defendingUnitOptional = getUnitAt(defender);
+        if (defendingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
+        Unit defendingUnit = defendingUnitOptional.get();
         ensureUnitOwner(attackingUnit, token);
         ensureUnitEnemy(attackingUnit, defendingUnit);
 
@@ -112,9 +119,10 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
-        Unit movingUnit = gameMap.getTile(start).getUnit();
-        if (movingUnit == null)
+        Optional<Unit> movingUnitOptional = getUnitAt(start);
+        if (movingUnitOptional.isEmpty())
             throw new UnitNotFoundException(start);
+        Unit movingUnit = movingUnitOptional.get();
         ensureUnitOwner(movingUnit, token);
         movingUnit.move(start, end);
     }
@@ -128,9 +136,10 @@ public class Game {
         ensureMember(token);
         ensureNotEnded();
         ensureTurn(token);
-        Unit waitingUnit = gameMap.getTile(position).getUnit();
-        if (waitingUnit == null)
+        Optional<Unit> waitingUnitOptional = getUnitAt(position);
+        if (waitingUnitOptional.isEmpty())
             throw new UnitNotFoundException(position);
+        Unit waitingUnit = waitingUnitOptional.get();
         ensureUnitOwner(waitingUnit, token);
         waitingUnit.unitWait();
     }
@@ -159,5 +168,12 @@ public class Game {
     private void ensureUnitEnemy(Unit first, Unit second) throws WrongTargetTeamException {
         if (first.getTeamId() == second.getTeamId())
             throw new WrongTargetTeamException(first, second);
+    }
+
+    private Optional<Unit> getUnitAt(Position position) {
+        return playerMap.values().stream()
+                .flatMap(player -> player.getUnits().stream())
+                .filter(unit -> unit.getPosition().equals(position))
+                .findAny();
     }
 }

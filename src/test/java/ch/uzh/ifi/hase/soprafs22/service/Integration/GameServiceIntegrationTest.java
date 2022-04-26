@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -46,9 +50,9 @@ public class GameServiceIntegrationTest {
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.RANKED, players);
         gameService.clear();
         gameService.addGame(GAME_ID, game);
-        redUnitPosition = findMatchingPosition(game, tile -> tile.getUnit() != null  && tile.getUnit().getUserId()==PLAYER_1.getId());
-        blueUnitPosition = findMatchingPosition(game, tile -> tile.getUnit() != null  && tile.getUnit().getUserId()==PLAYER_2.getId());
-        noUnitPosition = findMatchingPosition(game, tile -> tile.getUnit() == null);
+        redUnitPosition = positionWithTeamUnit(game, Team.RED);
+        blueUnitPosition = positionWithTeamUnit(game, Team.BLUE);
+        noUnitPosition = positionWithNoUnit(game);
     }
 
     // TODO: add test for GameOver in attack, move and wait.
@@ -219,17 +223,27 @@ public class GameServiceIntegrationTest {
         gameService.unitWait(GAME_ID, PLAYER_1.getToken(), redUnitPosition);
     }
 
-    /**
-     * Helper method in order to find positions with the search criteria.
-     */
-    private static final Position findMatchingPosition(Game game, Predicate<Tile> predicate) {
+    private Position positionWithTeamUnit(Game game, Team team) {
+        return game.getPlayerMap().values().stream()
+                .filter(player -> player.getTeam().equals(team)) // Get all players in team.
+                .flatMap(player -> player.getUnits().stream()) // Get their units
+                .map(Unit::getPosition) // Get their positions
+                .findAny() //Find the first one
+                .get();
+    }
+    private Position positionWithNoUnit(Game game) {
+        Set<Position> occupiedPositions = game.getPlayerMap().values().stream()//Get all players
+                .flatMap(player -> player.getUnits().stream())//Get their units.
+                .map(Unit::getPosition) // Get their positions
+                .collect(Collectors.toSet()); // Store them in a set.
         List<List<Tile>> tiles = game.getGameMap().getTiles();
-        for (int x = 0; x < tiles.size(); x++) {
-            for (int y = 0; y < tiles.get(x).size(); y++){
-                if (predicate.test(tiles.get(x).get(y)))
-                    return new Position(x,y);
+        for (int x =0; x < tiles.size(); x++)
+            for (int y = 0; y < tiles.get(x).size(); y++) {
+                Position position = new Position(x, y);
+                if (occupiedPositions.contains(position))
+                    continue;
+                return position;
             }
-        }
-        throw new RuntimeException("Could not find position with criteria");
+        throw new NoSuchElementException();
     }
 }
