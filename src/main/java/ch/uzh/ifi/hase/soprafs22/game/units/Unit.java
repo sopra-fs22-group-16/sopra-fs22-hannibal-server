@@ -9,13 +9,22 @@ import java.util.List;
 public class Unit {
     private UnitType type;
     private int health;
-    private List<Integer> defense;
-    private List<Integer> attackDamage;
+    private List<Integer> defenseList;
+    private List<Integer> attackDamageList;
     private int attackRange;
     private int movementRange;
-    private List<UnitCommands> commands;
+    private List<UnitCommands> commandList;
     private int teamId;
-    private int userId;
+    private long userId;
+    private Position position;
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
 
     public UnitType getType() {
         return type;
@@ -33,20 +42,20 @@ public class Unit {
         this.health = health;
     }
 
-    public List<Integer> getDefense() {
-        return defense;
+    public List<Integer> getDefenseList() {
+        return defenseList;
     }
 
-    public void setDefense(List<Integer> defense) {
-        this.defense = defense;
+    public void setDefenseList(List<Integer> defense) {
+        this.defenseList = defense;
     }
 
-    public List<Integer> getAttackDamage() {
-        return attackDamage;
+    public List<Integer> getAttackDamageList() {
+        return attackDamageList;
     }
 
-    public void setAttackDamage(List<Integer> attackDamage) {
-        this.attackDamage = attackDamage;
+    public void setAttackDamageList(List<Integer> attackDamage) {
+        this.attackDamageList = attackDamage;
     }
 
     public int getAttackRange() {
@@ -65,12 +74,12 @@ public class Unit {
         this.movementRange = movementRange;
     }
 
-    public List<UnitCommands> getCommands() {
-        return commands;
+    public List<UnitCommands> getCommandList() {
+        return commandList;
     }
 
-    public void setCommands(List<UnitCommands> commands) {
-        this.commands = commands;
+    public void setCommandList(List<UnitCommands> commands) {
+        this.commandList = commands;
     }
 
     public int getTeamId() {
@@ -81,11 +90,11 @@ public class Unit {
         this.teamId = teamId;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

@@ -1,53 +1,43 @@
 package ch.uzh.ifi.hase.soprafs22.game.tiles;
 
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileType;
-import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.TileVariant;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Type;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Variant;
 
 public class Tile {
-    private TileType tileType;
-    private TileVariant tileVariant;
+    private Type type;
+    private Variant variant;
     private Boolean traversable;
     private int traversingCost;
-    private Unit unit;
 
     public Tile() {
     }
 
-    public Unit getUnit() {
-        return unit;
+    public Type getType() {
+        return type;
     }
 
-    public void setUnit(Unit unit) {
-        this.unit = unit;
-    }
-
-    public TileType getTileType() {
-        return tileType;
-    }
-
-    public void setTileType(TileType tileType) {
-        this.tileType = tileType;
-    }
-
-    public TileVariant getTileVariant() {
-        return tileVariant;
-    }
-
-    public void setTileVariant(TileVariant tileVariant) {
-        this.tileVariant = tileVariant;
+    public Variant getVariant() {
+        return variant;
     }
 
     public Boolean getTraversable() {
         return traversable;
     }
 
-    public void setTraversable(Boolean traversable) {
-        this.traversable = traversable;
-    }
-
     public int getTraversingCost() {
         return traversingCost;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public void setVariant(Variant variant) {
+        this.variant = variant;
+    }
+
+    public void setTraversable(Boolean traversable) {
+        this.traversable = traversable;
     }
 
     public void setTraversingCost(int traversingCost) {

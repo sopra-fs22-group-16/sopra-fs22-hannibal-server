@@ -12,12 +12,9 @@ public class TileDirector {
     }
 
     public void make(Map<String, Object> tile) {
-        tileBuilder.setTileType((String) tile.get("type"));
-        tileBuilder.setTileVariant((String) tile.get("variant"));
-        tileBuilder.setTileTraversability((Boolean) tile.get("traversable"));
-        tileBuilder.setTileTraversingCost((Integer) tile.get("traversingCost"));
-        if(tile.get("unit")!=null){
-            tileBuilder.setTileUnit((Map<String, Object>) tile.get("unit"));
-        }
+        tileBuilder.setType((String) tile.get("type"));
+        tileBuilder.setVariant((String) tile.get("variant"));
+        tileBuilder.setTraversability((Boolean) tile.get("traversable"));
+        tileBuilder.setTraversingCost((Integer) tile.get("traversingCost"));
     }
 }

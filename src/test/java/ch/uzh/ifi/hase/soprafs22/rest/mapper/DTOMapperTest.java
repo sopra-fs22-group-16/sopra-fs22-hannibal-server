@@ -41,7 +41,7 @@ class DTOMapperTest {
             assertEquals(lobbyGetDTO.getPlayers().get(counter).getId(), player.getId());
             assertEquals(lobbyGetDTO.getPlayers().get(counter).getName(), player.getName());
             assertEquals(lobbyGetDTO.getPlayers().get(counter).isReady(), player.isReady());
-            assertEquals(lobbyGetDTO.getPlayers().get(counter).getTeam(), player.getTeam().getTeamNumber());
+            assertEquals(lobbyGetDTO.getPlayers().get(counter).getTeam(), player.getTeam().ordinal());
             ++counter;
         }
 
@@ -64,7 +64,7 @@ class DTOMapperTest {
         assertEquals(player.getId(), playerGetDTO.getId());
         assertEquals(player.getName(), playerGetDTO.getName());
         assertEquals(player.isReady(), playerGetDTO.isReady());
-        assertEquals(player.getTeam().getTeamNumber(), playerGetDTO.getTeam());
+        assertEquals(player.getTeam().ordinal(), playerGetDTO.getTeam());
     }
 
     @Test
