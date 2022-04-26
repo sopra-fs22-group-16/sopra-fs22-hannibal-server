@@ -7,7 +7,6 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -100,63 +99,63 @@ class GameTest {
 
     @Test
     void attack_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.attack("badToken", redUnitPosition, blueUnitPosition));
+        assertThrows(NotAMemberOfGameException.class, () -> game.unitAttack("badToken", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.attack("token1", redUnitPosition, blueUnitPosition));
+        assertThrows(NotPlayersTurnException.class, () -> game.unitAttack("token1", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_nonAttacker_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.attack("token0", noUnitPosition, blueUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_noDefender_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.attack("token0", redUnitPosition, noUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", redUnitPosition, noUnitPosition));
     }
 
     @Test
     void attack_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.attack("token0", blueUnitPosition, redUnitPosition));
+        assertThrows(WrongUnitOwnerException.class, () -> game.unitAttack("token0", blueUnitPosition, redUnitPosition));
     }
 
     @Test
     void attack_notEnemy_throwsWrongTargetTeamException() {
-        assertThrows(WrongTargetTeamException.class, () -> game.attack("token0", redUnitPosition, redUnitPosition));
+        assertThrows(WrongTargetTeamException.class, () -> game.unitAttack("token0", redUnitPosition, redUnitPosition));
     }
 
     @Test
     void attack_good() throws Exception {
-        game.attack("token0", redUnitPosition, blueUnitPosition);
+        game.unitAttack("token0", redUnitPosition, blueUnitPosition);
     }
 
     // TODO test TargetUnreachableException for move.
     @Test
     void move_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.move("badToken", redUnitPosition, blueUnitPosition));
+        assertThrows(NotAMemberOfGameException.class, () -> game.unitMove("badToken", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.move("token1", redUnitPosition, blueUnitPosition));
+        assertThrows(NotPlayersTurnException.class, () -> game.unitMove("token1", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_nonUnit_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.move("token0", noUnitPosition, blueUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitMove("token0", noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.move("token0", blueUnitPosition, redUnitPosition));
+        assertThrows(WrongUnitOwnerException.class, () -> game.unitMove("token0", blueUnitPosition, redUnitPosition));
     }
 
     @Test
     void move_good() throws Exception {
-        game.move("token0", redUnitPosition, noUnitPosition);
+        game.unitMove("token0", redUnitPosition, noUnitPosition);
     }
 
     @Test

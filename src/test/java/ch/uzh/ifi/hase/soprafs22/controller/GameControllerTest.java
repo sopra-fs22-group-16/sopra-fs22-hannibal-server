@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import static org.junit.jupiter.api.Assertions.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.MovePostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -80,7 +78,7 @@ class GameControllerTest {
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).attack(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
+        verify(gameService).unitAttack(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
     }
 
     @Test
@@ -95,7 +93,7 @@ class GameControllerTest {
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).move(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
+        verify(gameService).unitMove(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
     }
 
     @Test

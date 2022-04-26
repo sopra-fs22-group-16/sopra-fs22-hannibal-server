@@ -73,7 +73,8 @@ public abstract class DTOMapper {
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
-    public Position convertPositionDTOToPosition(PositionDTO position) {
-        return new Position(position.getX(), position.getY());
-    }
+
+    @Mapping(source = "x", target = "x")
+    @Mapping(source = "y", target = "y")
+    public abstract Position convertPositionDTOToPosition(PositionDTO position);
 }

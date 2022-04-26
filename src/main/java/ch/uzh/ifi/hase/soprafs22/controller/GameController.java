@@ -1,14 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.MovePostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.WaitPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
-import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,20 +31,20 @@ public class GameController {
 
     @PostMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void attack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody AttackPostDTO attackPostDTO) {
+    public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody AttackPostDTO attackPostDTO) {
         Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getAttacker());
         Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getDefender());
 
-        gameService.attack(id, token, attacker, defender);
+        gameService.unitAttack(id, token, attacker, defender);
     }
 
     @PostMapping("/{apiVersion}/game/match/{id}/command/move")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void move(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody MovePostDTO movePostDTO) {
+    public void unitMove(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody MovePostDTO movePostDTO) {
         Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getStart());
         Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getEnd());
 
-        gameService.move(id, token, start, end);
+        gameService.unitMove(id, token, start, end);
     }
 
     @PostMapping("/{apiVersion}/game/match/{id}/command/wait")

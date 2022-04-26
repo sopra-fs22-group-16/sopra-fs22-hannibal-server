@@ -79,7 +79,7 @@ public class Game {
         return turnOrder[turnNumber % turnOrder.length].equals(token);
     }
 
-    public void attack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+    public void unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
             TileOutOfRangeException,
             AttackOutOfRangeException,
             NotAMemberOfGameException,
@@ -102,7 +102,7 @@ public class Game {
         attackingUnit.attack(defendingUnit);
     }
 
-    public void move(String token, Position start, Position end) throws NotPlayersTurnException,
+    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,

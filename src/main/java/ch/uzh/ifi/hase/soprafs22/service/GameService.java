@@ -43,9 +43,9 @@ public class GameService {
     }
 
 
-    public void attack(Long id, String token, Position attacker, Position defender) {
+    public void unitAttack(Long id, String token, Position attacker, Position defender) {
         try {
-            getGameById(id).attack(token, attacker, defender);
+            getGameById(id).unitAttack(token, attacker, defender);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not player's turn", e);
@@ -76,9 +76,9 @@ public class GameService {
         }
     }
 
-    public void move(Long id, String token, Position start, Position end) {
+    public void unitMove(Long id, String token, Position start, Position end) {
         try {
-            getGameById(id).move(token, start, end);
+            getGameById(id).unitMove(token, start, end);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not player's turn", e);
