@@ -32,7 +32,7 @@ public class UnitsLoader {
                         UnitBuilder unitBuilder = new UnitBuilder();
                         UnitDirector unitDirector = new UnitDirector(unitBuilder);
                         Map<String, Object> unitStream = (Map<String, Object>) t.get("unit");
-                        unitDirector.make(unitStream, row, column);
+                        unitDirector.make(unitStream, column, row);
                         Unit unit = unitBuilder.getResult();
                         unitList.add(unit);
                     }

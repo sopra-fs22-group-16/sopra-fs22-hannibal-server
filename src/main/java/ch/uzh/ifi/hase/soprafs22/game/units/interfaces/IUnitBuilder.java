@@ -24,5 +24,5 @@ public interface IUnitBuilder {
 
     void setUserId(int userId);
 
-    void setPosition(int row, int column);
+    void setPosition(int x, int y);
 }

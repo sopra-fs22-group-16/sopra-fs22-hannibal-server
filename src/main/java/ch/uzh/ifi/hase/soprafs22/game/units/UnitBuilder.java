@@ -75,8 +75,8 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     @Override
-    public void setPosition(int row, int column) {
-        this.result.setPosition(new Position(row, column));
+    public void setPosition(int x, int y) {
+        this.result.setPosition(new Position(x, y));
     }
 
     public Unit getResult() {
