@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;

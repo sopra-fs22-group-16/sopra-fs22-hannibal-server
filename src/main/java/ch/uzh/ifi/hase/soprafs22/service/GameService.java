@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
+import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +29,16 @@ import java.util.Map;
 public class GameService {
     private final Logger log = LoggerFactory.getLogger(GameService.class);
     private final UserRepository userRepository;
-    private final Map<Long, Game> gameMap = new HashMap<>();
+    private ILobbyManager lobbyManager;
 
     @Autowired
     public GameService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.lobbyManager = LobbyManager.getInstance();
     }
 
     private Game getGameById(Long id) throws GameNotFoundException {
-        Game game = gameMap.get(id);
+        Game game = lobbyManager.getLobbyWithId(id).getGame();
         if (game == null) {
             throw new GameNotFoundException(id);
         }
@@ -133,17 +136,8 @@ public class GameService {
         }
     }
 
-    /**
-     * Used only for testing, removes all games.
-     */
-    public void clear() {
-        gameMap.clear();
-    }
-
-    /**
-     * Used Only for testing, adds a game to the service.
-     */
-    public void addGame(long id, Game game) {
-        gameMap.put(id, game);
+    // Only for testing
+    public void setLobbyManager(ILobbyManager lobbyManager) {
+        this.lobbyManager = lobbyManager;
     }
 }
