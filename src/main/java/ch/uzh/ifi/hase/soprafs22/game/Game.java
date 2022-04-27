@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
@@ -7,12 +8,10 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
+import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -83,5 +82,114 @@ public class Game {
 
     public boolean isPlayersTurn(String token){
         return turnOrder[turnNumber % turnOrder.length].equals(token);
+    }
+
+    public void unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            AttackOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException,
+            WrongUnitOwnerException,
+            WrongTargetTeamException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        ensureWithinRange(attacker);
+        ensureWithinRange(defender);
+        Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
+        if (attackingUnitOptional.isEmpty())
+            throw new UnitNotFoundException(attacker);
+        Unit attackingUnit = attackingUnitOptional.get();
+        Optional<Unit> defendingUnitOptional = getUnitAt(defender);
+        if (defendingUnitOptional.isEmpty())
+            throw new UnitNotFoundException(attacker);
+        Unit defendingUnit = defendingUnitOptional.get();
+        ensureUnitOwner(attackingUnit, token);
+        ensureUnitEnemy(attackingUnit, defendingUnit);
+
+        attackingUnit.attack(defendingUnit);
+    }
+
+    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
+        List<List<Tile>> tiles = gameMap.getTiles();
+        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
+        int yRange = tiles.size();
+        int xRange = tiles.get(0).size();
+        if (position.getY() >= tiles.size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+        if (position.getX() >= tiles.get(position.getY()).size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+    }
+
+    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException,
+            TargetUnreachableException,
+            WrongUnitOwnerException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        ensureWithinRange(start);
+        ensureWithinRange(end);
+        Optional<Unit> movingUnitOptional = getUnitAt(start);
+        if (movingUnitOptional.isEmpty())
+            throw new UnitNotFoundException(start);
+        Unit movingUnit = movingUnitOptional.get();
+        ensureUnitOwner(movingUnit, token);
+        movingUnit.move(start, end);
+    }
+
+    public void unitWait(String token, Position position) throws NotPlayersTurnException,
+            TileOutOfRangeException,
+            NotAMemberOfGameException,
+            GameOverException,
+            UnitNotFoundException,
+            WrongUnitOwnerException {
+        ensureMember(token);
+        ensureNotEnded();
+        ensureTurn(token);
+        ensureWithinRange(position);
+        Optional<Unit> waitingUnitOptional = getUnitAt(position);
+        if (waitingUnitOptional.isEmpty())
+            throw new UnitNotFoundException(position);
+        Unit waitingUnit = waitingUnitOptional.get();
+        ensureUnitOwner(waitingUnit, token);
+        waitingUnit.unitWait();
+    }
+
+    private void ensureMember(String token) throws NotAMemberOfGameException {
+        if (!playerMap.containsKey(token))
+            throw new NotAMemberOfGameException();
+    }
+
+    private void ensureNotEnded() throws GameOverException {
+        if (hasEnded())
+            throw new GameOverException();
+    }
+
+    private void ensureTurn(String token) throws NotPlayersTurnException {
+        if (!isPlayersTurn(token)) {
+            throw new NotPlayersTurnException();
+        }
+    }
+
+    private void ensureUnitOwner(Unit unit, String token) throws WrongUnitOwnerException {
+        if (playerMap.get(token).getId() != unit.getUserId())
+            throw new WrongUnitOwnerException(unit, playerMap.get(token).getId());
+    }
+
+    private void ensureUnitEnemy(Unit first, Unit second) throws WrongTargetTeamException {
+        if (first.getTeamId() == second.getTeamId())
+            throw new WrongTargetTeamException(first, second);
+    }
+
+    private Optional<Unit> getUnitAt(Position position) {
+        return playerMap.values().stream()
+                .flatMap(player -> player.getUnits().stream())
+                .filter(unit -> unit.getPosition().equals(position))
+                .findAny();
     }
 }

@@ -1719,7 +1719,30 @@
         "type": "grass",
         "variant": "flat",
         "traversable": true,
-        "traversingCost": 1
+        "traversingCost": 1,
+        "unit": {
+          "type": "archer",
+          "health": 100,
+          "defense": [
+            15,
+            5,
+            5
+          ],
+          "attackDamage": [
+            25,
+            10,
+            50
+          ],
+          "attackRange": 5,
+          "movementRange": 3,
+          "commands": [
+            "move",
+            "attack",
+            "wait"
+          ],
+          "teamId": 0,
+          "userId": 0
+        }
       },
       {
         "type": "grass",
