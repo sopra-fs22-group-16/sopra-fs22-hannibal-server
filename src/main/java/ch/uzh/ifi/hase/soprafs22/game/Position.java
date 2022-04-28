@@ -48,6 +48,13 @@ public class Position {
         // Compare the data members and return accordingly
         return x == c.x && y == c.y;
     }
+
+    @Override
+    public int hashCode() {
+        // From effective java item 9.
+        return 17 + x + 31*y;
+    }
+
     @Override
     public String toString() {
         return String.format("(%s, %s)", x, y);
