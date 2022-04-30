@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
@@ -10,8 +9,6 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
-import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
@@ -24,12 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.Lob;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 @WebAppConfiguration
 @SpringBootTest
-public class GameServiceIntegrationTest {
+class GameServiceIntegrationTest {
     @Autowired
     GameService gameService;
 
@@ -226,6 +220,7 @@ public class GameServiceIntegrationTest {
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
+
     @Test
     void GameNotFoundException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -241,6 +236,7 @@ public class GameServiceIntegrationTest {
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
+
     @Test
     void unitWait_OK() {
         gameService.unitWait(GAME_ID, PLAYER_1.getToken(), redUnitPosition);
@@ -254,13 +250,14 @@ public class GameServiceIntegrationTest {
                 .findAny() //Find the first one
                 .get();
     }
+
     private Position positionWithNoUnit(Game game) {
         Set<Position> occupiedPositions = game.getPlayerMap().values().stream()//Get all players
                 .flatMap(player -> player.getUnits().stream())//Get their units.
                 .map(Unit::getPosition) // Get their positions
                 .collect(Collectors.toSet()); // Store them in a set.
         List<List<Tile>> tiles = game.getGameMap().getTiles();
-        for (int x =0; x < tiles.size(); x++)
+        for (int x = 0; x < tiles.size(); x++)
             for (int y = 0; y < tiles.get(x).size(); y++) {
                 Position position = new Position(x, y);
                 if (occupiedPositions.contains(position))

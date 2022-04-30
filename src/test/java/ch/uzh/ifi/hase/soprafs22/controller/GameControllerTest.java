@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -78,7 +76,7 @@ class GameControllerTest {
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).unitAttack(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
+        verify(gameService).unitAttack(MATCH_ID, TOKEN, position1, position2);
     }
 
     @Test
@@ -93,7 +91,7 @@ class GameControllerTest {
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).unitMove(eq(MATCH_ID), eq(TOKEN), eq(position1), eq(position2));
+        verify(gameService).unitMove(MATCH_ID, TOKEN, position1, position2);
     }
 
     @Test
@@ -107,7 +105,7 @@ class GameControllerTest {
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).unitWait(eq(MATCH_ID), eq(TOKEN), eq(position1));
+        verify(gameService).unitWait(MATCH_ID, TOKEN, position1);
     }
 
     /**

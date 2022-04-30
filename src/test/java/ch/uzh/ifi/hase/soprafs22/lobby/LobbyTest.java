@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LobbyTest {
 
     @Test
-    void createLobby_hostSet(){
+    void createLobby_hostSet() {
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
@@ -26,7 +26,7 @@ class LobbyTest {
     }
 
     @Test
-    void createLobby_hostInformationSet(){
+    void createLobby_hostInformationSet() {
         // Create new lobby
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
@@ -38,9 +38,9 @@ class LobbyTest {
         assertNotNull(host.getTeam());
         assertFalse(host.isReady());
     }
-    
+
     @Test
-    public void updateLobbyPlayer_userName_OK() throws Exception {
+    void updateLobbyPlayer_userName_OK() throws Exception {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         IPlayer host = lobby.getHost();
 
@@ -50,7 +50,7 @@ class LobbyTest {
     }
 
     @Test
-    public void updateLobbyPlayer_userNameDouble_OK() throws Exception  {
+    void updateLobbyPlayer_userNameDouble_OK() throws Exception {
         // Test that old names are available for usage.
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         IPlayer host = lobby.getHost();
@@ -63,7 +63,7 @@ class LobbyTest {
     }
 
     @Test
-    public void updateLobbyPlayer_ready_OK() throws Exception  {
+    void updateLobbyPlayer_ready_OK() throws Exception {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         IPlayer host = lobby.getHost();
 
@@ -73,14 +73,14 @@ class LobbyTest {
     }
 
     @Test
-    public void updateLobbyPlayer_ready_notFound() {
+    void updateLobbyPlayer_ready_notFound() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         assertThrows(PlayerNotFoundException.class, () -> lobby.setReady("invalid token", true));
     }
 
     @Test
-    public void updateLobbyPlayer_userName_notFound() {
+    void updateLobbyPlayer_userName_notFound() {
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
 
         assertThrows(PlayerNotFoundException.class, () -> lobby.setUserName("invalid token", "new username"));
@@ -88,14 +88,14 @@ class LobbyTest {
 
 
     @Test
-    public void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException {
+    void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException {
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         IPlayer host = lobby.getHost();
         IPlayer newPlayer = lobby.generatePlayer();
         lobby.addPlayer(newPlayer);
 
-        assertThrows(DuplicateUserNameInLobbyException.class,  () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
+        assertThrows(DuplicateUserNameInLobbyException.class, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
     }
 
 

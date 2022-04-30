@@ -18,6 +18,7 @@ public class TileBuilder implements ITileBuilder {
             case "grass" -> this.result.setType(Type.GRASS);
             case "river" -> this.result.setType(Type.RIVER);
             case "bridge" -> this.result.setType(Type.BRIDGE);
+            default -> throw new IllegalArgumentException();
         }
     }
 
