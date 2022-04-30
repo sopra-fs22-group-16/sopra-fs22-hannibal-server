@@ -140,7 +140,7 @@ public class Game {
             throw new UnitNotFoundException(start);
         Unit movingUnit = movingUnitOptional.get();
         ensureUnitOwner(movingUnit, token);
-        movingUnit.move(start, end);
+        movingUnit.setPosition(end);
     }
 
     public void unitWait(String token, Position position) throws NotPlayersTurnException,
@@ -158,7 +158,6 @@ public class Game {
             throw new UnitNotFoundException(position);
         Unit waitingUnit = waitingUnitOptional.get();
         ensureUnitOwner(waitingUnit, token);
-        waitingUnit.unitWait();
     }
 
     private void ensureMember(String token) throws NotAMemberOfGameException {

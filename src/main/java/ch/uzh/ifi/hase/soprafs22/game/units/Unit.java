@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.game.units;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.AttackOutOfRangeException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.TargetUnreachableException;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
@@ -100,15 +99,7 @@ public class Unit {
         this.userId = userId;
     }
 
-    public void attack(Unit unit) throws AttackOutOfRangeException {
-
-    }
-
-    public void move(Position from, Position to) throws TargetUnreachableException {
-
-    }
-
-    public void unitWait() {
-
+    public void attack(Unit victim) throws AttackOutOfRangeException {
+        victim.health -= this.attackDamageList.get(victim.type.ordinal()) / victim.defenseList.get(this.type.ordinal());
     }
 }

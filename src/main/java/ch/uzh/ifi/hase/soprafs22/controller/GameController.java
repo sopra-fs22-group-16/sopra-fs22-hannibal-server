@@ -46,12 +46,4 @@ public class GameController {
 
         gameService.unitMove(id, token, start, end);
     }
-
-    @PostMapping("/{apiVersion}/game/match/{id}/command/wait")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody WaitPostDTO waitPostDTO) {
-        Position unitPosition = DTOMapper.INSTANCE.convertPositionDTOToPosition(waitPostDTO.getUnitPosition());
-
-        gameService.unitWait(id, token, unitPosition);
-    }
 }
