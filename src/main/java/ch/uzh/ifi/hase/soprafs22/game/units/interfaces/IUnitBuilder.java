@@ -1,8 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.game.units.interfaces;
 
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
-
 import java.util.List;
 
 public interface IUnitBuilder {

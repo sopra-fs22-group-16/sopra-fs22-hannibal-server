@@ -392,7 +392,6 @@ class LobbyServiceIntegrationTests {
     void getLobby_removeHostPlayer_assignNewHost_success() {
         // given
         String lobbyName = "lobbyName";
-        String token = "";
         Visibility visibility = Visibility.PRIVATE;
         GameMode gameMode = GameMode.ONE_VS_ONE;
         GameType gameType = GameType.UNRANKED;
@@ -448,7 +447,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
 
         // set only host ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);

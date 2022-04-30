@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
-import java.awt.*;
-
 public class Position {
     private int x;
     private int y;
@@ -27,8 +25,6 @@ public class Position {
         this.y = y;
     }
 
-    // We need to define equals to compare them. Existing libraries have all this, and more.
-    // Point https://docs.oracle.com/javase/7/docs/api/java/awt/Point.html seems to do exactly what we want, and we don't have to test it...
     @Override
     public boolean equals(Object o) {
         // If the object is compared with itself then return true
@@ -44,7 +40,7 @@ public class Position {
 
         // typecast o to Complex so that we can compare data members
         Position c = (Position) o;
-
+        super.equals(o);
         // Compare the data members and return accordingly
         return x == c.x && y == c.y;
     }
