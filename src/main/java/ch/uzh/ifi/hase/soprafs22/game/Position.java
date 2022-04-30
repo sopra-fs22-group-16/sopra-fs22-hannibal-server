@@ -47,7 +47,8 @@ public class Position {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        // From effective java item 9.
+        return 17 + x + 31*y;
     }
 
     @Override
