@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LobbyServiceTest {
+class LobbyServiceTest {
 
     private final LobbyManager lobbyManager;
 
@@ -25,7 +25,7 @@ public class LobbyServiceTest {
     }
 
     @Test
-    void getQRCode_validInput_success()  {
+    void getQRCode_validInput_success() {
         // given
         long id = 0L;
         String lobbyName = "lobbyName";
@@ -49,7 +49,7 @@ public class LobbyServiceTest {
 
             // Using parseInt() method of Integer class
             int val = Integer.parseInt(hexByteCodeSampleImage.substring(index, index + 2), 16);
-            qrCode[i] = (byte)val;
+            qrCode[i] = (byte) val;
         }
 
         // create spy out of lobby
