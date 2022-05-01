@@ -6,8 +6,9 @@ import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 
 import java.util.List;
+import java.util.Observable;
 
-public class Unit {
+public class Unit extends Observable {
     private UnitType type;
     private int health;
     private List<Integer> defenseList;
@@ -101,5 +102,9 @@ public class Unit {
 
     public void attack(Unit victim) throws AttackOutOfRangeException {
         victim.health -= this.attackDamageList.get(victim.type.ordinal()) / victim.defenseList.get(this.type.ordinal());
+        //counterattack
+        this.health -= 1 / 3 * victim.attackDamageList.get(this.type.ordinal()) / this.defenseList.get(victim.type.ordinal());
+        victim.notifyObservers(victim);
+        this.notifyObservers(this);
     }
 }

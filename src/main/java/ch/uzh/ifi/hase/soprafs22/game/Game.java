@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
@@ -53,7 +54,11 @@ public class Game {
         for (IPlayer player : playerMap.values()) {
             List<Unit> filteredUnitList = unitList.stream()
                     .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
-            this.playerMap.put(player.getToken(), new PlayerDecorator(player, filteredUnitList));
+            PlayerDecorator playerDecorator = new PlayerDecorator(player, filteredUnitList);
+            for (Unit u : filteredUnitList) {
+                u.addObserver(playerDecorator);
+            }
+            this.playerMap.put(player.getToken(), playerDecorator);
         }
     }
 
