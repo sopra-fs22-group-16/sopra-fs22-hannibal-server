@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.MovePostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.WaitPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,10 +64,10 @@ class GameControllerTest {
 
     @Test
     void test_unitAttack() throws Exception {
-        AttackPostDTO attackPostDTO = new AttackPostDTO();
-        attackPostDTO.setAttacker(positionDTO1);
-        attackPostDTO.setDefender(positionDTO2);
-        MockHttpServletRequestBuilder request = post("/v1/game/match/101/command/attack")
+        UnitCommandPutDTO attackPostDTO = new UnitCommandPutDTO();
+        attackPostDTO.setStart(positionDTO1);
+        attackPostDTO.setEnd(positionDTO2);
+        MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/attack")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(attackPostDTO))
                 .header("token", TOKEN);
@@ -80,32 +78,18 @@ class GameControllerTest {
     }
 
     @Test
-    void test_unitMove() throws Exception {
-        MovePostDTO movePostDTO = new MovePostDTO();
-        movePostDTO.setStart(positionDTO1);
-        movePostDTO.setEnd(positionDTO2);
-        MockHttpServletRequestBuilder request = post("/v1/game/match/101/command/move")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(movePostDTO))
-                .header("token", TOKEN);
-
-        mockMvc.perform(request).andExpect(status().is2xxSuccessful());
-
-        verify(gameService).unitMove(MATCH_ID, TOKEN, position1, position2);
-    }
-
-    @Test
     void test_unitWait() throws Exception {
-        WaitPostDTO waitPostDTO = new WaitPostDTO();
-        waitPostDTO.setUnitPosition(positionDTO1);
-        MockHttpServletRequestBuilder request = post("/v1/game/match/101/command/wait")
+        UnitCommandPutDTO unitCommandPutDTO = new UnitCommandPutDTO();
+        unitCommandPutDTO.setStart(positionDTO1);
+        unitCommandPutDTO.setEnd(positionDTO2);
+        MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/wait")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(waitPostDTO))
+                .content(asJsonString(unitCommandPutDTO))
                 .header("token", TOKEN);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
-        verify(gameService).unitWait(MATCH_ID, TOKEN, position1);
+        verify(gameService).unitWait(MATCH_ID, TOKEN, position1, position2);
     }
 
     /**

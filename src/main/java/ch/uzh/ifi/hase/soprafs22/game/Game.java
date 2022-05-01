@@ -123,7 +123,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+    public void unitWait(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,

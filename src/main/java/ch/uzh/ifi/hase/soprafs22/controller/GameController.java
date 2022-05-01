@@ -1,9 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.AttackPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.MovePostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.WaitPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,21 +27,21 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping("/{apiVersion}/game/match/{id}/command/attack")
+    @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody AttackPostDTO attackPostDTO) {
-        Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getAttacker());
-        Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(attackPostDTO.getDefender());
+    public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
+        Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getStart());
+        Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
 
         gameService.unitAttack(id, token, attacker, defender);
     }
 
-    @PostMapping("/{apiVersion}/game/match/{id}/command/move")
+    @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unitMove(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody MovePostDTO movePostDTO) {
-        Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getStart());
-        Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(movePostDTO.getEnd());
+    public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
+        Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getStart());
+        Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
 
-        gameService.unitMove(id, token, start, end);
+        gameService.unitWait(id, token, start, end);
     }
 }
