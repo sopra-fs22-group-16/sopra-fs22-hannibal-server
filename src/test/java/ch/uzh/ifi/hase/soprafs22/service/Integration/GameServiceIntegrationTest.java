@@ -137,109 +137,56 @@ class GameServiceIntegrationTest {
 
     // TODO test for TargetUnreachableException once it is implemented in units.
     @Test
-    void move_NotPlayersTurnException() {
+    void wait_NotPlayersTurnException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_2.getToken(), redUnitPosition, noUnitPosition));
+                () -> gameService.unitWait(GAME_ID, PLAYER_2.getToken(), redUnitPosition, noUnitPosition));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
     @Test
-    void move_TileOutOfRangeException() {
+    void wait_TileOutOfRangeException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), OUT_OF_RANGE_POSITION, noUnitPosition));
+                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), OUT_OF_RANGE_POSITION, noUnitPosition));
 
         assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatus());
     }
 
     @Test
-    void move_NotAMemberOfGameException() {
+    void wait_NotAMemberOfGameException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, "wrong token", redUnitPosition, noUnitPosition));
+                () -> gameService.unitWait(GAME_ID, "wrong token", redUnitPosition, noUnitPosition));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
     @Test
-    void move_UnitNotFoundException() {
+    void wait_UnitNotFoundException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), noUnitPosition, noUnitPosition));
+                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), noUnitPosition, noUnitPosition));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
     @Test
-    void move_GameNotFoundException() {
+    void wait_GameNotFoundException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(NO_GAME_ID, PLAYER_1.getToken(), redUnitPosition, noUnitPosition));
+                () -> gameService.unitWait(NO_GAME_ID, PLAYER_1.getToken(), redUnitPosition, noUnitPosition));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
     @Test
-    void move_WrongUnitOwnerException() {
+    void wait_WrongUnitOwnerException() {
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), blueUnitPosition, noUnitPosition));
+                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), blueUnitPosition, noUnitPosition));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
     @Test
-    void move_OK() {
-        gameService.unitMove(GAME_ID, PLAYER_1.getToken(), redUnitPosition, noUnitPosition);
-    }
-
-    @Test
-    void unitWait_NotPlayersTurnException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(GAME_ID, PLAYER_2.getToken(), redUnitPosition));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-    }
-
-    @Test
-    void unitWait_TileOutOfRangeException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), OUT_OF_RANGE_POSITION));
-
-        assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatus());
-    }
-
-    @Test
-    void unitWait_NotAMemberOfGameException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(GAME_ID, "bad token", redUnitPosition));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-    }
-
-    @Test
-    void unitWait_UnitNotFoundException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), noUnitPosition));
-
-        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
-    }
-
-    @Test
-    void GameNotFoundException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(NO_GAME_ID, PLAYER_1.getToken(), redUnitPosition));
-
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    }
-
-    @Test
-    void unitWait_WrongUnitOwnerException() {
-        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitWait(GAME_ID, PLAYER_1.getToken(), blueUnitPosition));
-
-        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
-    }
-
-    @Test
-    void unitWait_OK() {
-        gameService.unitWait(GAME_ID, PLAYER_1.getToken(), redUnitPosition);
+    void wait_OK() {
+        gameService.unitWait(GAME_ID, PLAYER_1.getToken(), redUnitPosition, noUnitPosition);
     }
 
     private Position positionWithTeamUnit(Game game, Team team) {

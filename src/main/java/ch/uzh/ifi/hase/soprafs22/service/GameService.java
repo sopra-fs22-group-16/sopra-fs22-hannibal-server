@@ -83,9 +83,9 @@ public class GameService {
         }
     }
 
-    public void unitMove(Long id, String token, Position start, Position end) {
+    public void unitWait(Long id, String token, Position start, Position end) {
         try {
-            getGameById(id).unitMove(token, start, end);
+            getGameById(id).unitWait(token, start, end);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -107,33 +107,6 @@ public class GameService {
         }
         catch (TargetUnreachableException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit " + e.getUnit().getType().name() + " cannot move from " + e.getStart() + " to " + e.getEnd(), e);
-        }
-        catch (WrongUnitOwnerException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getUnit() + DOES_NOT_BELONG_TO_THE_PLAYER, e);
-        }
-    }
-
-    public void unitWait(Long id, String token, Position position) {
-        try {
-            getGameById(id).unitWait(token, position);
-        }
-        catch (NotPlayersTurnException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
-        }
-        catch (TileOutOfRangeException e) {
-            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, TILE + e.getPosition() + IS_OUT_OF_RANGE, e);
-        }
-        catch (NotAMemberOfGameException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_A_MEMBER_OF_THE_GAME, e);
-        }
-        catch (GameOverException e) {
-            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
-        }
-        catch (UnitNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT_NOT_FOUND_IN + e.getPosition() + ".", e);
-        }
-        catch (GameNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
         }
         catch (WrongUnitOwnerException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getUnit() + DOES_NOT_BELONG_TO_THE_PLAYER, e);

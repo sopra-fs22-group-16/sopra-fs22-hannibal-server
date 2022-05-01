@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
@@ -53,7 +54,11 @@ public class Game {
         for (IPlayer player : playerMap.values()) {
             List<Unit> filteredUnitList = unitList.stream()
                     .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
-            this.playerMap.put(player.getToken(), new PlayerDecorator(player, filteredUnitList));
+            PlayerDecorator playerDecorator = new PlayerDecorator(player, filteredUnitList);
+            for (Unit u : filteredUnitList) {
+                u.addObserver(playerDecorator);
+            }
+            this.playerMap.put(player.getToken(), playerDecorator);
         }
     }
 
@@ -123,7 +128,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+    public void unitWait(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -140,7 +145,7 @@ public class Game {
             throw new UnitNotFoundException(start);
         Unit movingUnit = movingUnitOptional.get();
         ensureUnitOwner(movingUnit, token);
-        movingUnit.move(start, end);
+        movingUnit.setPosition(end);
     }
 
     public void unitWait(String token, Position position) throws NotPlayersTurnException,
@@ -158,7 +163,6 @@ public class Game {
             throw new UnitNotFoundException(position);
         Unit waitingUnit = waitingUnitOptional.get();
         ensureUnitOwner(waitingUnit, token);
-        waitingUnit.unitWait();
     }
 
     private void ensureMember(String token) throws NotAMemberOfGameException {
