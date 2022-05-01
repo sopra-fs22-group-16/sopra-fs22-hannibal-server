@@ -33,7 +33,7 @@ public class PlayerDecorator extends BasePlayerDecorator implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (((Unit) o).getHealth() <= 0) {
+        if (o instanceof Unit && ((Unit) o).getHealth() <= 0) {
             units.remove(o);
         }
     }
