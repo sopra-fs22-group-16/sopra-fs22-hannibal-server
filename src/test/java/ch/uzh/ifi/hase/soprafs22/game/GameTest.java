@@ -43,13 +43,14 @@ class GameTest {
                 .findAny() //Find the first one
                 .get();
     }
+
     private Position positionWithNoUnit(Game game) {
         Set<Position> occupiedPositions = game.getPlayerMap().values().stream()//Get all players
                 .flatMap(player -> player.getUnits().stream())//Get their units.
                 .map(Unit::getPosition) // Get their positions
                 .collect(Collectors.toSet()); // Store them in a set.
         List<List<Tile>> tiles = game.getGameMap().getTiles();
-        for (int x =0; x < tiles.size(); x++)
+        for (int x = 0; x < tiles.size(); x++)
             for (int y = 0; y < tiles.get(x).size(); y++) {
                 Position position = new Position(x, y);
                 if (occupiedPositions.contains(position))
