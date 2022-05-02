@@ -420,7 +420,7 @@ class LobbyServiceIntegrationTests {
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
         IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
-        
+
         // set players ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);

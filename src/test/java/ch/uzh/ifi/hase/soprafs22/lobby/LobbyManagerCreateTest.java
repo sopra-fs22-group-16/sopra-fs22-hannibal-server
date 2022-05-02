@@ -14,12 +14,12 @@ class LobbyManagerCreateTest {
     private static LobbyManager lobbyManager;
 
     @BeforeAll
-    static void setup(){
+    static void setup() {
         lobbyManager = LobbyManager.getInstance();
     }
 
     @BeforeEach
-    public void before(){
+    public void before() {
         // Clear lobbyManager lobby list
         lobbyManager.clear();
     }
@@ -87,7 +87,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    void removeLobbyWithId_removed(){
+    void removeLobbyWithId_removed() {
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
@@ -106,7 +106,7 @@ class LobbyManagerCreateTest {
     }
 
     @Test
-    void getLobbyWithId(){
+    void getLobbyWithId() {
         try {
             // Fill lobby list
             ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PlayerTest {
 
     @Test
-    void linkRegisteredUser(){
+    void linkRegisteredUser() {
 
         // given
         RegisteredUser registeredUser = new RegisteredUser();
@@ -28,7 +28,7 @@ class PlayerTest {
     }
 
     @Test
-    void setUsername_registeredUser_noChange(){
+    void setUsername_registeredUser_noChange() {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
         registeredUser.setUsername("registeredUsername");
