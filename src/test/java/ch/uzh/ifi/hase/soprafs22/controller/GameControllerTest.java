@@ -81,7 +81,7 @@ class GameControllerTest {
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
         verify(gameService).unitAttack(MATCH_ID, TOKEN, position1, position2);
-        verify(socketMessage).convertAndSend(eq("/topic/game/101"), eq("{position:{\"x\":3,\"y\":4}, health:0}"));
+        verify(socketMessage).convertAndSend(eq("/topic/game/101"), eq("{\"start\": {\"x\":1,\"y\":2}, \"end\": {\"x\":3,\"y\":4}, \"defenderPosition\":{\"x\":3,\"y\":4}, \"health\":0}"));
     }
 
     @Test
@@ -97,6 +97,7 @@ class GameControllerTest {
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
         verify(gameService).unitWait(MATCH_ID, TOKEN, position1, position2);
+        verify(socketMessage).convertAndSend(eq("/topic/game/101"), eq("{\"start\": {\"x\":1,\"y\":2}, \"end\": {\"x\":3,\"y\":4}}"));
     }
 
     /**

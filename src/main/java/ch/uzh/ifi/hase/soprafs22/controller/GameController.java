@@ -46,8 +46,11 @@ public class GameController {
         Unit defendingUnit = gameService.unitAttack(id, token, attacker, defender);
 
         try {
-            String positionJson = asJsonString(DTOMapper.INSTANCE.convertPositionToPositionDTO(defendingUnit.getPosition()));
-            String payload = String.format("{position:%s, health:%s}", positionJson, defendingUnit.getHealth());
+            String startPosition = asJsonString(unitCommandPutDTO.getStart());
+            String endPosition = asJsonString(unitCommandPutDTO.getEnd());
+            String defenderPosition = asJsonString(DTOMapper.INSTANCE.convertPositionToPositionDTO(defendingUnit.getPosition()));
+            String payload = String.format("{\"start\": %s, \"end\": %s, \"defenderPosition\":%s, \"health\":%s}",
+                    startPosition, endPosition, defenderPosition, defendingUnit.getHealth());
             socketMessage.convertAndSend(TOPIC_GAME + id, payload);
         }
         catch (JsonProcessingException e) {
@@ -63,6 +66,16 @@ public class GameController {
         Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
 
         gameService.unitWait(id, token, start, end);
+        try {
+            String startPosition = asJsonString(unitCommandPutDTO.getStart());
+            String endPosition = asJsonString(unitCommandPutDTO.getEnd());
+            String payload = String.format("{\"start\": %s, \"end\": %s}", startPosition, endPosition);
+            socketMessage.convertAndSend(TOPIC_GAME + id, payload);
+        }
+        catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    String.format("Message body could not be sent: %s", e));
+        }
     }
 
     private static String asJsonString(final Object object) throws JsonProcessingException {
