@@ -95,4 +95,8 @@ public abstract class DTOMapper {
         }
         return unitList;
     }
+
+    @Mapping(source = "x", target="x")
+    @Mapping(source = "y", target="y")
+    public abstract PositionDTO convertPositionToPositionDTO(Position position);
 }

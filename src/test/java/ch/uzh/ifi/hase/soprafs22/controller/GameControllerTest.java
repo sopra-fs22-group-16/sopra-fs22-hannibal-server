@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
@@ -18,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,10 +74,14 @@ class GameControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(attackPostDTO))
                 .header("token", TOKEN);
+        Unit unit = mock(Unit.class);
+        when(unit.getPosition()).thenReturn(position2);
+        when(gameService.unitAttack(any(), any(), any(), any())).thenReturn(unit);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
 
         verify(gameService).unitAttack(MATCH_ID, TOKEN, position1, position2);
+        verify(socketMessage).convertAndSend(eq("/topic/game/101"), eq("{position:{\"x\":3,\"y\":4}, health:0}"));
     }
 
     @Test

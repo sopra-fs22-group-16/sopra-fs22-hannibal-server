@@ -90,7 +90,10 @@ public class Game {
         return turnOrder[turnNumber % turnOrder.length].equals(token);
     }
 
-    public void unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+    /**
+     * Returns the defending unit, with the updated health.
+     */
+    public Unit unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
             TileOutOfRangeException,
             AttackOutOfRangeException,
             NotAMemberOfGameException,
@@ -115,6 +118,7 @@ public class Game {
         ensureUnitEnemy(attackingUnit, defendingUnit);
 
         attackingUnit.attack(defendingUnit);
+        return defendingUnit;
     }
 
     private void ensureWithinRange(Position position) throws TileOutOfRangeException {
