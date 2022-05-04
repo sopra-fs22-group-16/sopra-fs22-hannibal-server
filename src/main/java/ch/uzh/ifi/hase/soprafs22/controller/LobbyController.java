@@ -32,7 +32,7 @@ import java.util.Map;
 public class LobbyController {
     @Value("${api.version}")
     private String apiVersion;
-
+    private static final String TOPIC_LOBBY = "/topic/lobby/";  // Compliant
     private final LobbyService lobbyService;
 
     @Autowired
@@ -88,7 +88,7 @@ public class LobbyController {
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
     }
 
     @PutMapping("/{apiVersion}/game/lobby/{id}")
@@ -107,7 +107,7 @@ public class LobbyController {
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
     }
 
     @GetMapping("/{apiVersion}/game/lobby/{id}/qrcode")
@@ -143,7 +143,7 @@ public class LobbyController {
         lobbyService.createGame(token, lobbyId);
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/" + lobbyId, "GameCreated");
+        socketMessage.convertAndSend(TOPIC_LOBBY + lobbyId, "GameCreated");
     }
 
     @GetMapping("/{apiVersion}/game/match/{lobbyId}")
@@ -164,7 +164,7 @@ public class LobbyController {
         lobbyService.removePlayerFromLobby(token, id);
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
 
     }
 
@@ -179,7 +179,7 @@ public class LobbyController {
         PlayerWithTokenGetDTO playerWithTokenGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerWithTokenGetDTO(newPlayer);
 
         // send message to client via socket
-        socketMessage.convertAndSend("/topic/lobby/" + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
 
         return playerWithTokenGetDTO;
     }

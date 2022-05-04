@@ -20,7 +20,7 @@ public class LobbyManager implements ILobbyManager {
 
     private static final LobbyManager uniqueInstance = new LobbyManager();
 
-    private final HashMap<Long, ILobby> lobbyMap;
+    private final Map<Long, ILobby> lobbyMap;
 
     private LobbyManager() {
         this.lobbyMap = new HashMap<>();

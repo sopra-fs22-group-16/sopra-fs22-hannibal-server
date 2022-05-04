@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-public class MovePostDTO {
+public class UnitCommandPutDTO {
     private PositionDTO start;
     private PositionDTO end;
 

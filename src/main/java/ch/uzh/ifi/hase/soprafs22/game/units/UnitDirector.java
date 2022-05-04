@@ -1,10 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game.units;
 
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
-import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IUnitBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

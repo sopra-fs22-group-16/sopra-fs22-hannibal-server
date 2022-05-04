@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DTOMapperTest {
 
-    private static final ILobby LOBBY = new Lobby(1L,"myLobbyName", Visibility.PRIVATE);
+    private static final ILobby LOBBY = new Lobby(1L, "myLobbyName", Visibility.PRIVATE);
+
     @Test
     void testCreateLobby_fromLobby_toLobbyGetDTO_success() {
         // create Lobby

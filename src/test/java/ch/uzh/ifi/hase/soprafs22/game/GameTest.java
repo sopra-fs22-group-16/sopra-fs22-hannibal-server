@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,13 +43,14 @@ class GameTest {
                 .findAny() //Find the first one
                 .get();
     }
+
     private Position positionWithNoUnit(Game game) {
         Set<Position> occupiedPositions = game.getPlayerMap().values().stream()//Get all players
                 .flatMap(player -> player.getUnits().stream())//Get their units.
                 .map(Unit::getPosition) // Get their positions
                 .collect(Collectors.toSet()); // Store them in a set.
         List<List<Tile>> tiles = game.getGameMap().getTiles();
-        for (int x =0; x < tiles.size(); x++)
+        for (int x = 0; x < tiles.size(); x++)
             for (int y = 0; y < tiles.get(x).size(); y++) {
                 Position position = new Position(x, y);
                 if (occupiedPositions.contains(position))
@@ -159,27 +159,27 @@ class GameTest {
     // TODO test TargetUnreachableException for move.
     @Test
     void move_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.unitMove("badToken", redUnitPosition, blueUnitPosition));
+        assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.unitMove("token1", redUnitPosition, blueUnitPosition));
+        assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_nonUnit_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitMove("token0", noUnitPosition, blueUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void move_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.unitMove("token0", blueUnitPosition, redUnitPosition));
+        assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition, redUnitPosition));
     }
 
     @Test
     void move_good() throws Exception {
-        game.unitMove("token0", redUnitPosition, noUnitPosition);
+        game.unitWait("token0", redUnitPosition, noUnitPosition);
     }
 
     @Test

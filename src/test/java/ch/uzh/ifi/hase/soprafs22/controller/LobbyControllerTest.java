@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
@@ -64,10 +63,10 @@ class LobbyControllerTest {
         // then
         mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.id", is((int) lobby.getId())))
                 .andExpect(jsonPath("$.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.hostId", is((int)lobby.getHost().getId())))
-                .andExpect(jsonPath("$.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.hostId", is((int) lobby.getHost().getId())))
+                .andExpect(jsonPath("$.players[0].id", is((int) lobby.getHost().getId())))
                 .andExpect(jsonPath("$.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.players[0].team", is(lobby.getHost().getTeam().ordinal())))
@@ -78,7 +77,7 @@ class LobbyControllerTest {
     }
 
     @Test
-    void  unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
+    void unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -104,10 +103,10 @@ class LobbyControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.lobby.id", is((int) lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.hostId", is((int)lobby.getHost().getId())))
-                .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.hostId", is((int) lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].id", is((int) lobby.getHost().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().ordinal())))
@@ -116,12 +115,12 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
                 .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
-                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
+                .andExpect(jsonPath("$.playerId", is((int) lobby.getHost().getId())));
 
     }
 
     @Test
-    void  registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
+    void registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -148,10 +147,10 @@ class LobbyControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.lobby.id", is((int)lobby.getId())))
+                .andExpect(jsonPath("$.lobby.id", is((int) lobby.getId())))
                 .andExpect(jsonPath("$.lobby.name", is(lobby.getName())))
-                .andExpect(jsonPath("$.lobby.hostId", is((int)lobby.getHost().getId())))
-                .andExpect(jsonPath("$.lobby.players[0].id", is((int)lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.hostId", is((int) lobby.getHost().getId())))
+                .andExpect(jsonPath("$.lobby.players[0].id", is((int) lobby.getHost().getId())))
                 .andExpect(jsonPath("$.lobby.players[0].name", is(lobby.getHost().getName())))
                 .andExpect(jsonPath("$.lobby.players[0].ready", is(lobby.getHost().isReady())))
                 .andExpect(jsonPath("$.lobby.players[0].team", is(lobby.getHost().getTeam().ordinal())))
@@ -160,11 +159,11 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.lobby.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.lobby.invitationCode", is(lobby.getInvitationCode())))
                 .andExpect(jsonPath("$.token", is(lobby.getHost().getToken())))
-                .andExpect(jsonPath("$.playerId", is((int)lobby.getHost().getId())));
+                .andExpect(jsonPath("$.playerId", is((int) lobby.getHost().getId())));
     }
 
     @Test
-    void  validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
+    void validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
@@ -180,7 +179,7 @@ class LobbyControllerTest {
 
             // Using parseInt() method of Integer class
             int val = Integer.parseInt(hexByteCodeSampleImage.substring(index, index + 2), 16);
-            qrCode[i] = (byte)val;
+            qrCode[i] = (byte) val;
         }
 
         // this mocks the LobbyService -> we define above what the userService should
@@ -201,7 +200,7 @@ class LobbyControllerTest {
     }
 
     @Test
-    void  createLobby_thenLeaveLobby() throws Exception {
+    void createLobby_thenLeaveLobby() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);

@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
@@ -24,7 +25,7 @@ public class Game {
     private boolean running;
 
 
-    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap){
+    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
@@ -32,27 +33,32 @@ public class Game {
         this.turnOrder = new String[playerMap.size()];
         this.running = true;
 
-        for(IPlayer player: playerMap.values()){
+        for (IPlayer player : playerMap.values()) {
             int teamNumber = player.getTeam().ordinal();
-            if(turnOrder[teamNumber] == null){
+            if (turnOrder[teamNumber] == null) {
                 turnOrder[teamNumber] = player.getToken();
-            }else if( turnOrder.length > 2 && turnOrder[teamNumber+2] == null ){
-                turnOrder[teamNumber+2] = player.getToken();
+            }
+            else if (turnOrder.length > 2 && turnOrder[teamNumber + 2] == null) {
+                turnOrder[teamNumber + 2] = player.getToken();
             }
         }
 
         List<Unit> unitList = new ArrayList<>();
         //TODO Potential Feature: RANKED games get a harder map
-        if(gameType==GameType.UNRANKED||gameType==GameType.RANKED){
+        if (gameType == GameType.UNRANKED || gameType == GameType.RANKED) {
             this.gameMap = new MapLoader().deserialize("beginner_map.json");
             unitList = new UnitsLoader().deserialize("beginner_map.json");
         }
 
         // Convert players to PlayerDecorators
-        for(IPlayer player: playerMap.values()){
+        for (IPlayer player : playerMap.values()) {
             List<Unit> filteredUnitList = unitList.stream()
                     .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
-            this.playerMap.put(player.getToken(), new PlayerDecorator(player, filteredUnitList));
+            PlayerDecorator playerDecorator = new PlayerDecorator(player, filteredUnitList);
+            for (Unit u : filteredUnitList) {
+                u.addObserver(playerDecorator);
+            }
+            this.playerMap.put(player.getToken(), playerDecorator);
         }
     }
 
@@ -72,15 +78,15 @@ public class Game {
         return gameMap;
     }
 
-    public int nextTurn(){
+    public int nextTurn() {
         return ++turnNumber;
     }
 
-    public boolean hasEnded(){
+    public boolean hasEnded() {
         return !running;
     }
 
-    public boolean isPlayersTurn(String token){
+    public boolean isPlayersTurn(String token) {
         return turnOrder[turnNumber % turnOrder.length].equals(token);
     }
 
@@ -122,7 +128,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+    public void unitWait(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -139,7 +145,7 @@ public class Game {
             throw new UnitNotFoundException(start);
         Unit movingUnit = movingUnitOptional.get();
         ensureUnitOwner(movingUnit, token);
-        movingUnit.move(start, end);
+        movingUnit.setPosition(end);
     }
 
     public void unitWait(String token, Position position) throws NotPlayersTurnException,
@@ -157,7 +163,6 @@ public class Game {
             throw new UnitNotFoundException(position);
         Unit waitingUnit = waitingUnitOptional.get();
         ensureUnitOwner(waitingUnit, token);
-        waitingUnit.unitWait();
     }
 
     private void ensureMember(String token) throws NotAMemberOfGameException {

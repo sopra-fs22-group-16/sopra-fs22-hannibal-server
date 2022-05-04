@@ -31,6 +31,10 @@ import java.util.Collection;
 public class LobbyService {
     private final UserRepository userRepository;
     private final LobbyManager lobbyManager;
+    private static final String CREATED = "created";
+    private static final String ACCESSED = "accessed";
+    private static final String TOKEN = "token";
+    private static final String UPDATED = "updated";
 
     @Autowired
     public LobbyService(UserRepository userRepository) {
@@ -61,10 +65,10 @@ public class LobbyService {
     public ILobby createLobby(String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
 
         // Check if values are valid
-        checkStringConfigNullOrEmpty(lobbyName, "name", "created");
-        checkEnumConfigNull(visibility, "visibility", "created");
-        checkEnumConfigNull(gameMode, "game mode", "created");
-        checkEnumConfigNull(gameType, "game type", "created");
+        checkStringConfigNullOrEmpty(lobbyName, "name", CREATED);
+        checkEnumConfigNull(visibility, "visibility", CREATED);
+        checkEnumConfigNull(gameMode, "game mode", CREATED);
+        checkEnumConfigNull(gameType, "game type", CREATED);
 
         RegisteredUser registeredUser = null;
         // Check if token is set, then find user with token and link him to the host player
@@ -116,21 +120,21 @@ public class LobbyService {
      */
     public ILobby getLobby(String token, Long lobbyId) {
 
-        checkStringConfigNullOrEmpty(token, "token", "accessed");
+        checkStringConfigNullOrEmpty(token, TOKEN, ACCESSED);
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        checkUserIsInLobby(lobby, token, "accessed");
+        checkUserIsInLobby(lobby, token, ACCESSED);
 
         return lobby;
     }
 
     public byte[] getQRCodeFromLobby(String token, Long lobbyId) {
-        checkStringConfigNullOrEmpty(token, "token", "accessed");
+        checkStringConfigNullOrEmpty(token, TOKEN, ACCESSED);
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        checkUserIsInLobby(lobby, token, "accessed");
+        checkUserIsInLobby(lobby, token, ACCESSED);
 
         try {
             return lobby.getQrCode();
@@ -158,14 +162,14 @@ public class LobbyService {
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
-        checkStringConfigNullOrEmpty(token, "token", "updated");
+        checkStringConfigNullOrEmpty(token, TOKEN, UPDATED);
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
-        checkStringConfigNullOrEmpty(lobbyName, "name", "updated");
-        checkEnumConfigNull(visibility, "visibility", "updated");
-        checkEnumConfigNull(gameMode, "game mode", "updated");
-        checkEnumConfigNull(gameType, "game type", "updated");
+        checkStringConfigNullOrEmpty(lobbyName, "name", UPDATED);
+        checkEnumConfigNull(visibility, "visibility", UPDATED);
+        checkEnumConfigNull(gameMode, "game mode", UPDATED);
+        checkEnumConfigNull(gameType, "game type", UPDATED);
 
         // Check if lobby name already exists
         if (lobbyManager.getLobbyWithName(lobbyName) != null && !lobbyManager.getLobbyWithName(lobbyName).equals(lobby)) {
@@ -209,9 +213,8 @@ public class LobbyService {
     /**
      * Create a game for a lobby
      *
-     * @param token token of the user that tries to start a game
+     * @param token   token of the user that tries to start a game
      * @param lobbyId id of the lobby for which a game should be created
-     *
      * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a game with players that are not ready
      * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a ranked game with players that are not registered
      * @throws ResponseStatusException with HttpStatus.BadRequest If the user tried to start a game in a not complete lobby
@@ -223,7 +226,7 @@ public class LobbyService {
     public Game createGame(String token, long lobbyId) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        checkStringConfigNullOrEmpty(token, "token", "updated");
+        checkStringConfigNullOrEmpty(token, TOKEN, UPDATED);
 
         // Check that the user is the host
         if (!lobby.getHost().getToken().equals(token)) {
@@ -263,7 +266,7 @@ public class LobbyService {
     }
 
     private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
-        if (fieldName.equals("token")) {
+        if (fieldName.equals(TOKEN)) {
             if (s == null || s.isEmpty()) {
                 String errorMessage = "The user needs to provide authentication to retrieve lobby information."
                         + "Therefore, the lobby could not be " + errorMessageEnding + "!";
@@ -314,10 +317,8 @@ public class LobbyService {
     public IPlayer addPlayer(String invitationCode, Long lobbyId) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
-        if (invitationCode != null) {
-            if (!lobby.getInvitationCode().equals(invitationCode)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
-            }
+        if (invitationCode != null && !lobby.getInvitationCode().equals(invitationCode)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
         }
         IPlayer newPlayer = lobby.generatePlayer();
 

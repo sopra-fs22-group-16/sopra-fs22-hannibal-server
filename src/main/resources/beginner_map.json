@@ -1506,16 +1506,16 @@
         "traversingCost": 1,
         "unit": {
           "type": "knight",
-          "health": 125,
+          "health": 100,
           "defense": [
-            25,
-            15,
-            5
+            1.25,
+            1,
+            1.5
           ],
           "attackDamage": [
             50,
             25,
-            10
+            25
           ],
           "attackRange": 1,
           "movementRange": 2,
@@ -1625,18 +1625,18 @@
         "traversingCost": 1,
         "unit": {
           "type": "archer",
-          "health": 100,
+          "health": 75,
           "defense": [
-            15,
-            5,
-            5
+            1,
+            1.5,
+            2
           ],
           "attackDamage": [
             25,
-            10,
+            15,
             50
           ],
-          "attackRange": 5,
+          "attackRange": 4,
           "movementRange": 3,
           "commands": [
             "move",
@@ -1719,30 +1719,7 @@
         "type": "grass",
         "variant": "flat",
         "traversable": true,
-        "traversingCost": 1,
-        "unit": {
-          "type": "archer",
-          "health": 100,
-          "defense": [
-            15,
-            5,
-            5
-          ],
-          "attackDamage": [
-            25,
-            10,
-            50
-          ],
-          "attackRange": 5,
-          "movementRange": 3,
-          "commands": [
-            "move",
-            "attack",
-            "wait"
-          ],
-          "teamId": 0,
-          "userId": 0
-        }
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1917,14 +1894,14 @@
           "type": "war_elephant",
           "health": 150,
           "defense": [
-            5,
-            25,
-            15
+            1.25,
+            1.5,
+            1
           ],
           "attackDamage": [
             25,
             50,
-            25
+            50
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2078,14 +2055,14 @@
           "type": "war_elephant",
           "health": 150,
           "defense": [
-            5,
-            25,
-            15
+            1.25,
+            1.5,
+            1
           ],
           "attackDamage": [
             25,
             50,
-            25
+            50
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2343,18 +2320,18 @@
         "traversingCost": 1,
         "unit": {
           "type": "archer",
-          "health": 100,
+          "health": 75,
           "defense": [
-            15,
-            5,
-            5
+            1,
+            1.5,
+            2
           ],
           "attackDamage": [
             25,
-            10,
+            15,
             50
           ],
-          "attackRange": 5,
+          "attackRange": 4,
           "movementRange": 3,
           "commands": [
             "move",
@@ -2462,16 +2439,16 @@
         "traversingCost": 1,
         "unit": {
           "type": "knight",
-          "health": 125,
+          "health": 100,
           "defense": [
-            25,
-            15,
-            5
+            1.25,
+            1,
+            1.5
           ],
           "attackDamage": [
             50,
             25,
-            10
+            25
           ],
           "attackRange": 1,
           "movementRange": 2,
