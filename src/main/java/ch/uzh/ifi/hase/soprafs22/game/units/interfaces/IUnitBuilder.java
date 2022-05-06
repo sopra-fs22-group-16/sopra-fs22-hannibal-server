@@ -7,9 +7,9 @@ public interface IUnitBuilder {
 
     void setHealth(int health);
 
-    void setDefenseList(List<Integer> defense);
+    void setDefense(List<Double> defense);
 
-    void setAttackDamageList(List<Integer> attackDamage);
+    void setAttackDamage(List<Double> attackDamage);
 
     void setAttackRange(int attackRange);
 
