@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ public class GameGetDTO {
     private GameMode gameMode;
     private GameType gameType;
     private GameMap gameMap;
-    private List<Unit> units;
+    private List<UnitGetDTO> units;
 
     public GameMode getGameMode() {
         return gameMode;
@@ -37,11 +36,11 @@ public class GameGetDTO {
         return gameMap;
     }
 
-    public List<Unit> getUnits() {
+    public List<UnitGetDTO> getUnits() {
         return units;
     }
 
-    public void setUnits(List<Unit> units) {
+    public void setUnits(List<UnitGetDTO> units) {
         this.units = units;
     }
 }

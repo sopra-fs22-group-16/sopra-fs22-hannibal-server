@@ -1509,13 +1509,13 @@
           "health": 100,
           "defense": [
             1.25,
-            1,
+            1.0,
             1.5
           ],
           "attackDamage": [
-            50,
-            25,
-            25
+            50.0,
+            25.0,
+            25.0
           ],
           "attackRange": 1,
           "movementRange": 2,
@@ -1627,14 +1627,14 @@
           "type": "archer",
           "health": 75,
           "defense": [
-            1,
+            1.0,
             1.5,
-            2
+            2.0
           ],
           "attackDamage": [
-            25,
-            15,
-            50
+            25.0,
+            15.0,
+            50.0
           ],
           "attackRange": 4,
           "movementRange": 3,
@@ -1896,12 +1896,12 @@
           "defense": [
             1.25,
             1.5,
-            1
+            1.0
           ],
           "attackDamage": [
-            25,
-            50,
-            50
+            25.0,
+            50.0,
+            50.0
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2057,12 +2057,12 @@
           "defense": [
             1.25,
             1.5,
-            1
+            1.0
           ],
           "attackDamage": [
-            25,
-            50,
-            50
+            25.0,
+            50.0,
+            50.0
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2322,14 +2322,14 @@
           "type": "archer",
           "health": 75,
           "defense": [
-            1,
+            1.0,
             1.5,
-            2
+            2.0
           ],
           "attackDamage": [
-            25,
-            15,
-            50
+            25.0,
+            15.0,
+            50.0
           ],
           "attackRange": 4,
           "movementRange": 3,
@@ -2442,13 +2442,13 @@
           "health": 100,
           "defense": [
             1.25,
-            1,
+            1.0,
             1.5
           ],
           "attackDamage": [
-            50,
-            25,
-            25
+            50.0,
+            25.0,
+            25.0
           ],
           "attackRange": 1,
           "movementRange": 2,
