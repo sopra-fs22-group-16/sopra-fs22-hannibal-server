@@ -7,11 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerWithTokenGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -85,15 +81,29 @@ public abstract class DTOMapper {
     @Mapping(source = "playerMap", target = "units")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 
+    @Mapping(source = "type", target = "type")
+    @Mapping(source = "health", target = "health")
+    @Mapping(source = "defense", target = "defense")
+    @Mapping(source = "attackDamage", target = "attackDamage")
+    @Mapping(source = "attackRange", target = "attackRange")
+    @Mapping(source = "movementRange", target = "movementRange")
+    @Mapping(source = "commands", target = "commands")
+    @Mapping(source = "teamId", target = "teamId")
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "position", target = "position")
+    public abstract UnitGetDTO convertUnitToUnitDTO(Unit unit);
+
     public Position convertPositionDTOToPosition(PositionDTO position){
         return new Position(position.getX(), position.getY());
     }
-    protected List<Unit> convertPlayerMapToUnitList(Map<String, PlayerDecorator> playerMap){
-        List<Unit> unitList = new ArrayList<>();
+    protected List<UnitGetDTO> convertPlayerMapToUnitDTO(Map<String, PlayerDecorator> playerMap){
+        List<UnitGetDTO> units = new ArrayList<>();
         for(PlayerDecorator pd : playerMap.values()){
-            unitList.addAll(pd.getUnits());
+            for (Unit u: pd.getUnits()){
+                units.add(convertUnitToUnitDTO(u));
+            }
         }
-        return unitList;
+        return units;
     }
 
     @Mapping(source = "x", target="x")

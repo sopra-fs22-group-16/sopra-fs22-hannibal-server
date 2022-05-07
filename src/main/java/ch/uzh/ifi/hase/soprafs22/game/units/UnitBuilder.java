@@ -31,13 +31,13 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     @Override
-    public void setDefenseList(List<Integer> defense) {
-        this.result.setDefenseList(defense);
+    public void setDefense(List<Double> defense) {
+        this.result.setDefense(defense);
     }
 
     @Override
-    public void setAttackDamageList(List<Integer> attackDamage) {
-        this.result.setAttackDamageList(attackDamage);
+    public void setAttackDamage(List<Double> attackDamage) {
+        this.result.setAttackDamage(attackDamage);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class UnitBuilder implements IUnitBuilder {
                 default -> throw new IllegalArgumentException();
             }
         }
-        this.result.setCommandList(unitCommandList);
+        this.result.setCommands(unitCommandList);
     }
 
     @Override
