@@ -10,18 +10,11 @@ import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class GameTest {
 
@@ -30,16 +23,14 @@ class GameTest {
     Position redUnitPosition;
     Position blueUnitPosition;
     Position noUnitPosition;
-    SimpMessagingTemplate socketMessage;
 
     @BeforeEach
     void setUp() {
         playerMap = new HashMap<>();
         playerMap.put("token0", new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
-        socketMessage = mock(SimpMessagingTemplate.class);
+
         game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
-        game.setSocketMessage(socketMessage);
         redUnitPosition = positionWithTeamUnit(game, Team.RED);
         blueUnitPosition = positionWithTeamUnit(game, Team.BLUE);
         noUnitPosition = positionWithNoUnit(game);
@@ -88,9 +79,11 @@ class GameTest {
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
-        game.setSocketMessage(socketMessage);
-        game.nextTurn();
 
+        TurnInfo turn = game.nextTurn();
+
+        assertEquals(1, turn.getTurn()); // Games start at turn 0, not turn 1.
+        assertEquals(1, turn.getPlayerId());
         assertTrue(game.isPlayersTurn("token1"));
     }
 
@@ -101,10 +94,14 @@ class GameTest {
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
-        game.setSocketMessage(socketMessage);
-        game.nextTurn();
-        game.nextTurn();
 
+        TurnInfo turn1 = game.nextTurn();
+        TurnInfo turn2 = game.nextTurn();
+
+        assertEquals(1, turn1.getTurn());
+        assertEquals(1, turn1.getPlayerId());
+        assertEquals(2, turn2.getTurn());
+        assertEquals(0, turn2.getPlayerId());
         assertTrue(game.isPlayersTurn("token0"));
     }
 

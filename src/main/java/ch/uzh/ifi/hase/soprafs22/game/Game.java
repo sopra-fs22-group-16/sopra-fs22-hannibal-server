@@ -10,8 +10,6 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,8 +22,6 @@ public class Game {
     private int turnNumber;
     private String[] turnOrder;
     private boolean running;
-    @Autowired
-    SimpMessagingTemplate socketMessage;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
@@ -81,21 +77,23 @@ public class Game {
         return gameMap;
     }
 
-    public int nextTurn() {
-        // TODO test for real once turns can finish through the web.
-        ++turnNumber;
-        for (IPlayer player : playerMap.values()) {
-            String token = player.getToken();
-            if (isPlayersTurn(token))
-                socketMessage.convertAndSend("/topic/game/token" + token, "yes_turn");
-            else
-                socketMessage.convertAndSend("/topic/game/token" + token, "no_turn");
-        }
-        return turnNumber;
+
+    /**
+     * Make sure that this info makes it to GameController *EVERY* time there is a next turn.
+     * For example, if a movement ends the turn, this needs to be passed to GameController, if a player ends the turn,
+     * this needs to be returned to GameController.
+     * @return
+     */
+    public TurnInfo nextTurn() {
+        turnNumber++;
+        return currentTurn();
     }
 
-    public void setSocketMessage(SimpMessagingTemplate socketMessage) {
-        this.socketMessage = socketMessage;
+    private TurnInfo currentTurn() {
+        return TurnInfo.newBuilder()
+                .setTurn(turnNumber)
+                .setPlayerId(playerMap.get(turnOrder[turnNumber % turnOrder.length]).getId())
+                .build();
     }
 
     public boolean hasEnded() {
