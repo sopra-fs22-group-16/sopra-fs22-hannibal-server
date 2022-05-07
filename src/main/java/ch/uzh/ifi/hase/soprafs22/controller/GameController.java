@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,6 +25,9 @@ public class GameController {
     private String apiVersion;
 
     private final GameService gameService;
+
+    @Autowired
+    SimpMessagingTemplate socketMessage;
 
     GameController(GameService gameService) {
         this.gameService = gameService;
@@ -44,4 +50,9 @@ public class GameController {
 
         gameService.unitWait(id, token, start, end);
     }
+
+    private void pushTurnInfo(long id, TurnInfo turnInfo) {
+        socketMessage.convertAndSend("/topic/game/" + id, turnInfo);
+    }
+
 }
