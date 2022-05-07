@@ -724,8 +724,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -774,56 +774,56 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_inverted_top_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_top_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -906,8 +906,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -956,56 +956,56 @@
       {
         "type": "river",
         "variant": "corner_bottom_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_inverted_bottom_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -1088,8 +1088,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -1180,20 +1180,20 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -1270,8 +1270,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -1362,14 +1362,14 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -1452,8 +1452,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -1509,13 +1509,13 @@
           "health": 100,
           "defense": [
             1.25,
-            1,
+            1.0,
             1.5
           ],
           "attackDamage": [
-            50,
-            25,
-            25
+            50.0,
+            25.0,
+            25.0
           ],
           "attackRange": 1,
           "movementRange": 2,
@@ -1567,14 +1567,14 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -1627,14 +1627,14 @@
           "type": "archer",
           "health": 75,
           "defense": [
-            1,
+            1.0,
             1.5,
-            2
+            2.0
           ],
           "attackDamage": [
-            25,
-            15,
-            50
+            25.0,
+            15.0,
+            50.0
           ],
           "attackRange": 4,
           "movementRange": 3,
@@ -1680,8 +1680,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -1772,14 +1772,14 @@
       {
         "type": "bridge",
         "variant": "top_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "bridge",
         "variant": "top_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -1862,8 +1862,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
@@ -1896,12 +1896,12 @@
           "defense": [
             1.25,
             1.5,
-            1
+            1.0
           ],
           "attackDamage": [
-            25,
-            50,
-            50
+            25.0,
+            50.0,
+            50.0
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2057,12 +2057,12 @@
           "defense": [
             1.25,
             1.5,
-            1
+            1.0
           ],
           "attackDamage": [
-            25,
-            50,
-            50
+            25.0,
+            50.0,
+            50.0
           ],
           "attackRange": 1,
           "movementRange": 6,
@@ -2090,16 +2090,16 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       }
     ],
     [
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2182,14 +2182,14 @@
       {
         "type": "bridge",
         "variant": "bottom_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "bridge",
         "variant": "bottom_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2280,8 +2280,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2322,14 +2322,14 @@
           "type": "archer",
           "health": 75,
           "defense": [
-            1,
+            1.0,
             1.5,
-            2
+            2.0
           ],
           "attackDamage": [
-            25,
-            15,
-            50
+            25.0,
+            15.0,
+            50.0
           ],
           "attackRange": 4,
           "movementRange": 3,
@@ -2387,14 +2387,14 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2442,13 +2442,13 @@
           "health": 100,
           "defense": [
             1.25,
-            1,
+            1.0,
             1.5
           ],
           "attackDamage": [
-            50,
-            25,
-            25
+            50.0,
+            25.0,
+            25.0
           ],
           "attackRange": 1,
           "movementRange": 2,
@@ -2508,8 +2508,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2592,14 +2592,14 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2690,8 +2690,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2774,14 +2774,14 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2872,8 +2872,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -2956,56 +2956,56 @@
       {
         "type": "river",
         "variant": "left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_inverted_top_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "top",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_top_right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -3054,8 +3054,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -3138,56 +3138,56 @@
       {
         "type": "river",
         "variant": "corner_bottom_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "bottom",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "corner_inverted_bottom_left",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "river",
         "variant": "right",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",
@@ -3236,8 +3236,8 @@
       {
         "type": "border",
         "variant": "flat",
-        "traversable": true,
-        "traversingCost": 1
+        "traversable": false,
+        "traversingCost": 999
       },
       {
         "type": "grass",

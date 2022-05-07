@@ -15,8 +15,8 @@ public class UnitDirector {
     public void make(Map<String, Object> unitStream, int column, int row) {
         this.unitBuilder.setType((String) unitStream.get("type"));
         this.unitBuilder.setHealth((int) unitStream.get("health"));
-        this.unitBuilder.setDefenseList((List<Integer>)unitStream.get("defense"));
-        this.unitBuilder.setAttackDamageList((List<Integer>)unitStream.get("attackDamage"));
+        this.unitBuilder.setDefense((List<Double>)unitStream.get("defense"));
+        this.unitBuilder.setAttackDamage((List<Double>)unitStream.get("attackDamage"));
         this.unitBuilder.setAttackRange((int) unitStream.get("attackRange"));
         this.unitBuilder.setMovementRange((int) unitStream.get("movementRange"));
         this.unitBuilder.setCommandList((List<String>)unitStream.get("commands"));

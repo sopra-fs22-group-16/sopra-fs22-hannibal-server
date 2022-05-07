@@ -1,14 +1,12 @@
-package ch.uzh.ifi.hase.soprafs22.game.units;
+package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.AttackOutOfRangeException;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 
 import java.util.List;
-import java.util.Observable;
 
-public class Unit extends Observable {
+public class UnitGetDTO {
     private UnitType type;
     private int health;
     private List<Double> defense;
@@ -19,14 +17,6 @@ public class Unit extends Observable {
     private int teamId;
     private long userId;
     private Position position;
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
-    }
 
     public UnitType getType() {
         return type;
@@ -100,11 +90,11 @@ public class Unit extends Observable {
         this.userId = userId;
     }
 
-    public void attack(Unit victim) throws AttackOutOfRangeException {
-        victim.health -= this.attackDamage.get(victim.type.ordinal()) / victim.defense.get(this.type.ordinal());
-        //counterattack
-        this.health -= 1 / 3 * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
-        victim.notifyObservers(victim);
-        this.notifyObservers(this);
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 }
