@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -51,9 +51,9 @@ public class GameService {
     }
 
 
-    public void unitAttack(Long id, String token, Position attacker, Position defender) {
+    public Unit unitAttack(Long id, String token, Position attacker, Position defender) {
         try {
-            getGameById(id).unitAttack(token, attacker, defender);
+            return getGameById(id).unitAttack(token, attacker, defender);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);

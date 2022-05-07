@@ -1,8 +1,12 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.HealthDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.MovementDTO;
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitDeltaSockDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +28,12 @@ public class GameController {
     @Value("${api.version}")
     private String apiVersion;
 
-    private final GameService gameService;
+    private static final String TOPIC_GAME = "/topic/game/";  // Compliant
 
     @Autowired
     SimpMessagingTemplate socketMessage;
+
+    private final GameService gameService;
 
     GameController(GameService gameService) {
         this.gameService = gameService;
@@ -38,8 +44,21 @@ public class GameController {
     public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
         Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getStart());
         Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
+        Unit defendingUnit = gameService.unitAttack(id, token, attacker, defender);
 
-        gameService.unitAttack(id, token, attacker, defender);
+        UnitDeltaSockDTO unitDeltaSock = new UnitDeltaSockDTO();
+        // Health delta for socket.
+        HealthDTO healthDeltaSock = new HealthDTO();
+        healthDeltaSock.setHealth(defendingUnit.getHealth());
+        healthDeltaSock.setDefenderPosition(DTOMapper.INSTANCE.convertPositionToPositionDTO(defendingUnit.getPosition()));
+        unitDeltaSock.setHealth(healthDeltaSock);
+        // Movement delta for socket.
+        MovementDTO moveDeltaSock = new MovementDTO();
+        moveDeltaSock.setStart(unitCommandPutDTO.getStart());
+        moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
+        unitDeltaSock.setMovement(moveDeltaSock);
+
+        socketMessage.convertAndSend(TOPIC_GAME + id, unitDeltaSock);
     }
 
     @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
@@ -49,6 +68,14 @@ public class GameController {
         Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
 
         gameService.unitWait(id, token, start, end);
+
+        UnitDeltaSockDTO unitDeltaSock = new UnitDeltaSockDTO();
+        MovementDTO moveDeltaSock = new MovementDTO();
+        moveDeltaSock.setStart(unitCommandPutDTO.getStart());
+        moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
+        unitDeltaSock.setMovement(moveDeltaSock);
+
+        socketMessage.convertAndSend(TOPIC_GAME + id, unitDeltaSock);
     }
 
     private void pushTurnInfo(long id, TurnInfo turnInfo) {
