@@ -7,7 +7,6 @@ import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
-import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
@@ -78,8 +77,23 @@ public class Game {
         return gameMap;
     }
 
-    public int nextTurn() {
-        return ++turnNumber;
+
+    /**
+     * Make sure that this info makes it to GameController *EVERY* time there is a next turn.
+     * For example, if a movement ends the turn, this needs to be passed to GameController, if a player ends the turn,
+     * this needs to be returned to GameController.
+     * @return
+     */
+    public TurnInfo nextTurn() {
+        turnNumber++;
+        return currentTurn();
+    }
+
+    private TurnInfo currentTurn() {
+        return TurnInfo.newBuilder()
+                .setTurn(turnNumber)
+                .setPlayerId(playerMap.get(turnOrder[turnNumber % turnOrder.length]).getId())
+                .build();
     }
 
     public boolean hasEnded() {

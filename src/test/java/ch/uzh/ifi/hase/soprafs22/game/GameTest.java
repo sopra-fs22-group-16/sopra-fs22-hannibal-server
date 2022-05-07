@@ -29,6 +29,7 @@ class GameTest {
         playerMap = new HashMap<>();
         playerMap.put("token0", new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
+
         game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
         redUnitPosition = positionWithTeamUnit(game, Team.RED);
         blueUnitPosition = positionWithTeamUnit(game, Team.BLUE);
@@ -78,8 +79,11 @@ class GameTest {
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
-        game.nextTurn();
 
+        TurnInfo turn = game.nextTurn();
+
+        assertEquals(1, turn.getTurn()); // Games start at turn 0, not turn 1.
+        assertEquals(1, turn.getPlayerId());
         assertTrue(game.isPlayersTurn("token1"));
     }
 
@@ -90,9 +94,14 @@ class GameTest {
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
-        game.nextTurn();
-        game.nextTurn();
 
+        TurnInfo turn1 = game.nextTurn();
+        TurnInfo turn2 = game.nextTurn();
+
+        assertEquals(1, turn1.getTurn());
+        assertEquals(1, turn1.getPlayerId());
+        assertEquals(2, turn2.getTurn());
+        assertEquals(0, turn2.getPlayerId());
         assertTrue(game.isPlayersTurn("token0"));
     }
 

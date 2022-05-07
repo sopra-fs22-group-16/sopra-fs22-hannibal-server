@@ -4,18 +4,16 @@ import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.HealthDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.MovementDTO;
+import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitDeltaSockDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Game Controller
@@ -80,8 +78,8 @@ public class GameController {
         socketMessage.convertAndSend(TOPIC_GAME + id, unitDeltaSock);
     }
 
-    private static String asJsonString(final Object object) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(object);
+    private void pushTurnInfo(long id, TurnInfo turnInfo) {
+        socketMessage.convertAndSend("/topic/game/" + id, turnInfo);
     }
 
 }
