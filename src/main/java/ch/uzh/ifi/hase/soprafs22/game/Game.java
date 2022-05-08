@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
-import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
@@ -180,23 +179,6 @@ public class Game {
         movingUnit.setPosition(end);
         if (!start.equals(end))
             gameLogger.move(turnNumber);
-    }
-
-    public void unitWait(String token, Position position) throws NotPlayersTurnException,
-            TileOutOfRangeException,
-            NotAMemberOfGameException,
-            GameOverException,
-            UnitNotFoundException,
-            WrongUnitOwnerException {
-        ensureMember(token);
-        ensureNotEnded();
-        ensureTurn(token);
-        ensureWithinRange(position);
-        Optional<Unit> waitingUnitOptional = getUnitAt(position);
-        if (waitingUnitOptional.isEmpty())
-            throw new UnitNotFoundException(position);
-        Unit waitingUnit = waitingUnitOptional.get();
-        ensureUnitOwner(waitingUnit, token);
     }
 
     public IGameStatistics getStatistics() {
