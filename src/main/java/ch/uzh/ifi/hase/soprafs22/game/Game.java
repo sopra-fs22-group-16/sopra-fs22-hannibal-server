@@ -105,9 +105,9 @@ public class Game {
     }
 
     /**
-     * Returns the defending unit, with the updated health.
+     * Returns the units whose health got affected.
      */
-    public Unit unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+    public List<Unit> unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
             TileOutOfRangeException,
             AttackOutOfRangeException,
             NotAMemberOfGameException,
@@ -132,7 +132,7 @@ public class Game {
         ensureUnitEnemy(attackingUnit, defendingUnit);
 
         attackingUnit.attack(defendingUnit);
-        return defendingUnit;
+        return List.of(defendingUnit, attackingUnit);
     }
 
     private void ensureWithinRange(Position position) throws TileOutOfRangeException {
