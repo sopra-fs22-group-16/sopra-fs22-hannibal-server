@@ -79,6 +79,9 @@ public abstract class DTOMapper {
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")
     @Mapping(source = "playerMap", target = "units")
+    @Mapping(source = "turnNumber", target = "turnNumber")
+    @Mapping(source = "playerCurrentTurn", target = "playerIdCurrentTurn")
+    @Mapping(source = "playerMap", target = "players")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 
     @Mapping(source = "type", target = "type")
@@ -109,4 +112,16 @@ public abstract class DTOMapper {
     @Mapping(source = "x", target="x")
     @Mapping(source = "y", target="y")
     public abstract PositionDTO convertPositionToPositionDTO(Position position);
+
+    public long convertIPlayerToPlayerId(IPlayer player){
+        return player.getId();
+    }
+
+    public Map<Long, PlayerGetDTO> convertPlayerDecoratorMapTokenToPlayerMapId(Map<String, PlayerDecorator> playerMap) {
+        Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
+        for(IPlayer player: playerMap.values()){
+            newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
+        }
+        return newPlayerMap;
+    }
 }

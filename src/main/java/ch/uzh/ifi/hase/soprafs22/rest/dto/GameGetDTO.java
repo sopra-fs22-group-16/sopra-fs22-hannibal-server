@@ -5,12 +5,40 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 
 import java.util.List;
+import java.util.Map;
 
 public class GameGetDTO {
     private GameMode gameMode;
     private GameType gameType;
+    private int turnNumber;
+    private long playerIdCurrentTurn;
+    private Map<Long, PlayerGetDTO> players;
     private GameMap gameMap;
     private List<UnitGetDTO> units;
+
+    public int getTurnNumber() {
+        return turnNumber;
+    }
+
+    public void setTurnNumber(int turnNumber) {
+        this.turnNumber = turnNumber;
+    }
+
+    public long getPlayerIdCurrentTurn() {
+        return playerIdCurrentTurn;
+    }
+
+    public void setPlayerIdCurrentTurn(long playerIdCurrentTurn) {
+        this.playerIdCurrentTurn = playerIdCurrentTurn;
+    }
+
+    public Map<Long, PlayerGetDTO> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Map<Long, PlayerGetDTO> players) {
+        this.players = players;
+    }
 
     public GameMode getGameMode() {
         return gameMode;

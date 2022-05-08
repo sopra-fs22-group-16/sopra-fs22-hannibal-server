@@ -20,6 +20,7 @@ public class Game {
     private final Map<String, PlayerDecorator> playerMap;
     private GameMap gameMap;
     private int turnNumber;
+    private IPlayer playerCurrentTurn;
     private String[] turnOrder;
     private boolean running;
 
@@ -59,6 +60,8 @@ public class Game {
             }
             this.playerMap.put(player.getToken(), playerDecorator);
         }
+
+        this.playerCurrentTurn = this.playerMap.get(turnOrder[turnNumber % turnOrder.length]);
     }
 
     public Map<String, PlayerDecorator> getPlayerMap() {
@@ -77,6 +80,13 @@ public class Game {
         return gameMap;
     }
 
+    public int getTurnNumber() {
+        return turnNumber;
+    }
+
+    public IPlayer getPlayerCurrentTurn() {
+        return playerCurrentTurn;
+    }
 
     /**
      * Make sure that this info makes it to GameController *EVERY* time there is a next turn.
@@ -86,6 +96,7 @@ public class Game {
      */
     public TurnInfo nextTurn() {
         turnNumber++;
+        this.playerCurrentTurn = this.playerMap.get(turnOrder[turnNumber % turnOrder.length]);
         return currentTurn();
     }
 

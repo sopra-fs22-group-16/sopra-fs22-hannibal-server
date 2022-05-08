@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -221,6 +225,45 @@ class LobbyControllerTest {
         mockMvc.perform(deleteRequest)
                 .andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    void given1v1Game_whenGetGame_validInput_thenReturnJsonArray() throws Exception {
+        // given
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.UNRANKED);
+
+        IPlayer player1 = lobby.getHost();
+
+        IPlayer player2 = lobby.generatePlayer();
+        lobby.addPlayer(player2);
+        lobby.setReady(player2.getToken(), true);
+
+        lobby.startGame();
+
+        Game game = lobby.getGame();
+
+        given(lobbyService.getLobby(player1.getToken(), lobby.getId())).willReturn(lobby);
+
+        // when
+        MockHttpServletRequestBuilder getGameRequest = get("/v1/game/match/" + lobby.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", player1.getToken());
+
+        // then
+        mockMvc.perform(getGameRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameMode", is(game.getGameMode().toString())))
+                .andExpect(jsonPath("$.gameType", is(game.getGameType().toString())))
+                .andExpect(jsonPath("$.turnNumber", is(game.getTurnNumber())))
+                .andExpect(jsonPath("$.playerIdCurrentTurn", is((int) game.getPlayerCurrentTurn().getId())))
+                .andExpect(jsonPath("$.players[" + '"' + player1.getId() + '"' + "].name", is(player1.getName())))
+                .andExpect(jsonPath("$.players[" + '"' + player1.getId() + '"' + "].team", is(player1.getTeam().ordinal())))
+                .andExpect(jsonPath("$.players[" + '"' + player2.getId() + '"' + "].name", is(player2.getName())))
+                .andExpect(jsonPath("$.players[" + '"' + player2.getId() + '"' + "].team", is(player2.getTeam().ordinal())))
+                .andExpect(jsonPath("$.gameMap").isNotEmpty())
+                .andExpect(jsonPath("$.units").isNotEmpty());
     }
 
     /**
