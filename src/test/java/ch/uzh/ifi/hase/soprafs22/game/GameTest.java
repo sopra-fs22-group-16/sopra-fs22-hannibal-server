@@ -167,52 +167,27 @@ class GameTest {
 
     // TODO test TargetUnreachableException for move.
     @Test
-    void move_nonMember_throwsNotAMemberOfGameException() {
+    void wait_nonMember_throwsNotAMemberOfGameException() {
         assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition, blueUnitPosition));
     }
 
     @Test
-    void move_noTurn_throwsNotPlayersTurnException() {
+    void wait_noTurn_throwsNotPlayersTurnException() {
         assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition, blueUnitPosition));
     }
 
     @Test
-    void move_nonUnit_throwsUnitNotFoundException() {
+    void wait_nonUnit_throwsUnitNotFoundException() {
         assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition, blueUnitPosition));
     }
 
     @Test
-    void move_notOwner_throwsWrongUnitOwnerException() {
+    void wait_notOwner_throwsWrongUnitOwnerException() {
         assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition, redUnitPosition));
     }
 
     @Test
-    void move_good() throws Exception {
-        game.unitWait("token0", redUnitPosition, noUnitPosition);
-    }
-
-    @Test
-    void wait_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition));
-    }
-
-    @Test
-    void wait_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition));
-    }
-
-    @Test
-    void wait_nonUnit_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition));
-    }
-
-    @Test
-    void wait_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition));
-    }
-
-    @Test
     void wait_good() throws Exception {
-        game.unitWait("token0", redUnitPosition);
+        game.unitWait("token0", redUnitPosition, noUnitPosition);
     }
 }
