@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.game.logger;
+package ch.uzh.ifi.hase.soprafs22.game.logger.interfaces;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Provides statistical information to the client about a given game.
  */
-public interface GameStatistics {
+public interface IGameStatistics {
     /**
      * Returns the number of life units per player at each turn.
      */

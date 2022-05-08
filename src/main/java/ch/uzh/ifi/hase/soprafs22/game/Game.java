@@ -3,9 +3,9 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameLogger;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
-import ch.uzh.ifi.hase.soprafs22.game.logger.GameStatistics;
-import ch.uzh.ifi.hase.soprafs22.game.logger.implementation.GameLoggerImpl;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
@@ -26,8 +26,7 @@ public class Game {
     private final String[] turnOrder;
     private boolean running;
 
-    private final GameLogger logger;
-    private final GameLoggerImpl gameLogger;
+    private final GameLogger gameLogger;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
@@ -65,11 +64,9 @@ public class Game {
             }
             this.playerMap.put(player.getToken(), playerDecorator);
         }
-        this.gameLogger = GameLoggerImpl.newBuilder()
-                //Create a Map of long -> number of units from the values in playerMap.
-                .setUnitsPerPlayer(this.playerMap.values().stream().collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size())))
-                .build();
-        this.logger = gameLogger;
+        Map<Long, Integer> numberOfUnitsPerPlayerId = this.playerMap.values().stream().
+                collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
+        this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
     }
 
     public Map<String, PlayerDecorator> getPlayerMap() {
@@ -97,7 +94,7 @@ public class Game {
      */
     public TurnInfo nextTurn() {
         turnNumber++;
-        logger.nextTurn();
+        gameLogger.nextTurn();
         return currentTurn();
     }
 
@@ -146,9 +143,9 @@ public class Game {
         // TODO: attacking does not move the unit (setPosition), but interface implies it does!
         // logger.move(turnNumber);
         if (defendingUnit.getHealth() <= 0)
-            logger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
-            logger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
         return defendingUnit;
     }
 
@@ -182,7 +179,7 @@ public class Game {
         ensureUnitOwner(movingUnit, token);
         movingUnit.setPosition(end);
         if (!start.equals(end))
-            logger.move(turnNumber);
+            gameLogger.move(turnNumber);
     }
 
     public void unitWait(String token, Position position) throws NotPlayersTurnException,
@@ -202,7 +199,7 @@ public class Game {
         ensureUnitOwner(waitingUnit, token);
     }
 
-    public GameStatistics getStatistics() {
+    public IGameStatistics getStatistics() {
         return this.gameLogger;
     }
 
