@@ -166,23 +166,6 @@ public class Game {
         movingUnit.setPosition(end);
     }
 
-    public void unitWait(String token, Position position) throws NotPlayersTurnException,
-            TileOutOfRangeException,
-            NotAMemberOfGameException,
-            GameOverException,
-            UnitNotFoundException,
-            WrongUnitOwnerException {
-        ensureMember(token);
-        ensureNotEnded();
-        ensureTurn(token);
-        ensureWithinRange(position);
-        Optional<Unit> waitingUnitOptional = getUnitAt(position);
-        if (waitingUnitOptional.isEmpty())
-            throw new UnitNotFoundException(position);
-        Unit waitingUnit = waitingUnitOptional.get();
-        ensureUnitOwner(waitingUnit, token);
-    }
-
     private void ensureMember(String token) throws NotAMemberOfGameException {
         if (!playerMap.containsKey(token))
             throw new NotAMemberOfGameException();
