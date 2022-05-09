@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 /**
  * Game Service
  * This class is the "worker" and responsible for all functionality related to
@@ -51,7 +53,10 @@ public class GameService {
     }
 
 
-    public Unit unitAttack(Long id, String token, Position attacker, Position defender) {
+    /**
+     * Returns the list of units whose health got affected by the attack.
+     */
+    public List<Unit> unitAttack(Long id, String token, Position attacker, Position defender) {
         try {
             return getGameById(id).unitAttack(token, attacker, defender);
         }
