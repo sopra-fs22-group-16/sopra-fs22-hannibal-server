@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
+import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
@@ -20,8 +22,10 @@ public class Game {
     private final Map<String, PlayerDecorator> playerMap;
     private GameMap gameMap;
     private int turnNumber;
-    private String[] turnOrder;
+    private final String[] turnOrder;
     private boolean running;
+
+    private final GameLogger gameLogger;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
@@ -59,6 +63,9 @@ public class Game {
             }
             this.playerMap.put(player.getToken(), playerDecorator);
         }
+        Map<Long, Integer> numberOfUnitsPerPlayerId = this.playerMap.values().stream().
+                collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
+        this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
     }
 
     public Map<String, PlayerDecorator> getPlayerMap() {
@@ -86,6 +93,7 @@ public class Game {
      */
     public TurnInfo nextTurn() {
         turnNumber++;
+        gameLogger.nextTurn();
         return currentTurn();
     }
 
@@ -130,8 +138,13 @@ public class Game {
         Unit defendingUnit = defendingUnitOptional.get();
         ensureUnitOwner(attackingUnit, token);
         ensureUnitEnemy(attackingUnit, defendingUnit);
-
         attackingUnit.attack(defendingUnit);
+        // TODO: attacking does not move the unit (setPosition), but interface implies it does!
+        // logger.move(turnNumber);
+        if (defendingUnit.getHealth() <= 0)
+            gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
+        if (attackingUnit.getHealth() <= 0)
+            gameLogger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
         return List.of(defendingUnit, attackingUnit);
     }
 
@@ -164,6 +177,12 @@ public class Game {
         Unit movingUnit = movingUnitOptional.get();
         ensureUnitOwner(movingUnit, token);
         movingUnit.setPosition(end);
+        if (!start.equals(end))
+            gameLogger.move(turnNumber);
+    }
+
+    public IGameStatistics getStatistics() {
+        return this.gameLogger;
     }
 
     private void ensureMember(String token) throws NotAMemberOfGameException {
