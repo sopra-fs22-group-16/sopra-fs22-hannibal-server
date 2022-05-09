@@ -193,26 +193,26 @@ class GameTest {
 
     @Test
     void wait_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition));
+        assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void wait_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition));
+        assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void wait_nonUnit_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void wait_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition));
+        assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition, redUnitPosition));
     }
 
     @Test
     void wait_good() throws Exception {
-        game.unitWait("token0", redUnitPosition);
+        game.unitWait("token0", redUnitPosition, noUnitPosition);
     }
 }

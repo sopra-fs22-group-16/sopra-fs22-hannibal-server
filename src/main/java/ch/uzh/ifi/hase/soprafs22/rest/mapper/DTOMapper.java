@@ -80,7 +80,7 @@ public abstract class DTOMapper {
     @Mapping(source = "gameMap", target = "gameMap")
     @Mapping(source = "playerMap", target = "units")
     @Mapping(source = "turnNumber", target = "turnNumber")
-    @Mapping(source = "playerCurrentTurn", target = "playerIdCurrentTurn")
+    @Mapping(source = "playerIdCurrentTurn", target = "playerIdCurrentTurn")
     @Mapping(source = "playerMap", target = "players")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 

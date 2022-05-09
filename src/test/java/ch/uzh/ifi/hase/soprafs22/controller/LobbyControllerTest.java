@@ -7,9 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -257,7 +255,7 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.gameMode", is(game.getGameMode().toString())))
                 .andExpect(jsonPath("$.gameType", is(game.getGameType().toString())))
                 .andExpect(jsonPath("$.turnNumber", is(game.getTurnNumber())))
-                .andExpect(jsonPath("$.playerIdCurrentTurn", is((int) game.getPlayerCurrentTurn().getId())))
+                .andExpect(jsonPath("$.playerIdCurrentTurn", is((int) game.getPlayerIdCurrentTurn())))
                 .andExpect(jsonPath("$.players[" + '"' + player1.getId() + '"' + "].name", is(player1.getName())))
                 .andExpect(jsonPath("$.players[" + '"' + player1.getId() + '"' + "].team", is(player1.getTeam().ordinal())))
                 .andExpect(jsonPath("$.players[" + '"' + player2.getId() + '"' + "].name", is(player2.getName())))

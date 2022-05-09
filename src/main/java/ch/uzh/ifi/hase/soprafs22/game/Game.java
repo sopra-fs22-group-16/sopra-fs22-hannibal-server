@@ -20,8 +20,8 @@ public class Game {
     private final Map<String, PlayerDecorator> playerMap;
     private GameMap gameMap;
     private int turnNumber;
-    private IPlayer playerCurrentTurn;
-    private String[] turnOrder;
+    private long playerIdCurrentTurn;
+    private Long[] turnOrder;
     private boolean running;
 
 
@@ -30,16 +30,16 @@ public class Game {
         this.gameType = gameType;
         this.playerMap = new HashMap<>();
         this.turnNumber = 0;
-        this.turnOrder = new String[playerMap.size()];
+        this.turnOrder = new Long[playerMap.size()];
         this.running = true;
 
         for (IPlayer player : playerMap.values()) {
             int teamNumber = player.getTeam().ordinal();
             if (turnOrder[teamNumber] == null) {
-                turnOrder[teamNumber] = player.getToken();
+                turnOrder[teamNumber] = player.getId();
             }
             else if (turnOrder.length > 2 && turnOrder[teamNumber + 2] == null) {
-                turnOrder[teamNumber + 2] = player.getToken();
+                turnOrder[teamNumber + 2] = player.getId();
             }
         }
 
@@ -61,43 +61,44 @@ public class Game {
             this.playerMap.put(player.getToken(), playerDecorator);
         }
 
-        this.playerCurrentTurn = this.playerMap.get(turnOrder[turnNumber % turnOrder.length]);
+        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
     }
 
     public Map<String, PlayerDecorator> getPlayerMap() {
-        return playerMap;
+        return this.playerMap;
     }
 
     public GameMode getGameMode() {
-        return gameMode;
+        return this.gameMode;
     }
 
     public GameType getGameType() {
-        return gameType;
+        return this.gameType;
     }
 
     public GameMap getGameMap() {
-        return gameMap;
+        return this.gameMap;
     }
 
     public int getTurnNumber() {
-        return turnNumber;
+        return this.turnNumber;
     }
 
-    public IPlayer getPlayerCurrentTurn() {
-        return playerCurrentTurn;
+    public long getPlayerIdCurrentTurn() {
+        return this.playerIdCurrentTurn;
     }
 
     /**
      * Make sure that this info makes it to GameController *EVERY* time there is a next turn.
      * For example, if a movement ends the turn, this needs to be passed to GameController, if a player ends the turn,
      * this needs to be returned to GameController.
+     *
      * @return
      */
     public TurnInfo nextTurn() {
         ++this.turnNumber;
-        this.playerCurrentTurn = this.playerMap.get(turnOrder[turnNumber % turnOrder.length]);
-        return new TurnInfo(this.turnNumber, this.playerCurrentTurn.getId());
+        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
     }
 
     public boolean hasEnded() {
@@ -105,7 +106,7 @@ public class Game {
     }
 
     public boolean isPlayersTurn(String token) {
-        return turnOrder[turnNumber % turnOrder.length].equals(token);
+        return this.playerMap.get(token).getId() == turnOrder[turnNumber % turnOrder.length];
     }
 
     /**
@@ -119,9 +120,9 @@ public class Game {
             UnitNotFoundException,
             WrongUnitOwnerException,
             WrongTargetTeamException {
-        ensureMember(token);
-        ensureNotEnded();
-        ensureTurn(token);
+        ensureMemberOfGame(token);
+        ensureGameNotEnded();
+        ensurePlayersTurn(token);
         ensureWithinRange(attacker);
         ensureWithinRange(defender);
         Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
@@ -157,9 +158,9 @@ public class Game {
             UnitNotFoundException,
             TargetUnreachableException,
             WrongUnitOwnerException {
-        ensureMember(token);
-        ensureNotEnded();
-        ensureTurn(token);
+        ensureMemberOfGame(token);
+        ensureGameNotEnded();
+        ensurePlayersTurn(token);
         ensureWithinRange(start);
         ensureWithinRange(end);
         Optional<Unit> movingUnitOptional = getUnitAt(start);
@@ -170,41 +171,24 @@ public class Game {
         movingUnit.setPosition(end);
     }
 
-    public void unitWait(String token, Position position) throws NotPlayersTurnException,
-            TileOutOfRangeException,
-            NotAMemberOfGameException,
-            GameOverException,
-            UnitNotFoundException,
-            WrongUnitOwnerException {
-        ensureMember(token);
-        ensureNotEnded();
-        ensureTurn(token);
-        ensureWithinRange(position);
-        Optional<Unit> waitingUnitOptional = getUnitAt(position);
-        if (waitingUnitOptional.isEmpty())
-            throw new UnitNotFoundException(position);
-        Unit waitingUnit = waitingUnitOptional.get();
-        ensureUnitOwner(waitingUnit, token);
-    }
-
-    private void ensureMember(String token) throws NotAMemberOfGameException {
-        if (!playerMap.containsKey(token))
+    private void ensureMemberOfGame(String token) throws NotAMemberOfGameException {
+        if (!this.playerMap.containsKey(token))
             throw new NotAMemberOfGameException();
     }
 
-    private void ensureNotEnded() throws GameOverException {
+    private void ensureGameNotEnded() throws GameOverException {
         if (hasEnded())
             throw new GameOverException();
     }
 
-    private void ensureTurn(String token) throws NotPlayersTurnException {
+    private void ensurePlayersTurn(String token) throws NotPlayersTurnException {
         if (!isPlayersTurn(token)) {
             throw new NotPlayersTurnException();
         }
     }
 
     private void ensureUnitOwner(Unit unit, String token) throws WrongUnitOwnerException {
-        if (playerMap.get(token).getId() != unit.getUserId())
+        if (this.playerMap.get(token).getId() != unit.getUserId())
             throw new WrongUnitOwnerException(unit, playerMap.get(token).getId());
     }
 
@@ -214,7 +198,7 @@ public class Game {
     }
 
     private Optional<Unit> getUnitAt(Position position) {
-        return playerMap.values().stream()
+        return this.playerMap.values().stream()
                 .flatMap(player -> player.getUnits().stream())
                 .filter(unit -> unit.getPosition().equals(position))
                 .findAny();
