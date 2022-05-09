@@ -95,16 +95,9 @@ public class Game {
      * @return
      */
     public TurnInfo nextTurn() {
-        turnNumber++;
+        ++this.turnNumber;
         this.playerCurrentTurn = this.playerMap.get(turnOrder[turnNumber % turnOrder.length]);
-        return currentTurn();
-    }
-
-    private TurnInfo currentTurn() {
-        return TurnInfo.newBuilder()
-                .setTurn(turnNumber)
-                .setPlayerId(playerMap.get(turnOrder[turnNumber % turnOrder.length]).getId())
-                .build();
+        return new TurnInfo(this.turnNumber, this.playerCurrentTurn.getId());
     }
 
     public boolean hasEnded() {
