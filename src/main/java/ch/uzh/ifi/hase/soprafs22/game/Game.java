@@ -35,11 +35,11 @@ public class Game {
 
         for (IPlayer player : playerMap.values()) {
             int teamNumber = player.getTeam().ordinal();
-            if (turnOrder[teamNumber] == null) {
-                turnOrder[teamNumber] = player.getId();
+            if (this.turnOrder[teamNumber] == null) {
+                this.turnOrder[teamNumber] = player.getId();
             }
-            else if (turnOrder.length > 2 && turnOrder[teamNumber + 2] == null) {
-                turnOrder[teamNumber + 2] = player.getId();
+            else if (this.turnOrder.length > 2 && this.turnOrder[teamNumber + 2] == null) {
+                this.turnOrder[teamNumber + 2] = player.getId();
             }
         }
 
@@ -102,11 +102,11 @@ public class Game {
     }
 
     public boolean hasEnded() {
-        return !running;
+        return !this.running;
     }
 
     public boolean isPlayersTurn(String token) {
-        return this.playerMap.get(token).getId() == turnOrder[turnNumber % turnOrder.length];
+        return this.playerMap.get(token).getId() == this.turnOrder[this.turnNumber % this.turnOrder.length];
     }
 
     /**
@@ -141,7 +141,7 @@ public class Game {
     }
 
     private void ensureWithinRange(Position position) throws TileOutOfRangeException {
-        List<List<Tile>> tiles = gameMap.getTiles();
+        List<List<Tile>> tiles = this.gameMap.getTiles();
         // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
         int yRange = tiles.size();
         int xRange = tiles.get(0).size();
@@ -189,7 +189,7 @@ public class Game {
 
     private void ensureUnitOwner(Unit unit, String token) throws WrongUnitOwnerException {
         if (this.playerMap.get(token).getId() != unit.getUserId())
-            throw new WrongUnitOwnerException(unit, playerMap.get(token).getId());
+            throw new WrongUnitOwnerException(unit, this.playerMap.get(token).getId());
     }
 
     private void ensureUnitEnemy(Unit first, Unit second) throws WrongTargetTeamException {
