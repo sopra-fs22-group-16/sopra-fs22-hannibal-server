@@ -2,11 +2,10 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.HealthDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.MovementDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitDeltaSockDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitCommandPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitDeltaPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +45,14 @@ public class GameController {
         Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
         Unit defendingUnit = gameService.unitAttack(id, token, attacker, defender);
 
-        UnitDeltaSockDTO unitDeltaSock = new UnitDeltaSockDTO();
+        UnitDeltaPutDTO unitDeltaSock = new UnitDeltaPutDTO();
         // Health delta for socket.
-        HealthDTO healthDeltaSock = new HealthDTO();
+        HealthPutDTO healthDeltaSock = new HealthPutDTO();
         healthDeltaSock.setHealth(defendingUnit.getHealth());
         healthDeltaSock.setDefenderPosition(DTOMapper.INSTANCE.convertPositionToPositionDTO(defendingUnit.getPosition()));
         unitDeltaSock.setHealth(healthDeltaSock);
         // Movement delta for socket.
-        MovementDTO moveDeltaSock = new MovementDTO();
+        UnitCommandPutDTO moveDeltaSock = new UnitCommandPutDTO();
         moveDeltaSock.setStart(unitCommandPutDTO.getStart());
         moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
         unitDeltaSock.setMovement(moveDeltaSock);
@@ -69,8 +68,8 @@ public class GameController {
 
         gameService.unitWait(id, token, start, end);
 
-        UnitDeltaSockDTO unitDeltaSock = new UnitDeltaSockDTO();
-        MovementDTO moveDeltaSock = new MovementDTO();
+        UnitDeltaPutDTO unitDeltaSock = new UnitDeltaPutDTO();
+        UnitCommandPutDTO moveDeltaSock = new UnitCommandPutDTO();
         moveDeltaSock.setStart(unitCommandPutDTO.getStart());
         moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
         unitDeltaSock.setMovement(moveDeltaSock);

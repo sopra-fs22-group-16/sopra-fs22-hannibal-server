@@ -1,14 +1,14 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
-public class HealthDTO {
-    private PositionDTO defenderPosition;
+public class HealthPutDTO {
+    private PositionPutDTO defenderPosition;
     private long health;
 
-    public PositionDTO getDefenderPosition() {
+    public PositionPutDTO getDefenderPosition() {
         return defenderPosition;
     }
 
-    public void setDefenderPosition(PositionDTO defenderPosition) {
+    public void setDefenderPosition(PositionPutDTO defenderPosition) {
         this.defenderPosition = defenderPosition;
     }
 

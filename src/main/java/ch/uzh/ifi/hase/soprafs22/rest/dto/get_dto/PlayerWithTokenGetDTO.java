@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto;
 
 public class PlayerWithTokenGetDTO {
 

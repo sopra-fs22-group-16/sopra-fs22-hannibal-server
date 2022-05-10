@@ -120,9 +120,13 @@ public class Game {
             UnitNotFoundException,
             WrongUnitOwnerException,
             WrongTargetTeamException {
-        ensureMemberOfGame(token);
-        ensureGameNotEnded();
-        ensurePlayersTurn(token);
+        if (!this.playerMap.containsKey(token))
+            throw new NotAMemberOfGameException();
+        if (hasEnded())
+            throw new GameOverException();
+        if (!isPlayersTurn(token)) {
+            throw new NotPlayersTurnException();
+        }
         ensureWithinRange(attacker);
         ensureWithinRange(defender);
         Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
@@ -133,8 +137,10 @@ public class Game {
         if (defendingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
         Unit defendingUnit = defendingUnitOptional.get();
-        ensureUnitOwner(attackingUnit, token);
-        ensureUnitEnemy(attackingUnit, defendingUnit);
+        if (this.playerMap.get(token).getId() != defendingUnit.getUserId())
+            throw new WrongUnitOwnerException(defendingUnit, this.playerMap.get(token).getId());
+        if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
+            throw new WrongTargetTeamException(attackingUnit, defendingUnit);
 
         attackingUnit.attack(defendingUnit);
         return defendingUnit;
@@ -158,43 +164,22 @@ public class Game {
             UnitNotFoundException,
             TargetUnreachableException,
             WrongUnitOwnerException {
-        ensureMemberOfGame(token);
-        ensureGameNotEnded();
-        ensurePlayersTurn(token);
+        if (!this.playerMap.containsKey(token))
+            throw new NotAMemberOfGameException();
+        if (hasEnded())
+            throw new GameOverException();
+        if (!isPlayersTurn(token)) {
+            throw new NotPlayersTurnException();
+        }
         ensureWithinRange(start);
         ensureWithinRange(end);
         Optional<Unit> movingUnitOptional = getUnitAt(start);
         if (movingUnitOptional.isEmpty())
             throw new UnitNotFoundException(start);
         Unit movingUnit = movingUnitOptional.get();
-        ensureUnitOwner(movingUnit, token);
+        if (this.playerMap.get(token).getId() != movingUnit.getUserId())
+            throw new WrongUnitOwnerException(movingUnit, this.playerMap.get(token).getId());
         movingUnit.setPosition(end);
-    }
-
-    private void ensureMemberOfGame(String token) throws NotAMemberOfGameException {
-        if (!this.playerMap.containsKey(token))
-            throw new NotAMemberOfGameException();
-    }
-
-    private void ensureGameNotEnded() throws GameOverException {
-        if (hasEnded())
-            throw new GameOverException();
-    }
-
-    private void ensurePlayersTurn(String token) throws NotPlayersTurnException {
-        if (!isPlayersTurn(token)) {
-            throw new NotPlayersTurnException();
-        }
-    }
-
-    private void ensureUnitOwner(Unit unit, String token) throws WrongUnitOwnerException {
-        if (this.playerMap.get(token).getId() != unit.getUserId())
-            throw new WrongUnitOwnerException(unit, this.playerMap.get(token).getId());
-    }
-
-    private void ensureUnitEnemy(Unit first, Unit second) throws WrongTargetTeamException {
-        if (first.getTeamId() == second.getTeamId())
-            throw new WrongTargetTeamException(first, second);
     }
 
     private Optional<Unit> getUnitAt(Position position) {

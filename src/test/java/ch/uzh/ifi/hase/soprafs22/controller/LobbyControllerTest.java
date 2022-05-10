@@ -7,7 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

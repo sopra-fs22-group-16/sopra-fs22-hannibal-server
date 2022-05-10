@@ -1,6 +1,6 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
-public class PositionDTO {
+public class PositionPutDTO {
     private int x;
     private int y;
 

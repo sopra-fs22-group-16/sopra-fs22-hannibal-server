@@ -2,9 +2,9 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitCommandPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitDeltaSockDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitCommandPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitDeltaPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,12 +48,12 @@ class GameControllerTest {
     SimpMessagingTemplate socketMessage;
 
     @Captor
-    ArgumentCaptor<UnitDeltaSockDTO> unitDeltaSockDTOArgumentCaptor;
+    ArgumentCaptor<UnitDeltaPutDTO> unitDeltaSockDTOArgumentCaptor;
 
     private static final String TOKEN = "fakeToken";
     private static final long MATCH_ID = 101L;
-    private PositionDTO positionDTO1;
-    private PositionDTO positionDTO2;
+    private PositionPutDTO positionPutDTO1;
+    private PositionPutDTO positionPutDTO2;
 
     private Position position1;
     private Position position2;
@@ -62,21 +62,21 @@ class GameControllerTest {
     void setUp() {
         position1 = new Position(1, 2);
         position2 = new Position(3, 4);
-        positionDTO1 = new PositionDTO();
-        positionDTO2 = new PositionDTO();
+        positionPutDTO1 = new PositionPutDTO();
+        positionPutDTO2 = new PositionPutDTO();
 
-        positionDTO1.setX(1);
-        positionDTO1.setY(2);
-        positionDTO2.setX(3);
-        positionDTO2.setY(4);
+        positionPutDTO1.setX(1);
+        positionPutDTO1.setY(2);
+        positionPutDTO2.setX(3);
+        positionPutDTO2.setY(4);
     }
 
 
     @Test
     void test_unitAttack() throws Exception {
         UnitCommandPutDTO attackPostDTO = new UnitCommandPutDTO();
-        attackPostDTO.setStart(positionDTO1);
-        attackPostDTO.setEnd(positionDTO2);
+        attackPostDTO.setStart(positionPutDTO1);
+        attackPostDTO.setEnd(positionPutDTO2);
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/attack")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(attackPostDTO))
@@ -90,7 +90,7 @@ class GameControllerTest {
         verify(gameService).unitAttack(MATCH_ID, TOKEN, position1, position2);
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), unitDeltaSockDTOArgumentCaptor.capture());
 
-        UnitDeltaSockDTO foundUnitDeltaSock = unitDeltaSockDTOArgumentCaptor.getValue();
+        UnitDeltaPutDTO foundUnitDeltaSock = unitDeltaSockDTOArgumentCaptor.getValue();
         assertEquals(1, foundUnitDeltaSock.getMovement().getStart().getX());
         assertEquals(2, foundUnitDeltaSock.getMovement().getStart().getY());
         assertEquals(3, foundUnitDeltaSock.getMovement().getEnd().getX());
@@ -103,8 +103,8 @@ class GameControllerTest {
     @Test
     void test_unitWait() throws Exception {
         UnitCommandPutDTO unitCommandPutDTO = new UnitCommandPutDTO();
-        unitCommandPutDTO.setStart(positionDTO1);
-        unitCommandPutDTO.setEnd(positionDTO2);
+        unitCommandPutDTO.setStart(positionPutDTO1);
+        unitCommandPutDTO.setEnd(positionPutDTO2);
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/wait")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(unitCommandPutDTO))
@@ -114,7 +114,7 @@ class GameControllerTest {
 
         verify(gameService).unitWait(MATCH_ID, TOKEN, position1, position2);
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), unitDeltaSockDTOArgumentCaptor.capture());
-        UnitDeltaSockDTO foundUnitDeltaSock = unitDeltaSockDTOArgumentCaptor.getValue();
+        UnitDeltaPutDTO foundUnitDeltaSock = unitDeltaSockDTOArgumentCaptor.getValue();
 
         assertEquals(1, foundUnitDeltaSock.getMovement().getStart().getX());
         assertEquals(2, foundUnitDeltaSock.getMovement().getStart().getY());

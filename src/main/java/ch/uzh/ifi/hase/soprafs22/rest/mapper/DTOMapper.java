@@ -7,7 +7,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -96,7 +97,7 @@ public abstract class DTOMapper {
     @Mapping(source = "position", target = "position")
     public abstract UnitGetDTO convertUnitToUnitDTO(Unit unit);
 
-    public Position convertPositionDTOToPosition(PositionDTO position){
+    public Position convertPositionDTOToPosition(PositionPutDTO position){
         return new Position(position.getX(), position.getY());
     }
     protected List<UnitGetDTO> convertPlayerMapToUnitDTO(Map<String, PlayerDecorator> playerMap){
@@ -111,7 +112,7 @@ public abstract class DTOMapper {
 
     @Mapping(source = "x", target="x")
     @Mapping(source = "y", target="y")
-    public abstract PositionDTO convertPositionToPositionDTO(Position position);
+    public abstract PositionPutDTO convertPositionToPositionDTO(Position position);
 
     public long convertIPlayerToPlayerId(IPlayer player){
         return player.getId();

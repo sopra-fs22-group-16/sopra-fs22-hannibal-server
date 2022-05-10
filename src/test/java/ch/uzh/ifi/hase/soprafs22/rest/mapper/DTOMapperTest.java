@@ -6,8 +6,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PlayerGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.PlayerGetDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
