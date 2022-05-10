@@ -146,8 +146,8 @@ public class Game {
         if (defendingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
         Unit defendingUnit = defendingUnitOptional.get();
-        if (this.playerMap.get(token).getId() != defendingUnit.getUserId())
-            throw new WrongUnitOwnerException(defendingUnit, this.playerMap.get(token).getId());
+        if (this.playerMap.get(token).getId() != attackingUnit.getUserId())
+            throw new WrongUnitOwnerException(attackingUnit, this.playerMap.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
