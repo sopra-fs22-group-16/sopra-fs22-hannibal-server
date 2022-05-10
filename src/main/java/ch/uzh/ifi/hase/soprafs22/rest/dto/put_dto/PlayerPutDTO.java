@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
 public class PlayerPutDTO {
     private String name;

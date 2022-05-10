@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto;
 
 public class PlayerPostDTO {
     private String invitationCode;

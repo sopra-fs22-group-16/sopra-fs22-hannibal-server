@@ -7,7 +7,8 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -78,7 +79,10 @@ public abstract class DTOMapper {
     @Mapping(source = "gameType", target = "gameType")
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "gameMap", target = "gameMap")
-    @Mapping(source = "playerMap", target = "units")
+    @Mapping(source = "decoratedPlayers", target = "units")
+    @Mapping(source = "turnNumber", target = "turnNumber")
+    @Mapping(source = "playerIdCurrentTurn", target = "playerIdCurrentTurn")
+    @Mapping(source = "decoratedPlayers", target = "players")
     public abstract GameGetDTO convertGameToGameGetDTO(Game game);
 
     @Mapping(source = "type", target = "type")
@@ -91,16 +95,13 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
-    public abstract UnitGetDTO convertUnitToUnitDTO(Unit unit);
+    public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
-    public Position convertPositionDTOToPosition(PositionDTO position){
-        return new Position(position.getX(), position.getY());
-    }
-    protected List<UnitGetDTO> convertPlayerMapToUnitDTO(Map<String, PlayerDecorator> playerMap){
+    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap){
         List<UnitGetDTO> units = new ArrayList<>();
         for(PlayerDecorator pd : playerMap.values()){
             for (Unit u: pd.getUnits()){
-                units.add(convertUnitToUnitDTO(u));
+                units.add(convertUnitToUnitGetDTO(u));
             }
         }
         return units;
@@ -108,5 +109,17 @@ public abstract class DTOMapper {
 
     @Mapping(source = "x", target="x")
     @Mapping(source = "y", target="y")
-    public abstract PositionDTO convertPositionToPositionDTO(Position position);
+    public abstract PositionPutDTO convertPositionToPositionPutDTO(Position position);
+
+    public Position convertPositionPutDTOToPosition(PositionPutDTO position){
+        return new Position(position.getX(), position.getY());
+    }
+
+    public Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
+        Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
+        for(IPlayer player: playerMap.values()){
+            newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
+        }
+        return newPlayerMap;
+    }
 }
