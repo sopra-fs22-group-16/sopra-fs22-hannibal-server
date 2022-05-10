@@ -187,6 +187,7 @@ public class LobbyController {
 
         // send message to client via socket
         socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
 
         return playerWithTokenGetDTO;
     }
