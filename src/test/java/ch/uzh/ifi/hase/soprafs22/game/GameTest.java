@@ -167,31 +167,6 @@ class GameTest {
 
     // TODO test TargetUnreachableException for move.
     @Test
-    void move_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition, blueUnitPosition));
-    }
-
-    @Test
-    void move_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.unitWait("token1", redUnitPosition, blueUnitPosition));
-    }
-
-    @Test
-    void move_nonUnit_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitWait("token0", noUnitPosition, blueUnitPosition));
-    }
-
-    @Test
-    void move_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.unitWait("token0", blueUnitPosition, redUnitPosition));
-    }
-
-    @Test
-    void move_good() throws Exception {
-        game.unitWait("token0", redUnitPosition, noUnitPosition);
-    }
-
-    @Test
     void wait_nonMember_throwsNotAMemberOfGameException() {
         assertThrows(NotAMemberOfGameException.class, () -> game.unitWait("badToken", redUnitPosition, blueUnitPosition));
     }

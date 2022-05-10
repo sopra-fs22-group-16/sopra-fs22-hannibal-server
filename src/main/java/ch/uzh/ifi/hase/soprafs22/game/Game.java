@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
+import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
@@ -21,8 +23,10 @@ public class Game {
     private GameMap gameMap;
     private int turnNumber;
     private long playerIdCurrentTurn;
-    private Long[] turnOrder;
-    private boolean running;
+    private final Long[] turnOrder;
+    private final boolean running;
+
+    private final GameLogger gameLogger;
 
 
     public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
@@ -62,6 +66,9 @@ public class Game {
         }
 
         this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        Map<Long, Integer> numberOfUnitsPerPlayerId = this.playerMap.values().stream().
+                collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
+        this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
     }
 
     public Map<String, PlayerDecorator> getPlayerMap() {
@@ -93,13 +100,15 @@ public class Game {
      * For example, if a movement ends the turn, this needs to be passed to GameController, if a player ends the turn,
      * this needs to be returned to GameController.
      *
-     * @return
+     * @return The current TurnInfo
      */
     public TurnInfo nextTurn() {
         ++this.turnNumber;
         this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        this.gameLogger.nextTurn();
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
     }
+
 
     public boolean hasEnded() {
         return !this.running;
@@ -110,9 +119,9 @@ public class Game {
     }
 
     /**
-     * Returns the defending unit, with the updated health.
+     * Returns the units whose health got affected.
      */
-    public Unit unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+    public List<Unit> unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
             TileOutOfRangeException,
             AttackOutOfRangeException,
             NotAMemberOfGameException,
@@ -141,9 +150,14 @@ public class Game {
             throw new WrongUnitOwnerException(defendingUnit, this.playerMap.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
-
         attackingUnit.attack(defendingUnit);
-        return defendingUnit;
+        // TODO: attacking does not move the unit (setPosition), but interface implies it does!
+        // logger.move(turnNumber);
+        if (defendingUnit.getHealth() <= 0)
+            gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
+        if (attackingUnit.getHealth() <= 0)
+            gameLogger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
+        return List.of(defendingUnit, attackingUnit);
     }
 
     private void ensureWithinRange(Position position) throws TileOutOfRangeException {
@@ -180,6 +194,12 @@ public class Game {
         if (this.playerMap.get(token).getId() != movingUnit.getUserId())
             throw new WrongUnitOwnerException(movingUnit, this.playerMap.get(token).getId());
         movingUnit.setPosition(end);
+        if (!start.equals(end))
+            gameLogger.move(turnNumber);
+    }
+
+    public IGameStatistics getStatistics() {
+        return this.gameLogger;
     }
 
     private Optional<Unit> getUnitAt(Position position) {

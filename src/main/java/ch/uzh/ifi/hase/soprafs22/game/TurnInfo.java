@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
-import java.util.Optional;
-
 /**
  * Holds data related to a turn.
  */

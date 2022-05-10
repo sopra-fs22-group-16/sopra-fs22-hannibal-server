@@ -1,22 +1,22 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
 public class HealthPutDTO {
-    private PositionPutDTO defenderPosition;
-    private long health;
+    private PositionPutDTO unitPosition;
+    private int health;
 
-    public PositionPutDTO getDefenderPosition() {
-        return defenderPosition;
+    public PositionPutDTO getUnitPosition() {
+        return unitPosition;
     }
 
-    public void setDefenderPosition(PositionPutDTO defenderPosition) {
-        this.defenderPosition = defenderPosition;
+    public void setUnitPosition(PositionPutDTO unitPosition) {
+        this.unitPosition = unitPosition;
     }
 
     public long getHealth() {
         return health;
     }
 
-    public void setHealth(long health) {
+    public void setHealth(int health) {
         this.health = health;
     }
 }
