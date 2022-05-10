@@ -43,8 +43,8 @@ public class GameController {
     @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
-        Position attacker = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getStart());
-        Position defender = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
+        Position attacker = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getStart());
+        Position defender = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getEnd());
 
         List<Unit> affectedUnits = gameService.unitAttack(id, token, attacker, defender);
         // Movement delta for socket.
@@ -59,7 +59,7 @@ public class GameController {
             // Health delta for socket.
             HealthPutDTO health = new HealthPutDTO();
             health.setHealth(unit.getHealth());
-            health.setUnitPosition(DTOMapper.INSTANCE.convertPositionToPositionDTO(unit.getPosition()));
+            health.setUnitPosition(DTOMapper.INSTANCE.convertPositionToPositionPutDTO(unit.getPosition()));
             healthDTOs.add(health);
         }
         if (healthDTOs.size() > 0)
@@ -71,8 +71,8 @@ public class GameController {
     @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
-        Position start = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getStart());
-        Position end = DTOMapper.INSTANCE.convertPositionDTOToPosition(unitCommandPutDTO.getEnd());
+        Position start = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getStart());
+        Position end = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getEnd());
 
         gameService.unitWait(id, token, start, end);
 

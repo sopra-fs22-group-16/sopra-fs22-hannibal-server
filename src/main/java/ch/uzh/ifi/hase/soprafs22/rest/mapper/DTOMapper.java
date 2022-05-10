@@ -95,16 +95,13 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
-    public abstract UnitGetDTO convertUnitToUnitDTO(Unit unit);
+    public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
-    public Position convertPositionDTOToPosition(PositionPutDTO position){
-        return new Position(position.getX(), position.getY());
-    }
-    protected List<UnitGetDTO> convertPlayerMapToUnitDTO(Map<String, PlayerDecorator> playerMap){
+    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap){
         List<UnitGetDTO> units = new ArrayList<>();
         for(PlayerDecorator pd : playerMap.values()){
             for (Unit u: pd.getUnits()){
-                units.add(convertUnitToUnitDTO(u));
+                units.add(convertUnitToUnitGetDTO(u));
             }
         }
         return units;
@@ -112,13 +109,13 @@ public abstract class DTOMapper {
 
     @Mapping(source = "x", target="x")
     @Mapping(source = "y", target="y")
-    public abstract PositionPutDTO convertPositionToPositionDTO(Position position);
+    public abstract PositionPutDTO convertPositionToPositionPutDTO(Position position);
 
-    public long convertIPlayerToPlayerId(IPlayer player){
-        return player.getId();
+    public Position convertPositionPutDTOToPosition(PositionPutDTO position){
+        return new Position(position.getX(), position.getY());
     }
 
-    public Map<Long, PlayerGetDTO> convertPlayerDecoratorMapTokenToPlayerMapId(Map<String, PlayerDecorator> playerMap) {
+    public Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
         Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
         for(IPlayer player: playerMap.values()){
             newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
