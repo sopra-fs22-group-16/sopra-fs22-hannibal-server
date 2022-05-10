@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
-    private final Map<String, PlayerDecorator> playerMap;
+    private final Map<String, PlayerDecorator> decoratedPlayers;
     private GameMap gameMap;
     private int turnNumber;
     private long playerIdCurrentTurn;
@@ -29,15 +29,15 @@ public class Game {
     private final GameLogger gameLogger;
 
 
-    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> playerMap) {
+    public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> decoratedPlayers) {
         this.gameMode = gameMode;
         this.gameType = gameType;
-        this.playerMap = new HashMap<>();
+        this.decoratedPlayers = new HashMap<>();
         this.turnNumber = 0;
-        this.turnOrder = new Long[playerMap.size()];
+        this.turnOrder = new Long[decoratedPlayers.size()];
         this.running = true;
 
-        for (IPlayer player : playerMap.values()) {
+        for (IPlayer player : decoratedPlayers.values()) {
             int teamNumber = player.getTeam().ordinal();
             if (this.turnOrder[teamNumber] == null) {
                 this.turnOrder[teamNumber] = player.getId();
@@ -55,24 +55,24 @@ public class Game {
         }
 
         // Convert players to PlayerDecorators
-        for (IPlayer player : playerMap.values()) {
+        for (IPlayer player : decoratedPlayers.values()) {
             List<Unit> filteredUnitList = unitList.stream()
                     .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
             PlayerDecorator playerDecorator = new PlayerDecorator(player, filteredUnitList);
             for (Unit u : filteredUnitList) {
                 u.addObserver(playerDecorator);
             }
-            this.playerMap.put(player.getToken(), playerDecorator);
+            this.decoratedPlayers.put(player.getToken(), playerDecorator);
         }
 
         this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
-        Map<Long, Integer> numberOfUnitsPerPlayerId = this.playerMap.values().stream().
+        Map<Long, Integer> numberOfUnitsPerPlayerId = this.decoratedPlayers.values().stream().
                 collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
         this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
     }
 
-    public Map<String, PlayerDecorator> getPlayerMap() {
-        return this.playerMap;
+    public Map<String, PlayerDecorator> getDecoratedPlayers() {
+        return this.decoratedPlayers;
     }
 
     public GameMode getGameMode() {
@@ -115,7 +115,7 @@ public class Game {
     }
 
     public boolean isPlayersTurn(String token) {
-        return this.playerMap.get(token).getId() == this.turnOrder[this.turnNumber % this.turnOrder.length];
+        return this.decoratedPlayers.get(token).getId() == this.turnOrder[this.turnNumber % this.turnOrder.length];
     }
 
     /**
@@ -129,7 +129,7 @@ public class Game {
             UnitNotFoundException,
             WrongUnitOwnerException,
             WrongTargetTeamException {
-        if (!this.playerMap.containsKey(token))
+        if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
             throw new GameOverException();
@@ -146,8 +146,8 @@ public class Game {
         if (defendingUnitOptional.isEmpty())
             throw new UnitNotFoundException(attacker);
         Unit defendingUnit = defendingUnitOptional.get();
-        if (this.playerMap.get(token).getId() != attackingUnit.getUserId())
-            throw new WrongUnitOwnerException(attackingUnit, this.playerMap.get(token).getId());
+        if (this.decoratedPlayers.get(token).getId() != attackingUnit.getUserId())
+            throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
@@ -178,7 +178,7 @@ public class Game {
             UnitNotFoundException,
             TargetUnreachableException,
             WrongUnitOwnerException {
-        if (!this.playerMap.containsKey(token))
+        if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
             throw new GameOverException();
@@ -191,8 +191,8 @@ public class Game {
         if (movingUnitOptional.isEmpty())
             throw new UnitNotFoundException(start);
         Unit movingUnit = movingUnitOptional.get();
-        if (this.playerMap.get(token).getId() != movingUnit.getUserId())
-            throw new WrongUnitOwnerException(movingUnit, this.playerMap.get(token).getId());
+        if (this.decoratedPlayers.get(token).getId() != movingUnit.getUserId())
+            throw new WrongUnitOwnerException(movingUnit, this.decoratedPlayers.get(token).getId());
         movingUnit.setPosition(end);
         if (!start.equals(end))
             gameLogger.move(turnNumber);
@@ -203,7 +203,7 @@ public class Game {
     }
 
     private Optional<Unit> getUnitAt(Position position) {
-        return this.playerMap.values().stream()
+        return this.decoratedPlayers.values().stream()
                 .flatMap(player -> player.getUnits().stream())
                 .filter(unit -> unit.getPosition().equals(position))
                 .findAny();

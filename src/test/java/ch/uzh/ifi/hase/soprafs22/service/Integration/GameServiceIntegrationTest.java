@@ -190,7 +190,7 @@ class GameServiceIntegrationTest {
     }
 
     private Position positionWithTeamUnit(Game game, Team team) {
-        return game.getPlayerMap().values().stream()
+        return game.getDecoratedPlayers().values().stream()
                 .filter(player -> player.getTeam().equals(team)) // Get all players in team.
                 .flatMap(player -> player.getUnits().stream()) // Get their units
                 .map(Unit::getPosition) // Get their positions
@@ -199,7 +199,7 @@ class GameServiceIntegrationTest {
     }
 
     private Position positionWithNoUnit(Game game) {
-        Set<Position> occupiedPositions = game.getPlayerMap().values().stream()//Get all players
+        Set<Position> occupiedPositions = game.getDecoratedPlayers().values().stream()//Get all players
                 .flatMap(player -> player.getUnits().stream())//Get their units.
                 .map(Unit::getPosition) // Get their positions
                 .collect(Collectors.toSet()); // Store them in a set.
