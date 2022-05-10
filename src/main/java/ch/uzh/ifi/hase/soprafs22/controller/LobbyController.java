@@ -32,7 +32,8 @@ import java.util.Map;
 public class LobbyController {
     @Value("${api.version}")
     private String apiVersion;
-    private static final String TOPIC_LOBBY = "/topic/lobby/";  // Compliant
+    private static final String TOPIC_LOBBY = "/topic/lobby/";
+    private static final String TOPIC_PUBLIC_LOBBIES = "/topic/lobby/join";
     private final LobbyService lobbyService;
 
     @Autowired
@@ -66,6 +67,10 @@ public class LobbyController {
         returnMap.put("lobby", lobbyGetDTO);
         returnMap.put("token", token);
         returnMap.put("playerId", lobby.getHost().getId());
+
+        if(lobbyGetDTO.getVisibility() == Visibility.PUBLIC) {
+            socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
+        }
 
         return returnMap;
     }
@@ -106,8 +111,9 @@ public class LobbyController {
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
 
-        // send message to client via socket
+        // send messages to client via socket
         socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
     }
 
     @GetMapping("/{apiVersion}/game/lobby/{id}/qrcode")
@@ -165,6 +171,7 @@ public class LobbyController {
 
         // send message to client via socket
         socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
 
     }
 
