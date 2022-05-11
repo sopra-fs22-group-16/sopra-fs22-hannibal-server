@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.GameDeltaPutDTO;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitCommandPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +32,7 @@ public class GameController {
     @Value("${api.version}")
     private String apiVersion;
 
-    private static final String TOPIC_GAME = "/topic/game/";  // Compliant
+    private static final String TOPIC_GAME = "/topic/game/";
 
     @Autowired
     SimpMessagingTemplate socketMessage;
@@ -42,17 +45,17 @@ public class GameController {
 
     @PutMapping("/{apiVersion}/game/match/{id}/command/attack")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
-        Position attacker = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getStart());
-        Position defender = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getEnd());
+    public void unitAttack(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitAttackPutDTO attackPutDTO) {
 
-        List<Unit> affectedUnits = gameService.unitAttack(id, token, attacker, defender);
+        AttackCommand attackCommand = DTOMapper.INSTANCE.convertUnitAttackPutDTOToAttackCommand(attackPutDTO);
+
+        List<Unit> affectedUnits = gameService.unitAttack(id, token, attackCommand);
         // Movement delta for socket.
-        UnitCommandPutDTO moveDeltaSock = new UnitCommandPutDTO();
-        moveDeltaSock.setStart(unitCommandPutDTO.getStart());
-        moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
+        UnitMovePutDTO moveDeltaSock = new UnitMovePutDTO();
+        moveDeltaSock.setStart(attackPutDTO.getAttacker());
+        moveDeltaSock.setDestination(attackPutDTO.getAttackerDestination());
 
-        GameDeltaPutDTO deltaSock = new GameDeltaPutDTO();
+        GameDeltaWebSocketDTO deltaSock = new GameDeltaWebSocketDTO();
         deltaSock.setMove(moveDeltaSock);
         List<HealthPutDTO> healthDTOs = new ArrayList<>();
         for (Unit unit : affectedUnits){
@@ -68,19 +71,18 @@ public class GameController {
         sendThroughSocket(id, deltaSock);
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/wait")
+    @PutMapping("/{apiVersion}/game/match/{id}/command/move")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unitWait(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitCommandPutDTO unitCommandPutDTO) {
-        Position start = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getStart());
-        Position end = DTOMapper.INSTANCE.convertPositionPutDTOToPosition(unitCommandPutDTO.getEnd());
+    public void unitMove(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitMovePutDTO movePutDTO) {
+        MoveCommand moveCommand = DTOMapper.INSTANCE.convertUnitMovePutDTOToMoveCommand(movePutDTO);
 
-        gameService.unitWait(id, token, start, end);
+        gameService.unitMove(id, token, moveCommand);
 
-        UnitCommandPutDTO moveDeltaSock = new UnitCommandPutDTO();
-        moveDeltaSock.setStart(unitCommandPutDTO.getStart());
-        moveDeltaSock.setEnd(unitCommandPutDTO.getEnd());
+        UnitMovePutDTO moveDeltaSock = new UnitMovePutDTO();
+        moveDeltaSock.setStart(movePutDTO.getStart());
+        moveDeltaSock.setDestination(movePutDTO.getDestination());
 
-        GameDeltaPutDTO deltaSock = new GameDeltaPutDTO();
+        GameDeltaWebSocketDTO deltaSock = new GameDeltaWebSocketDTO();
         deltaSock.setMove(moveDeltaSock);
         sendThroughSocket(id, deltaSock);
     }
@@ -88,7 +90,7 @@ public class GameController {
     /**
      * All socket info should be sent through this method to ensure format consistency.
      */
-    private void sendThroughSocket(long id, GameDeltaPutDTO gameDelta) {
+    private void sendThroughSocket(long id, GameDeltaWebSocketDTO gameDelta) {
         socketMessage.convertAndSend("/topic/game/" + id, gameDelta);
     }
 }

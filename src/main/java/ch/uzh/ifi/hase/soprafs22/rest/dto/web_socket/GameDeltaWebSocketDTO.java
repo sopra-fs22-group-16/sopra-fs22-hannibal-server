@@ -1,24 +1,26 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket;
 
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
 
 import java.util.List;
 
 /**
  * Delta to be sent through web socket about the game so client can process info easier.
  */
-public class GameDeltaPutDTO {
-    private UnitCommandPutDTO move;
+public class GameDeltaWebSocketDTO {
+    private UnitMovePutDTO move;
 
     private TurnInfo turnInfo;
     private List<HealthPutDTO> health;
 
 
-    public UnitCommandPutDTO getMove() {
+    public UnitMovePutDTO getMove() {
         return move;
     }
 
-    public void setMove(UnitCommandPutDTO move) {
+    public void setMove(UnitMovePutDTO move) {
         this.move = move;
     }
 

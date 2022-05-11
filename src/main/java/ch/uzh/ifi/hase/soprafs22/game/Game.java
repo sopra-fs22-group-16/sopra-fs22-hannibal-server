@@ -102,13 +102,17 @@ public class Game {
      *
      * @return The current TurnInfo
      */
-    public TurnInfo nextTurn() {
+    public TurnInfo nextTurn(String token) {
+        resetUnitsPreviousTurn(token);
         ++this.turnNumber;
         this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
         this.gameLogger.nextTurn();
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
     }
 
+    private void resetUnitsPreviousTurn(String token) {
+        decoratedPlayers.get(token).getUnits().forEach(u -> u.setMoved(false));
+    }
 
     public boolean hasEnded() {
         return !this.running;
@@ -138,21 +142,17 @@ public class Game {
         }
         ensureWithinRange(attacker);
         ensureWithinRange(defender);
-        Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
-        if (attackingUnitOptional.isEmpty())
+        Unit attackingUnit = getUnitAtPosition(attacker);
+        if (attackingUnit == null)
             throw new UnitNotFoundException(attacker);
-        Unit attackingUnit = attackingUnitOptional.get();
-        Optional<Unit> defendingUnitOptional = getUnitAt(defender);
-        if (defendingUnitOptional.isEmpty())
-            throw new UnitNotFoundException(attacker);
-        Unit defendingUnit = defendingUnitOptional.get();
+        Unit defendingUnit = getUnitAtPosition(defender);
+        if (defendingUnit == null)
+            throw new UnitNotFoundException(defender);
         if (this.decoratedPlayers.get(token).getId() != attackingUnit.getUserId())
             throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
-        // TODO: attacking does not move the unit (setPosition), but interface implies it does!
-        // logger.move(turnNumber);
         if (defendingUnit.getHealth() <= 0)
             gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
@@ -171,7 +171,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public void unitWait(String token, Position start, Position end) throws NotPlayersTurnException,
+    public void unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -187,25 +187,30 @@ public class Game {
         }
         ensureWithinRange(start);
         ensureWithinRange(end);
-        Optional<Unit> movingUnitOptional = getUnitAt(start);
-        if (movingUnitOptional.isEmpty())
+        Unit movingUnit = getUnitAtPosition(start);
+        if (movingUnit == null) {
             throw new UnitNotFoundException(start);
-        Unit movingUnit = movingUnitOptional.get();
-        if (this.decoratedPlayers.get(token).getId() != movingUnit.getUserId())
+        }
+        if (this.decoratedPlayers.get(token).getId() != movingUnit.getUserId()) {
             throw new WrongUnitOwnerException(movingUnit, this.decoratedPlayers.get(token).getId());
+        }
         movingUnit.setPosition(end);
         if (!start.equals(end))
             gameLogger.move(turnNumber);
+        movingUnit.setMoved(true);
+        nextTurn(token);
+    }
+
+
+    private Unit getUnitAtPosition(Position position) {
+        return this.decoratedPlayers.values().stream()
+                .flatMap(player -> player.getUnits().stream())
+                .filter(unit -> unit.getPosition().equals(position))
+                .findFirst()
+                .orElse(null);
     }
 
     public IGameStatistics getStatistics() {
         return this.gameLogger;
-    }
-
-    private Optional<Unit> getUnitAt(Position position) {
-        return this.decoratedPlayers.values().stream()
-                .flatMap(player -> player.getUnits().stream())
-                .filter(unit -> unit.getPosition().equals(position))
-                .findAny();
     }
 }

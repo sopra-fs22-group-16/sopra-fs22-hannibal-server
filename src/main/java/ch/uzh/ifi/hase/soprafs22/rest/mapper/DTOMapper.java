@@ -6,9 +6,13 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -122,4 +126,13 @@ public abstract class DTOMapper {
         }
         return newPlayerMap;
     }
+
+    @Mapping(source = "attacker", target="attacker")
+    @Mapping(source = "defender", target="defender")
+    @Mapping(source = "attackerDestination", target="attackerDestination")
+    public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand (UnitAttackPutDTO unitAttackPutDTO);
+
+    @Mapping(source = "start", target="start")
+    @Mapping(source = "destination", target="destination")
+    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand (UnitMovePutDTO unitMovePutDTO);
 }

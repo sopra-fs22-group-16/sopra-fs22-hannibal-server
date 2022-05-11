@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -56,9 +58,15 @@ public class GameService {
     /**
      * Returns the list of units whose health got affected by the attack.
      */
-    public List<Unit> unitAttack(Long id, String token, Position attacker, Position defender) {
+    public List<Unit> unitAttack(Long id, String token, AttackCommand attackCommand) {
         try {
-            return getGameById(id).unitAttack(token, attacker, defender);
+            Game game = getGameById(id);
+            Position attacker = attackCommand.getAttacker();
+            Position defender = attackCommand.getDefender();
+            List<Unit> units = game.unitAttack(token, attacker, defender);
+            Position attackerDestination = attackCommand.getAttackerDestination();
+            game.unitMove(token, attacker, attackerDestination);
+            return units;
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -87,11 +95,16 @@ public class GameService {
         catch (WrongTargetTeamException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getSecond() + " is not a valid target of unit " + e.getFirst() + ".", e);
         }
+        catch (TargetUnreachableException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit " + e.getUnit().getType().name() + " cannot move from " + e.getStart() + " to " + e.getEnd(), e);
+        }
     }
 
-    public void unitWait(Long id, String token, Position start, Position end) {
+    public void unitMove(Long id, String token, MoveCommand moveCommand) {
         try {
-            getGameById(id).unitWait(token, start, end);
+            Position start = moveCommand.getStart();
+            Position destination = moveCommand.getDestination();
+            getGameById(id).unitMove(token, start, destination);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);

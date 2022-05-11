@@ -19,6 +19,7 @@ public class Unit extends Observable {
     private int teamId;
     private long userId;
     private Position position;
+    private boolean moved;
 
     public Position getPosition() {
         return position;
@@ -106,5 +107,13 @@ public class Unit extends Observable {
         this.health -= 1 / 3 * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
         victim.notifyObservers(victim);
         this.notifyObservers(this);
+    }
+
+    public boolean hasMoved() {
+        return moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 }
