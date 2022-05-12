@@ -1,31 +1,33 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
-public class UnitAttackPutDTO {
-    private PositionPutDTO attacker;
-    private PositionPutDTO defender;
-    private PositionPutDTO attackerDestination;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 
-    public PositionPutDTO getAttacker() {
+public class UnitAttackPutDTO {
+    private PositionDTO attacker;
+    private PositionDTO defender;
+    private PositionDTO attackerDestination;
+
+    public PositionDTO getAttacker() {
         return attacker;
     }
 
-    public void setAttacker(PositionPutDTO attacker) {
+    public void setAttacker(PositionDTO attacker) {
         this.attacker = attacker;
     }
 
-    public PositionPutDTO getDefender() {
+    public PositionDTO getDefender() {
         return defender;
     }
 
-    public void setDefender(PositionPutDTO defender) {
+    public void setDefender(PositionDTO defender) {
         this.defender = defender;
     }
 
-    public PositionPutDTO getAttackerDestination() {
+    public PositionDTO getAttackerDestination() {
         return attackerDestination;
     }
 
-    public void setAttackerDestination(PositionPutDTO attackerDestination) {
+    public void setAttackerDestination(PositionDTO attackerDestination) {
         this.attackerDestination = attackerDestination;
     }
 }

@@ -1,14 +1,16 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
 
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
+
 public class HealthPutDTO {
-    private PositionPutDTO unitPosition;
+    private PositionDTO unitPosition;
     private int health;
 
-    public PositionPutDTO getUnitPosition() {
+    public PositionDTO getUnitPosition() {
         return unitPosition;
     }
 
-    public void setUnitPosition(PositionPutDTO unitPosition) {
+    public void setUnitPosition(PositionDTO unitPosition) {
         this.unitPosition = unitPosition;
     }
 

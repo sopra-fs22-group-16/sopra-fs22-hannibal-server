@@ -10,9 +10,10 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.UnitMoveWebSocketDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -99,6 +100,7 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
+    @Mapping(source = "moved", target = "hasMoved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
     protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap){
@@ -113,9 +115,9 @@ public abstract class DTOMapper {
 
     @Mapping(source = "x", target="x")
     @Mapping(source = "y", target="y")
-    public abstract PositionPutDTO convertPositionToPositionPutDTO(Position position);
+    public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    public Position convertPositionPutDTOToPosition(PositionPutDTO position){
+    public Position convertPositionPutDTOToPosition(PositionDTO position){
         return new Position(position.getX(), position.getY());
     }
 
@@ -135,4 +137,8 @@ public abstract class DTOMapper {
     @Mapping(source = "start", target="start")
     @Mapping(source = "destination", target="destination")
     public abstract MoveCommand convertUnitMovePutDTOToMoveCommand (UnitMovePutDTO unitMovePutDTO);
+
+    @Mapping(source = "position", target="destination")
+    @Mapping(source = "moved", target="hasMoved")
+    public abstract UnitMoveWebSocketDTO convertUnitToUnitMoveWebSocketDTO(Unit unit);
 }

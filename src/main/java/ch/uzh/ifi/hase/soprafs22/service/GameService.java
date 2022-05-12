@@ -100,11 +100,12 @@ public class GameService {
         }
     }
 
-    public void unitMove(Long id, String token, MoveCommand moveCommand) {
+    public Unit unitMove(Long id, String token, MoveCommand moveCommand) {
         try {
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();
-            getGameById(id).unitMove(token, start, destination);
+            Unit movedUnit = getGameById(id).unitMove(token, start, destination);
+            return movedUnit;
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);

@@ -80,7 +80,7 @@ class GameTest {
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
 
-        TurnInfo turn = game.nextTurn("token0");
+        TurnInfo turn = game.nextTurn();
 
         assertEquals(1, turn.getTurn()); // Games start at turn 0, not turn 1.
         assertEquals(1, turn.getPlayerId());
@@ -95,8 +95,8 @@ class GameTest {
 
         Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, playerMap);
 
-        TurnInfo turn1 = game.nextTurn("token0");
-        TurnInfo turn2 = game.nextTurn("token1");
+        TurnInfo turn1 = game.nextTurn();
+        TurnInfo turn2 = game.nextTurn();
 
         assertEquals(1, turn1.getTurn());
         assertEquals(1, turn1.getPlayerId());

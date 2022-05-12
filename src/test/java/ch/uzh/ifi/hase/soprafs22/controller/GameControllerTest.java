@@ -4,10 +4,10 @@ import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,8 +58,8 @@ class GameControllerTest {
 
     private static final String TOKEN = "fakeToken";
     private static final long MATCH_ID = 101L;
-    private PositionPutDTO positionPutDTO1;
-    private PositionPutDTO positionPutDTO2;
+    private PositionDTO positionDTO1;
+    private PositionDTO positionDTO2;
 
     private Position position1;
     private Position position2;
@@ -71,13 +71,13 @@ class GameControllerTest {
     void setUp() {
         position1 = new Position(1, 2);
         position2 = new Position(3, 4);
-        positionPutDTO1 = new PositionPutDTO();
-        positionPutDTO2 = new PositionPutDTO();
+        positionDTO1 = new PositionDTO();
+        positionDTO2 = new PositionDTO();
 
-        positionPutDTO1.setX(1);
-        positionPutDTO1.setY(2);
-        positionPutDTO2.setX(3);
-        positionPutDTO2.setY(4);
+        positionDTO1.setX(1);
+        positionDTO1.setY(2);
+        positionDTO2.setX(3);
+        positionDTO2.setY(4);
 
         attackCommand = new AttackCommand();
         attackCommand.setAttacker(position1);
@@ -93,9 +93,9 @@ class GameControllerTest {
     @Test
     void test_unitAttack() throws Exception {
         UnitAttackPutDTO attackPutDTO = new UnitAttackPutDTO();
-        attackPutDTO.setAttacker(positionPutDTO1);
-        attackPutDTO.setDefender(positionPutDTO2);
-        attackPutDTO.setAttackerDestination(positionPutDTO1);
+        attackPutDTO.setAttacker(positionDTO1);
+        attackPutDTO.setDefender(positionDTO2);
+        attackPutDTO.setAttackerDestination(positionDTO1);
 
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/attack")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -138,8 +138,8 @@ class GameControllerTest {
     @Test
     void test_unitMove() throws Exception {
         UnitMovePutDTO unitMovePutDTO = new UnitMovePutDTO();
-        unitMovePutDTO.setStart(positionPutDTO1);
-        unitMovePutDTO.setDestination(positionPutDTO2);
+        unitMovePutDTO.setStart(positionDTO1);
+        unitMovePutDTO.setDestination(positionDTO2);
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/move")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(unitMovePutDTO))

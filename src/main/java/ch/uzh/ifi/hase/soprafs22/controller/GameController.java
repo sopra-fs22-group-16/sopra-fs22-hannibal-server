@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.UnitMoveWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class GameController {
             // Health delta for socket.
             HealthPutDTO health = new HealthPutDTO();
             health.setHealth(unit.getHealth());
-            health.setUnitPosition(DTOMapper.INSTANCE.convertPositionToPositionPutDTO(unit.getPosition()));
+            health.setUnitPosition(DTOMapper.INSTANCE.convertPositionToPositionDTO(unit.getPosition()));
             healthDTOs.add(health);
         }
         if (healthDTOs.size() > 0)
@@ -76,21 +77,18 @@ public class GameController {
     public void unitMove(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody UnitMovePutDTO movePutDTO) {
         MoveCommand moveCommand = DTOMapper.INSTANCE.convertUnitMovePutDTOToMoveCommand(movePutDTO);
 
-        gameService.unitMove(id, token, moveCommand);
+        Unit movedUnit = this.gameService.unitMove(id, token, moveCommand);
 
-        UnitMovePutDTO moveDeltaSock = new UnitMovePutDTO();
-        moveDeltaSock.setStart(movePutDTO.getStart());
-        moveDeltaSock.setDestination(movePutDTO.getDestination());
+        UnitMoveWebSocketDTO unitMoveWebSocketDTO = DTOMapper.INSTANCE.convertUnitToUnitMoveWebSocketDTO(movedUnit);
+        unitMoveWebSocketDTO.setStart(movePutDTO.getStart());
 
-        GameDeltaWebSocketDTO deltaSock = new GameDeltaWebSocketDTO();
-        deltaSock.setMove(moveDeltaSock);
-        sendThroughSocket(id, deltaSock);
+        this.socketMessage.convertAndSend(TOPIC_GAME + id, unitMoveWebSocketDTO);
     }
 
     /**
      * All socket info should be sent through this method to ensure format consistency.
      */
     private void sendThroughSocket(long id, GameDeltaWebSocketDTO gameDelta) {
-        socketMessage.convertAndSend("/topic/game/" + id, gameDelta);
+        this.socketMessage.convertAndSend("/topic/game/" + id, gameDelta);
     }
 }
