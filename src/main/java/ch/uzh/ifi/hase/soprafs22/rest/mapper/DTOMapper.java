@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
@@ -16,7 +15,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.UnitHealthsWebSocketDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -142,14 +141,17 @@ public abstract class DTOMapper {
 
     @Mapping(source = "moveCommand", target = "move")
     @Mapping(source = "turnInfo", target = "turnInfo")
+    @Mapping(source = "unitHealths", target = "unitHealths")
     public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
 
-    protected List<UnitHealthsWebSocketDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
-        List<UnitHealthsWebSocketDTO> unitHealthsList = new ArrayList<>();
+    protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
+        if (unitHealthsMap.size() == 0)
+            return null;
+        List<UnitHealthDTO> unitHealthsList = new ArrayList<>();
         for (var uh : unitHealthsMap.entrySet()) {
             PositionDTO p = convertPositionToPositionDTO(uh.getKey());
             int health = uh.getValue();
-            unitHealthsList.add(new UnitHealthsWebSocketDTO(p, health));
+            unitHealthsList.add(new UnitHealthDTO(p, health));
         }
         return unitHealthsList;
     }

@@ -1,12 +1,10 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket;
+package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
-
-public class UnitHealthsWebSocketDTO {
+public class UnitHealthDTO {
     private PositionDTO unitPosition;
     private int health;
 
-    public UnitHealthsWebSocketDTO(PositionDTO unitPosition, int health) {
+    public UnitHealthDTO(PositionDTO unitPosition, int health) {
         this.unitPosition = unitPosition;
         this.health = health;
     }

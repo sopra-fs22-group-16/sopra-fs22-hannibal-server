@@ -159,17 +159,6 @@ public class Game {
         return List.of(defendingUnit, attackingUnit);
     }
 
-    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
-        List<List<Tile>> tiles = this.gameMap.getTiles();
-        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
-        int yRange = tiles.size();
-        int xRange = tiles.get(0).size();
-        if (position.getY() >= tiles.size())
-            throw new TileOutOfRangeException(position, xRange, yRange);
-        if (position.getX() >= tiles.get(position.getY()).size())
-            throw new TileOutOfRangeException(position, xRange, yRange);
-    }
-
     public Position unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
@@ -201,9 +190,12 @@ public class Game {
     }
 
     public boolean haveAllUnitsOfPlayerMoved(String token) {
-        return this.decoratedPlayers.get(token).getUnits().stream().allMatch(u -> u.getMoved() == true);
+        return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
     }
 
+    public IGameStatistics getStatistics() {
+        return this.gameLogger;
+    }
 
     private Unit getUnitAtPosition(Position position) {
         return this.decoratedPlayers.values().stream()
@@ -213,7 +205,14 @@ public class Game {
                 .orElse(null);
     }
 
-    public IGameStatistics getStatistics() {
-        return this.gameLogger;
+    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
+        List<List<Tile>> tiles = this.gameMap.getTiles();
+        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
+        int yRange = tiles.size();
+        int xRange = tiles.get(0).size();
+        if (position.getY() >= tiles.size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+        if (position.getX() >= tiles.get(position.getY()).size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
     }
 }
