@@ -62,10 +62,10 @@ public class GameService {
         try {
             Game game = getGameById(id);
             Position attacker = attackCommand.getAttacker();
-            Position defender = attackCommand.getDefender();
-            List<Unit> units = game.unitAttack(token, attacker, defender);
             Position attackerDestination = attackCommand.getAttackerDestination();
-            game.unitMove(token, attacker, attackerDestination);
+            Unit movedAttacker = game.unitMove(token, attacker, attackerDestination);
+            Position defender = attackCommand.getDefender();
+            List<Unit> units = game.unitAttack(token, movedAttacker.getPosition(), defender);
             return units;
         }
         catch (NotPlayersTurnException e) {
