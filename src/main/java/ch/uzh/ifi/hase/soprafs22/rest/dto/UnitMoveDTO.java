@@ -1,8 +1,6 @@
-package ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto;
+package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
-
-public class UnitMovePutDTO {
+public class UnitMoveDTO {
     private PositionDTO start;
     private PositionDTO destination;
 

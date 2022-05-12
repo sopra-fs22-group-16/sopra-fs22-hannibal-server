@@ -6,9 +6,9 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.UnitHealthsWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -117,13 +117,13 @@ class GameControllerTest {
         GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
 
         assertNull(deltaSockDTO.getTurnInfo());
-        UnitMovePutDTO moveSock = deltaSockDTO.getMove();
+        UnitMoveDTO moveSock = deltaSockDTO.getMove();
         assertEquals(1, moveSock.getStart().getX());
         assertEquals(2, moveSock.getStart().getY());
         //assertEquals(3, moveSock.getDestination().getX());
         //assertEquals(4, moveSock.getDestination().getY());
 
-        List<HealthPutDTO> healthSock = deltaSockDTO.getHealth();
+        List<UnitHealthsWebSocketDTO> healthSock = deltaSockDTO.getUnitHealths();
         assertEquals(2, healthSock.size());
 
 
@@ -137,12 +137,12 @@ class GameControllerTest {
 
     @Test
     void test_unitMove() throws Exception {
-        UnitMovePutDTO unitMovePutDTO = new UnitMovePutDTO();
-        unitMovePutDTO.setStart(positionDTO1);
-        unitMovePutDTO.setDestination(positionDTO2);
+        UnitMoveDTO unitMoveDTO = new UnitMoveDTO();
+        unitMoveDTO.setStart(positionDTO1);
+        unitMoveDTO.setDestination(positionDTO2);
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/move")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(unitMovePutDTO))
+                .content(asJsonString(unitMoveDTO))
                 .header("token", TOKEN);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
@@ -151,9 +151,9 @@ class GameControllerTest {
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), gameDeltaSockDTOArgumentCaptor.capture());
         GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
 
-        assertNull(deltaSockDTO.getHealth());
+        assertNull(deltaSockDTO.getUnitHealths());
         assertNull(deltaSockDTO.getTurnInfo());
-        UnitMovePutDTO moveSock = deltaSockDTO.getMove();
+        UnitMoveDTO moveSock = deltaSockDTO.getMove();
         assertEquals(1, moveSock.getStart().getX());
         assertEquals(2, moveSock.getStart().getY());
         assertEquals(3, moveSock.getDestination().getX());

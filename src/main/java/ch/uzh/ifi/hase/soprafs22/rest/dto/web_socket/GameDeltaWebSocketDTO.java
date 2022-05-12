@@ -1,26 +1,25 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket;
 
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.HealthPutDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitMovePutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Delta to be sent through web socket about the game so client can process info easier.
  */
 public class GameDeltaWebSocketDTO {
-    private UnitMovePutDTO move;
-
+    private UnitMoveDTO move;
+    private List<UnitHealthsWebSocketDTO> unitHealths;
     private TurnInfo turnInfo;
-    private List<HealthPutDTO> health;
 
-
-    public UnitMovePutDTO getMove() {
+    public UnitMoveDTO getMove() {
         return move;
     }
 
-    public void setMove(UnitMovePutDTO move) {
+    public void setMove(UnitMoveDTO move) {
         this.move = move;
     }
 
@@ -32,11 +31,11 @@ public class GameDeltaWebSocketDTO {
         this.turnInfo = turnInfo;
     }
 
-    public List<HealthPutDTO> getHealth() {
-        return health;
+    public List<UnitHealthsWebSocketDTO> getUnitHealths() {
+        return unitHealths;
     }
 
-    public void setHealth(List<HealthPutDTO> health) {
-        this.health = health;
+    public void setUnitHealths(List<UnitHealthsWebSocketDTO> unitHealths) {
+        this.unitHealths = unitHealths;
     }
 }

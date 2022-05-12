@@ -2,7 +2,10 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
@@ -15,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Game Service
@@ -63,9 +69,9 @@ public class GameService {
             Game game = getGameById(id);
             Position attacker = attackCommand.getAttacker();
             Position attackerDestination = attackCommand.getAttackerDestination();
-            Unit movedAttacker = game.unitMove(token, attacker, attackerDestination);
+            Position arrival = game.unitMove(token, attacker, attackerDestination);
             Position defender = attackCommand.getDefender();
-            List<Unit> units = game.unitAttack(token, movedAttacker.getPosition(), defender);
+            List<Unit> units = game.unitAttack(token, arrival, defender);
             return units;
         }
         catch (NotPlayersTurnException e) {
@@ -100,12 +106,23 @@ public class GameService {
         }
     }
 
-    public Unit unitMove(Long id, String token, MoveCommand moveCommand) {
+    public GameDelta unitMove(Long id, String token, MoveCommand moveCommand) {
         try {
+            Game game = getGameById(id);
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();
-            Unit movedUnit = getGameById(id).unitMove(token, start, destination);
-            return movedUnit;
+            Position arrival = game.unitMove(token, start, destination);
+            moveCommand.setDestination(arrival);
+            TurnInfo turnInfo = null;
+            if (game.haveAllUnitsOfPlayerMoved(token)) {
+                if (game.resetUnitsFromPreviousTurn(token)) {
+                    turnInfo = game.nextTurn();
+                }
+            }
+            Collection<PlayerDecorator> players = game.getDecoratedPlayers().values();
+            List<Unit> units = players.stream().flatMap(p -> p.getUnits().stream()).collect(Collectors.toList());
+            Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
+            return new GameDelta(moveCommand, turnInfo, unitHealths);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);

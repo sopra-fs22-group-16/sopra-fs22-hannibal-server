@@ -109,7 +109,7 @@ public class Game {
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
     }
 
-    private boolean resetUnitsFromPreviousTurn(String token) {
+    public boolean resetUnitsFromPreviousTurn(String token) {
         return this.decoratedPlayers.get(token).resetUnitsMovedStatus();
     }
 
@@ -170,7 +170,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public Unit unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+    public Position unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -197,16 +197,10 @@ public class Game {
         if (!start.equals(end))
             gameLogger.move(turnNumber);
         movingUnit.setMoved(true);
-        if (haveAllUnitsOfPlayerMoved(token)) {
-            boolean allUnitsMovedStatusReset = resetUnitsFromPreviousTurn(token);
-            if (allUnitsMovedStatusReset) {
-                nextTurn();
-            }
-        }
-        return movingUnit;
+        return movingUnit.getPosition();
     }
 
-    private boolean haveAllUnitsOfPlayerMoved(String token) {
+    public boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(u -> u.getMoved() == true);
     }
 
