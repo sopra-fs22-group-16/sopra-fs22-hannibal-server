@@ -17,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.UnitMoveWebSocketDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 
 /**
@@ -41,10 +42,10 @@ public abstract class DTOMapper {
     @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
-    protected int convertTeamToTeamNumber(Team team){
+    protected int convertTeamToTeamNumber(Team team) {
         return team.ordinal();
     }
-  
+
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
@@ -61,7 +62,7 @@ public abstract class DTOMapper {
         return lobbyGetDTO;
     }
 
-    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby) {
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
@@ -103,42 +104,42 @@ public abstract class DTOMapper {
     @Mapping(source = "moved", target = "hasMoved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
-    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap){
+    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap) {
         List<UnitGetDTO> units = new ArrayList<>();
-        for(PlayerDecorator pd : playerMap.values()){
-            for (Unit u: pd.getUnits()){
+        for (PlayerDecorator pd : playerMap.values()) {
+            for (Unit u : pd.getUnits()) {
                 units.add(convertUnitToUnitGetDTO(u));
             }
         }
         return units;
     }
 
-    @Mapping(source = "x", target="x")
-    @Mapping(source = "y", target="y")
+    @Mapping(source = "x", target = "x")
+    @Mapping(source = "y", target = "y")
     public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    public Position convertPositionPutDTOToPosition(PositionDTO position){
+    public Position convertPositionPutDTOToPosition(PositionDTO position) {
         return new Position(position.getX(), position.getY());
     }
 
     public Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
         Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
-        for(IPlayer player: playerMap.values()){
+        for (IPlayer player : playerMap.values()) {
             newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
         }
         return newPlayerMap;
     }
 
-    @Mapping(source = "attacker", target="attacker")
-    @Mapping(source = "defender", target="defender")
-    @Mapping(source = "attackerDestination", target="attackerDestination")
-    public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand (UnitAttackPutDTO unitAttackPutDTO);
+    @Mapping(source = "attacker", target = "attacker")
+    @Mapping(source = "defender", target = "defender")
+    @Mapping(source = "attackerDestination", target = "attackerDestination")
+    public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO);
 
-    @Mapping(source = "start", target="start")
-    @Mapping(source = "destination", target="destination")
-    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand (UnitMovePutDTO unitMovePutDTO);
+    @Mapping(source = "start", target = "start")
+    @Mapping(source = "destination", target = "destination")
+    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMovePutDTO unitMovePutDTO);
 
-    @Mapping(source = "position", target="destination")
-    @Mapping(source = "moved", target="hasMoved")
+    @Mapping(source = "position", target = "destination")
+    @Mapping(source = "moved", target = "moved")
     public abstract UnitMoveWebSocketDTO convertUnitToUnitMoveWebSocketDTO(Unit unit);
 }

@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 public class UnitMoveWebSocketDTO {
     private PositionDTO start;
     private PositionDTO destination;
-    private Boolean hasMoved;
+    private boolean moved;
 
     public PositionDTO getStart() {
         return start;
@@ -23,11 +23,11 @@ public class UnitMoveWebSocketDTO {
         this.destination = destination;
     }
 
-    public Boolean hasMoved() {
-        return hasMoved;
+    public boolean getMoved() {
+        return moved;
     }
 
-    public void setHasMoved(Boolean hasMoved) {
-        this.hasMoved = hasMoved;
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 }
