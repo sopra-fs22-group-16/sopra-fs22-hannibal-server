@@ -50,8 +50,8 @@ class GameServiceIntegrationTest {
     private Position blueUnitPosition;
     private Position noUnitPosition;
 
-    private AttackCommand attackCommand;
-    private MoveCommand moveCommand;
+    private AttackCommand attackCommand = new AttackCommand();
+    private MoveCommand moveCommand = new MoveCommand();
     @Mock
     ILobbyManager lobbyManager;
 
@@ -75,9 +75,6 @@ class GameServiceIntegrationTest {
         redUnitPosition = positionWithTeamUnit(game, Team.RED);
         blueUnitPosition = positionWithTeamUnit(game, Team.BLUE);
         noUnitPosition = positionWithNoUnit(game);
-
-        attackCommand = new AttackCommand();
-        moveCommand = new MoveCommand();
     }
 
     // TODO: add test for GameOver in attack, move and wait.
@@ -193,7 +190,7 @@ class GameServiceIntegrationTest {
         moveCommand.setStart(redUnitPosition);
         moveCommand.setDestination(noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, "wrong token",moveCommand));
+                () -> gameService.unitMove(GAME_ID, "wrong token", moveCommand));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }

@@ -13,7 +13,7 @@ public class UnitHealthDTO {
         return unitPosition;
     }
 
-    public long getHealth() {
+    public int getHealth() {
         return health;
     }
 }
