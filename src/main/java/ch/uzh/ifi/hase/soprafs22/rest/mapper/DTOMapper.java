@@ -1,14 +1,21 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PositionPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -36,10 +43,10 @@ public abstract class DTOMapper {
     @Mapping(source = "team", target = "team")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
-    protected int convertTeamToTeamNumber(Team team){
+    protected int convertTeamToTeamNumber(Team team) {
         return team.ordinal();
     }
-  
+
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
@@ -47,7 +54,6 @@ public abstract class DTOMapper {
     @Mapping(source = "token", target = "token")
     public abstract PlayerWithTokenGetDTO convertIPlayerToPlayerWithTokenGetDTO(IPlayer player);
 
-    //add invitation code if token matches
     public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby, String token) {
         LobbyGetDTO lobbyGetDTO = convertILobbyToLobbyGetDTO(lobby);
         if (lobby.getHost().getToken().equals(token)) {
@@ -56,7 +62,7 @@ public abstract class DTOMapper {
         return lobbyGetDTO;
     }
 
-    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby){
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby) {
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
@@ -95,31 +101,58 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
+    @Mapping(source = "moved", target = "hasMoved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
-    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap){
+    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap) {
         List<UnitGetDTO> units = new ArrayList<>();
-        for(PlayerDecorator pd : playerMap.values()){
-            for (Unit u: pd.getUnits()){
+        for (PlayerDecorator pd : playerMap.values()) {
+            for (Unit u : pd.getUnits()) {
                 units.add(convertUnitToUnitGetDTO(u));
             }
         }
         return units;
     }
 
-    @Mapping(source = "x", target="x")
-    @Mapping(source = "y", target="y")
-    public abstract PositionPutDTO convertPositionToPositionPutDTO(Position position);
+    @Mapping(source = "x", target = "x")
+    @Mapping(source = "y", target = "y")
+    public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    public Position convertPositionPutDTOToPosition(PositionPutDTO position){
+    protected Position convertPositionPutDTOToPosition(PositionDTO position) {
         return new Position(position.getX(), position.getY());
     }
 
-    public Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
+    protected Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
         Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
-        for(IPlayer player: playerMap.values()){
+        for (IPlayer player : playerMap.values()) {
             newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
         }
         return newPlayerMap;
+    }
+
+    @Mapping(source = "attacker", target = "attacker")
+    @Mapping(source = "defender", target = "defender")
+    @Mapping(source = "attackerDestination", target = "attackerDestination")
+    public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO);
+
+    @Mapping(source = "start", target = "start")
+    @Mapping(source = "destination", target = "destination")
+    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO);
+
+    @Mapping(source = "moveCommand", target = "move")
+    @Mapping(source = "turnInfo", target = "turnInfo")
+    @Mapping(source = "unitHealths", target = "unitHealths")
+    public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
+
+    protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
+        if (unitHealthsMap.size() == 0)
+            return null;
+        List<UnitHealthDTO> unitHealthsList = new ArrayList<>();
+        for (var uh : unitHealthsMap.entrySet()) {
+            PositionDTO p = convertPositionToPositionDTO(uh.getKey());
+            int health = uh.getValue();
+            unitHealthsList.add(new UnitHealthDTO(p, health));
+        }
+        return unitHealthsList;
     }
 }

@@ -109,6 +109,9 @@ public class Game {
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
     }
 
+    public boolean resetUnitsFromPreviousTurn(String token) {
+        return this.decoratedPlayers.get(token).resetUnitsMovedStatus();
+    }
 
     public boolean hasEnded() {
         return !this.running;
@@ -138,21 +141,17 @@ public class Game {
         }
         ensureWithinRange(attacker);
         ensureWithinRange(defender);
-        Optional<Unit> attackingUnitOptional = getUnitAt(attacker);
-        if (attackingUnitOptional.isEmpty())
+        Unit attackingUnit = getUnitAtPosition(attacker);
+        if (attackingUnit == null)
             throw new UnitNotFoundException(attacker);
-        Unit attackingUnit = attackingUnitOptional.get();
-        Optional<Unit> defendingUnitOptional = getUnitAt(defender);
-        if (defendingUnitOptional.isEmpty())
-            throw new UnitNotFoundException(attacker);
-        Unit defendingUnit = defendingUnitOptional.get();
+        Unit defendingUnit = getUnitAtPosition(defender);
+        if (defendingUnit == null)
+            throw new UnitNotFoundException(defender);
         if (this.decoratedPlayers.get(token).getId() != attackingUnit.getUserId())
             throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
-        // TODO: attacking does not move the unit (setPosition), but interface implies it does!
-        // logger.move(turnNumber);
         if (defendingUnit.getHealth() <= 0)
             gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
@@ -160,18 +159,7 @@ public class Game {
         return List.of(defendingUnit, attackingUnit);
     }
 
-    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
-        List<List<Tile>> tiles = this.gameMap.getTiles();
-        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
-        int yRange = tiles.size();
-        int xRange = tiles.get(0).size();
-        if (position.getY() >= tiles.size())
-            throw new TileOutOfRangeException(position, xRange, yRange);
-        if (position.getX() >= tiles.get(position.getY()).size())
-            throw new TileOutOfRangeException(position, xRange, yRange);
-    }
-
-    public void unitWait(String token, Position start, Position end) throws NotPlayersTurnException,
+    public Position unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -187,25 +175,44 @@ public class Game {
         }
         ensureWithinRange(start);
         ensureWithinRange(end);
-        Optional<Unit> movingUnitOptional = getUnitAt(start);
-        if (movingUnitOptional.isEmpty())
+        Unit movingUnit = getUnitAtPosition(start);
+        if (movingUnit == null) {
             throw new UnitNotFoundException(start);
-        Unit movingUnit = movingUnitOptional.get();
-        if (this.decoratedPlayers.get(token).getId() != movingUnit.getUserId())
+        }
+        if (this.decoratedPlayers.get(token).getId() != movingUnit.getUserId()) {
             throw new WrongUnitOwnerException(movingUnit, this.decoratedPlayers.get(token).getId());
+        }
         movingUnit.setPosition(end);
         if (!start.equals(end))
             gameLogger.move(turnNumber);
+        movingUnit.setMoved(true);
+        return movingUnit.getPosition();
+    }
+
+    public boolean haveAllUnitsOfPlayerMoved(String token) {
+        return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
     }
 
     public IGameStatistics getStatistics() {
         return this.gameLogger;
     }
 
-    private Optional<Unit> getUnitAt(Position position) {
+    private Unit getUnitAtPosition(Position position) {
         return this.decoratedPlayers.values().stream()
                 .flatMap(player -> player.getUnits().stream())
                 .filter(unit -> unit.getPosition().equals(position))
-                .findAny();
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
+        List<List<Tile>> tiles = this.gameMap.getTiles();
+        // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
+        int yRange = tiles.size();
+        int xRange = tiles.get(0).size();
+        if (position.getY() >= tiles.size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
+        if (position.getX() >= tiles.get(position.getY()).size())
+            throw new TileOutOfRangeException(position, xRange, yRange);
     }
 }

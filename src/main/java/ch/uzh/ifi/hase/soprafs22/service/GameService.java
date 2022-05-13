@@ -2,8 +2,13 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
+import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -13,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Game Service
@@ -56,9 +64,16 @@ public class GameService {
     /**
      * Returns the list of units whose health got affected by the attack.
      */
-    public List<Unit> unitAttack(Long id, String token, Position attacker, Position defender) {
+    public GameDelta unitAttack(Long id, String token, AttackCommand attackCommand) {
         try {
-            return getGameById(id).unitAttack(token, attacker, defender);
+            Game game = getGameById(id);
+            Position attacker = attackCommand.getAttacker();
+            Position attackerDestination = attackCommand.getAttackerDestination();
+            Position arrival = game.unitMove(token, attacker, attackerDestination);
+            Position defender = attackCommand.getDefender();
+            List<Unit> units = game.unitAttack(token, arrival, defender);
+            Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
+            return new GameDelta(attackCommand, maybeTurnInfo(game, token), unitHealths);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -87,11 +102,19 @@ public class GameService {
         catch (WrongTargetTeamException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getSecond() + " is not a valid target of unit " + e.getFirst() + ".", e);
         }
+        catch (TargetUnreachableException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit " + e.getUnit().getType().name() + " cannot move from " + e.getStart() + " to " + e.getEnd(), e);
+        }
     }
 
-    public void unitWait(Long id, String token, Position start, Position end) {
+    public GameDelta unitMove(Long id, String token, MoveCommand moveCommand) {
         try {
-            getGameById(id).unitWait(token, start, end);
+            Game game = getGameById(id);
+            Position start = moveCommand.getStart();
+            Position destination = moveCommand.getDestination();
+            Position arrival = game.unitMove(token, start, destination);
+            moveCommand.setDestination(arrival);
+            return new GameDelta(moveCommand, maybeTurnInfo(game, token), null); //Health does not change when moving
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -118,6 +141,18 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getUnit() + DOES_NOT_BELONG_TO_THE_PLAYER, e);
         }
     }
+
+    // Doesnt this belong in Game?
+    private TurnInfo maybeTurnInfo(Game game, String token) {
+        TurnInfo turnInfo = null;
+        if (game.haveAllUnitsOfPlayerMoved(token)) {
+            if (game.resetUnitsFromPreviousTurn(token)) {
+                turnInfo = game.nextTurn();
+            }
+        }
+        return turnInfo;
+    }
+
 
     // Only for testing
     public void setLobbyManager(ILobbyManager lobbyManager) {

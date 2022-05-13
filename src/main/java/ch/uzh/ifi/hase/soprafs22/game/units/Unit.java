@@ -19,6 +19,7 @@ public class Unit extends Observable {
     private int teamId;
     private long userId;
     private Position position;
+    private boolean moved;
 
     public Position getPosition() {
         return position;
@@ -37,7 +38,7 @@ public class Unit extends Observable {
     }
 
     public int getHealth() {
-        return health;
+        return this.health;
     }
 
     public void setHealth(int health) {
@@ -45,7 +46,7 @@ public class Unit extends Observable {
     }
 
     public List<Double> getDefense() {
-        return defense;
+        return this.defense;
     }
 
     public void setDefense(List<Double> defense) {
@@ -53,7 +54,7 @@ public class Unit extends Observable {
     }
 
     public List<Double> getAttackDamage() {
-        return attackDamage;
+        return this.attackDamage;
     }
 
     public void setAttackDamage(List<Double> attackDamage) {
@@ -61,7 +62,7 @@ public class Unit extends Observable {
     }
 
     public int getAttackRange() {
-        return attackRange;
+        return this.attackRange;
     }
 
     public void setAttackRange(int attackRange) {
@@ -69,7 +70,7 @@ public class Unit extends Observable {
     }
 
     public int getMovementRange() {
-        return movementRange;
+        return this.movementRange;
     }
 
     public void setMovementRange(int movementRange) {
@@ -77,7 +78,7 @@ public class Unit extends Observable {
     }
 
     public List<UnitCommands> getCommands() {
-        return commands;
+        return this.commands;
     }
 
     public void setCommands(List<UnitCommands> commands) {
@@ -85,7 +86,7 @@ public class Unit extends Observable {
     }
 
     public int getTeamId() {
-        return teamId;
+        return this.teamId;
     }
 
     public void setTeamId(int teamId) {
@@ -93,7 +94,7 @@ public class Unit extends Observable {
     }
 
     public long getUserId() {
-        return userId;
+        return this.userId;
     }
 
     public void setUserId(long userId) {
@@ -106,5 +107,13 @@ public class Unit extends Observable {
         this.health -= 1 / 3 * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
         victim.notifyObservers(victim);
         this.notifyObservers(this);
+    }
+
+    public boolean getMoved() {
+        return this.moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 }
