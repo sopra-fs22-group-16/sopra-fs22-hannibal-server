@@ -110,10 +110,6 @@ public class Lobby implements ILobby {
     public void setReady(String token, Boolean ready) throws PlayerNotFoundException {
         IPlayer player = getPlayer(token);
         player.setReady(ready);
-        // Here lobby knows if all players are ready and can inform clients through web socket.
-        // Sum of players that are ready:
-        // long playersReady = playerMap.values().stream().filter(Player::isReady).count();
-        // startGame();
     }
 
     @Override
@@ -130,6 +126,46 @@ public class Lobby implements ILobby {
                 break;
             }
         }
+    }
+
+    @Override
+    public int reducePlayersInLobby() {
+        Iterator <IPlayer> it = iterator();
+        while(it.hasNext()){
+            if(it.next() != host && lobbyCapacity < getNumberOfPlayers()){
+                it.remove();
+            }
+        }
+        return getNumberOfPlayers();
+    }
+
+    @Override
+    public boolean setAllPlayersNotReady(){
+        for (IPlayer player : playerMap.values()){
+            player.setReady(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean balanceTeams(){
+        Team t = null;
+        // we alternate teams between consecutive players
+        for (IPlayer player : playerMap.values()){
+            if (t == null){
+                player.setTeam(Team.RED);
+            }
+            else{
+                if(t == Team.RED){
+                    player.setTeam(Team.BLUE);
+                }
+                else{
+                    player.setTeam(Team.RED);
+                }
+            }
+            t = player.getTeam();
+        }
+        return true;
     }
 
     @Override
@@ -169,6 +205,11 @@ public class Lobby implements ILobby {
     @Override
     public IPlayer getHost() {
         return host;
+    }
+
+    @Override
+    public int getLobbyCapacity() {
+        return lobbyCapacity;
     }
 
     //TODO: This method does not belong here
