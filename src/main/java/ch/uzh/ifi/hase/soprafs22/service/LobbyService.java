@@ -191,6 +191,14 @@ public class LobbyService {
         }
     }
 
+    public void checkLobbyCapacity(ILobby lobby) {
+        if(lobby.getLobbyCapacity() < lobby.getNumberOfPlayers()){
+            lobby.reduceLobbyCapacity();
+            lobby.setAllPlayersNotReady();
+            lobby.balanceTeams();
+        }
+    }
+
     public void removePlayerFromLobby(String token, Long lobbyId) {
 
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);

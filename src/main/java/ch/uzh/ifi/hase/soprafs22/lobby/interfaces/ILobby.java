@@ -57,4 +57,12 @@ public interface ILobby extends Iterable<IPlayer>{
     IPlayer generatePlayer();
 
     void addPlayer(IPlayer player) throws FullLobbyException;
+
+    int getLobbyCapacity();
+
+    void reduceLobbyCapacity();
+
+    void setAllPlayersNotReady();
+
+    void balanceTeams();
 }
