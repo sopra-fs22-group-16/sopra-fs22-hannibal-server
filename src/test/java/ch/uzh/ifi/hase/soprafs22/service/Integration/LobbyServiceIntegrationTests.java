@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
@@ -600,6 +602,35 @@ class LobbyServiceIntegrationTests {
 
         // Check https status code
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+
+    }
+
+    @Test
+    void createLobby_exceedCapacityWhenChangingMode(){
+
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PUBLIC;
+        GameMode gameMode = GameMode.TWO_VS_TWO;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        lobbyService.addPlayer(null, createdLobby.getId());
+        lobbyService.addPlayer(null, createdLobby.getId());
+        lobbyService.addPlayer(null, createdLobby.getId());
+
+        // change game mode to 1v1
+        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, visibility, GameMode.ONE_VS_ONE, gameType);
+
+        // check that the capacity has been exceeded
+        assert createdLobby.getNumberOfPlayers() > createdLobby.getLobbyCapacity();
+
+        // check lobby capacity
+        lobbyService.checkLobbyCapacity(createdLobby);
+
+        // check that the number of players has been reduced to the maximum capacity
+        assertEquals(createdLobby.getNumberOfPlayers(), createdLobby.getLobbyCapacity());
 
     }
 }
