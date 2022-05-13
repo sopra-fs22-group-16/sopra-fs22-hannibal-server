@@ -92,14 +92,9 @@ class GameControllerTest {
         positionDTO3.setX(5);
         positionDTO3.setY(6);
 
-        attackCommand = new AttackCommand();
-        attackCommand.setAttacker(position1);
-        attackCommand.setDefender(position2);
-        attackCommand.setAttackerDestination(position3);
+        attackCommand = new AttackCommand(position1, position2, position3);
 
-        moveCommand = new MoveCommand();
-        moveCommand.setStart(position1);
-        moveCommand.setDestination(position2);
+        moveCommand = new MoveCommand(position1, position2);
     }
 
 
@@ -120,7 +115,9 @@ class GameControllerTest {
         Unit unit2 = mock(Unit.class);
         when(unit2.getPosition()).thenReturn(position2);
         when(unit2.getHealth()).thenReturn(2);
-        GameDelta gameDelta = new GameDelta(attackCommand, null, Map.of(position1, 1, position2, 2));
+
+        MoveCommand move = new MoveCommand(attackCommand.getAttacker(), attackCommand.getAttackerDestination());
+        GameDelta gameDelta = new GameDelta(move, null, Map.of(position1, 1, position2, 2));
         when(gameService.unitAttack(any(), any(), any())).thenReturn(gameDelta);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
@@ -167,7 +164,7 @@ class GameControllerTest {
                 .content(asJsonString(unitMoveDTO))
                 .header("token", TOKEN);
 
-        GameDelta gameDelta = new GameDelta(moveCommand, null);
+        GameDelta gameDelta = new GameDelta(moveCommand, null, null);
 
         when(gameService.unitMove(any(), any(), any())).thenReturn(gameDelta);
 

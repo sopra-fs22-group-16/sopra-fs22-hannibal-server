@@ -50,8 +50,8 @@ class GameServiceIntegrationTest {
     private Position blueUnitPosition;
     private Position noUnitPosition;
 
-    private AttackCommand attackCommand = new AttackCommand();
-    private MoveCommand moveCommand = new MoveCommand();
+    private AttackCommand attackCommand;
+    private MoveCommand moveCommand;
     @Mock
     ILobbyManager lobbyManager;
 
@@ -81,9 +81,7 @@ class GameServiceIntegrationTest {
     // TODO test for AttackOutOfRangeException once it is implemented in units.
     @Test
     void attack_NotPlayersTurnException() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(blueUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, PLAYER_2.getToken(), attackCommand));
 
@@ -92,9 +90,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_TileOutOfRangeException() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(OUT_OF_RANGE_POSITION);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, OUT_OF_RANGE_POSITION, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
 
@@ -103,9 +99,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_NotAMemberOfGameException() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(blueUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, "wrong token", attackCommand));
 
@@ -114,9 +108,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_UnitNotFoundException() {
-        attackCommand.setAttacker(noUnitPosition);
-        attackCommand.setDefender(blueUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(noUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
 
@@ -125,9 +117,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_GameNotFoundException() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(blueUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(NO_GAME_ID, PLAYER_1.getToken(), attackCommand));
 
@@ -136,9 +126,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_WrongUnitOwnerException() {
-        attackCommand.setAttacker(blueUnitPosition);
-        attackCommand.setDefender(redUnitPosition);
-        attackCommand.setAttackerDestination(blueUnitPosition);
+        attackCommand = new AttackCommand(blueUnitPosition, redUnitPosition, blueUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
 
@@ -147,9 +135,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_WrongTargetTeamException() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(redUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, redUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
 
@@ -158,17 +144,14 @@ class GameServiceIntegrationTest {
 
     @Test
     void attack_OK() {
-        attackCommand.setAttacker(redUnitPosition);
-        attackCommand.setDefender(blueUnitPosition);
-        attackCommand.setAttackerDestination(redUnitPosition);
+        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
         gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand);
     }
 
     // TODO test for TargetUnreachableException once it is implemented in units.
     @Test
     void wait_NotPlayersTurnException() {
-        moveCommand.setStart(redUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(GAME_ID, PLAYER_2.getToken(), moveCommand));
 
@@ -177,8 +160,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_TileOutOfRangeException() {
-        moveCommand.setStart(OUT_OF_RANGE_POSITION);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(OUT_OF_RANGE_POSITION, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
 
@@ -187,8 +169,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_NotAMemberOfGameException() {
-        moveCommand.setStart(redUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(GAME_ID, "wrong token", moveCommand));
 
@@ -197,8 +178,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_UnitNotFoundException() {
-        moveCommand.setStart(noUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(noUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
 
@@ -207,8 +187,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_GameNotFoundException() {
-        moveCommand.setStart(redUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(NO_GAME_ID, PLAYER_1.getToken(), moveCommand));
 
@@ -217,8 +196,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_WrongUnitOwnerException() {
-        moveCommand.setStart(blueUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(blueUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
 
@@ -227,8 +205,7 @@ class GameServiceIntegrationTest {
 
     @Test
     void wait_OK() {
-        moveCommand.setStart(redUnitPosition);
-        moveCommand.setDestination(noUnitPosition);
+        moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand);
     }
 
