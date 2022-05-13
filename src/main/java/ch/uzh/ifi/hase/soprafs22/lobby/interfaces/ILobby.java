@@ -60,9 +60,9 @@ public interface ILobby extends Iterable<IPlayer>{
 
     int getLobbyCapacity();
 
-    void reduceLobbyCapacity();
+    int reducePlayersInLobby();
 
-    void setAllPlayersNotReady();
+    boolean setAllPlayersNotReady();
 
-    void balanceTeams();
+    boolean balanceTeams();
 }

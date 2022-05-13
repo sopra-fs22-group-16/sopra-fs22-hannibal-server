@@ -625,10 +625,10 @@ class LobbyServiceIntegrationTests {
         assert createdLobby.getNumberOfPlayers() > createdLobby.getLobbyCapacity();
 
         // check lobby capacity
-        lobbyService.checkLobbyCapacity(createdLobby);
+        int numberPlayers = lobbyService.checkPlayersInLobby(createdLobby);
 
         // check that the number of players has been reduced to the maximum capacity
-        assertEquals(createdLobby.getNumberOfPlayers(), createdLobby.getLobbyCapacity());
+        assertEquals(numberPlayers, createdLobby.getLobbyCapacity());
 
     }
 }

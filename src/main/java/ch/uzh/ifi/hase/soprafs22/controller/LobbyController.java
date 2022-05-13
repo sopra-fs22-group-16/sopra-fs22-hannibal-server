@@ -115,7 +115,7 @@ public class LobbyController {
         GameType gameType = lobbyPutDTO.getGameType();
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
-        lobbyService.checkLobbyCapacity(lobby);
+        lobbyService.checkPlayersInLobby(lobby);
 
         // send messages to client via socket
         socketMessage.convertAndSend(TOPIC_LOBBY + id, DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token));

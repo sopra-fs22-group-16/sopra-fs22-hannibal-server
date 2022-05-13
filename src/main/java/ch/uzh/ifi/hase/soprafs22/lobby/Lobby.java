@@ -129,40 +129,43 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void reduceLobbyCapacity() {
+    public int reducePlayersInLobby() {
         Iterator <IPlayer> it = iterator();
         while(it.hasNext()){
             if(it.next() != host && lobbyCapacity < getNumberOfPlayers()){
                 it.remove();
             }
         }
+        return getNumberOfPlayers();
     }
 
     @Override
-    public void setAllPlayersNotReady(){
+    public boolean setAllPlayersNotReady(){
         for (IPlayer player : playerMap.values()){
             player.setReady(false);
         }
+        return true;
     }
 
     @Override
-    public void balanceTeams(){
+    public boolean balanceTeams(){
         Team t = null;
         // we alternate teams between consecutive players
         for (IPlayer player : playerMap.values()){
             if (t == null){
-                player.setTeam(Team.values()[0]);
+                player.setTeam(Team.RED);
             }
             else{
-                if(t == Team.values()[0]){
-                    player.setTeam(Team.values()[1]);
+                if(t == Team.RED){
+                    player.setTeam(Team.BLUE);
                 }
                 else{
-                    player.setTeam(Team.values()[0]);
+                    player.setTeam(Team.RED);
                 }
             }
             t = player.getTeam();
         }
+        return true;
     }
 
     @Override
