@@ -38,7 +38,7 @@ public class Unit extends Observable {
     }
 
     public int getHealth() {
-        return this.health;
+        return health;
     }
 
     public void setHealth(int health) {
@@ -46,7 +46,7 @@ public class Unit extends Observable {
     }
 
     public List<Double> getDefense() {
-        return this.defense;
+        return defense;
     }
 
     public void setDefense(List<Double> defense) {
@@ -54,7 +54,7 @@ public class Unit extends Observable {
     }
 
     public List<Double> getAttackDamage() {
-        return this.attackDamage;
+        return attackDamage;
     }
 
     public void setAttackDamage(List<Double> attackDamage) {
@@ -62,7 +62,7 @@ public class Unit extends Observable {
     }
 
     public int getAttackRange() {
-        return this.attackRange;
+        return attackRange;
     }
 
     public void setAttackRange(int attackRange) {
@@ -70,7 +70,7 @@ public class Unit extends Observable {
     }
 
     public int getMovementRange() {
-        return this.movementRange;
+        return movementRange;
     }
 
     public void setMovementRange(int movementRange) {
@@ -78,7 +78,7 @@ public class Unit extends Observable {
     }
 
     public List<UnitCommands> getCommands() {
-        return this.commands;
+        return commands;
     }
 
     public void setCommands(List<UnitCommands> commands) {
@@ -86,7 +86,7 @@ public class Unit extends Observable {
     }
 
     public int getTeamId() {
-        return this.teamId;
+        return teamId;
     }
 
     public void setTeamId(int teamId) {
@@ -94,7 +94,7 @@ public class Unit extends Observable {
     }
 
     public long getUserId() {
-        return this.userId;
+        return userId;
     }
 
     public void setUserId(long userId) {
@@ -110,7 +110,7 @@ public class Unit extends Observable {
     }
 
     public boolean getMoved() {
-        return this.moved;
+        return moved;
     }
 
     public void setMoved(boolean moved) {

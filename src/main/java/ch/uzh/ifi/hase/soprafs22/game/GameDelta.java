@@ -6,22 +6,14 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import java.util.Map;
 
 public class GameDelta {
-    private MoveCommand moveCommand;
-    private Map<Position, Integer> unitHealths;
-    private TurnInfo turnInfo;
+    private final MoveCommand moveCommand;
+    private final Map<Position, Integer> unitHealths;
+    private final TurnInfo turnInfo;
 
     public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths) {
-        this.moveCommand = moveCommand;
         this.turnInfo = turnInfo;
+        this.moveCommand =  moveCommand;
         this.unitHealths = unitHealths;
-    }
-
-    public GameDelta(AttackCommand attackCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths) {
-        this.turnInfo = turnInfo;
-        this.unitHealths = unitHealths;
-        moveCommand =  new MoveCommand();
-        moveCommand.setStart(attackCommand.getAttacker());
-        moveCommand.setDestination(attackCommand.getAttackerDestination());
     }
 
     public MoveCommand getMoveCommand() {

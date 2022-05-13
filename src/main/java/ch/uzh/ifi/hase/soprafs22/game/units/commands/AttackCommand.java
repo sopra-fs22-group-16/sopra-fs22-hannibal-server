@@ -7,27 +7,21 @@ public class AttackCommand {
     Position defender;
     Position attackerDestination;
 
-    public Position getAttacker() {
-        return attacker;
+    public AttackCommand(Position attacker, Position defender, Position attackerDestination) {
+        this.attacker = attacker;
+        this.defender = defender;
+        this.attackerDestination = attackerDestination;
     }
 
-    public void setAttacker(Position attacker) {
-        this.attacker = attacker;
+    public Position getAttacker() {
+        return attacker;
     }
 
     public Position getDefender() {
         return defender;
     }
 
-    public void setDefender(Position defender) {
-        this.defender = defender;
-    }
-
     public Position getAttackerDestination() {
         return attackerDestination;
-    }
-
-    public void setAttackerDestination(Position attackerDestination) {
-        this.attackerDestination = attackerDestination;
     }
 }

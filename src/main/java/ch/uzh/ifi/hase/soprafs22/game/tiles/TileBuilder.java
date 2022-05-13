@@ -70,6 +70,6 @@ public class TileBuilder implements ITileBuilder {
     }
 
     public Tile getResult() {
-        return this.result;
+        return result;
     }
 }

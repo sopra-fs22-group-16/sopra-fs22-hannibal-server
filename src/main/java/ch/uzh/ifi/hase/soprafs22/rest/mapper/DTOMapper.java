@@ -101,7 +101,7 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
-    @Mapping(source = "moved", target = "hasMoved")
+    @Mapping(source = "moved", target = "moved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
     protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap) {
@@ -118,7 +118,7 @@ public abstract class DTOMapper {
     @Mapping(source = "y", target = "y")
     public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    protected Position convertPositionPutDTOToPosition(PositionDTO position) {
+    protected Position convertPositionDTOToPosition(PositionDTO position) {
         return new Position(position.getX(), position.getY());
     }
 
@@ -133,11 +133,18 @@ public abstract class DTOMapper {
     @Mapping(source = "attacker", target = "attacker")
     @Mapping(source = "defender", target = "defender")
     @Mapping(source = "attackerDestination", target = "attackerDestination")
-    public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO);
+    public AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO) {
+        Position attacker = convertPositionDTOToPosition(unitAttackPutDTO.getAttacker());
+        Position defender = convertPositionDTOToPosition(unitAttackPutDTO.getDefender());
+        Position attackerDestination = convertPositionDTOToPosition(unitAttackPutDTO.getAttackerDestination());
+        return new AttackCommand(attacker, defender, attackerDestination);
+    }
 
-    @Mapping(source = "start", target = "start")
-    @Mapping(source = "destination", target = "destination")
-    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO);
+    public MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO) {
+        Position start = convertPositionDTOToPosition(unitMoveDTO.getStart());
+        Position destination = convertPositionDTOToPosition(unitMoveDTO.getDestination());
+        return new MoveCommand(start, destination);
+    }
 
     @Mapping(source = "moveCommand", target = "move")
     @Mapping(source = "turnInfo", target = "turnInfo")
@@ -145,7 +152,7 @@ public abstract class DTOMapper {
     public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
 
     protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
-        if (unitHealthsMap.size() == 0)
+        if (unitHealthsMap == null)
             return null;
         List<UnitHealthDTO> unitHealthsList = new ArrayList<>();
         for (var uh : unitHealthsMap.entrySet()) {

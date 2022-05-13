@@ -16,7 +16,7 @@ public class PlayerDecorator extends BasePlayerDecorator implements Observer {
     }
 
     public List<Unit> getUnits() {
-        return this.units;
+        return units;
     }
 
     public boolean resetUnitsMovedStatus(){

@@ -80,6 +80,6 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     public Unit getResult() {
-        return this.result;
+        return result;
     }
 }

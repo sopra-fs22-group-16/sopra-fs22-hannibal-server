@@ -6,20 +6,17 @@ public class MoveCommand {
     Position start;
     Position destination;
 
+    public MoveCommand(Position start, Position destination) {
+        this.start = start;
+        this.destination = destination;
+    }
+
     public Position getStart() {
         return start;
     }
 
-    public void setStart(Position start) {
-        this.start = start;
-    }
-
     public Position getDestination() {
         return destination;
-    }
-
-    public void setDestination(Position destination) {
-        this.destination = destination;
     }
 
     @Override
