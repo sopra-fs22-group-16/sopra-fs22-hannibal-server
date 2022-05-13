@@ -101,7 +101,7 @@ public abstract class DTOMapper {
     @Mapping(source = "teamId", target = "teamId")
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "position", target = "position")
-    @Mapping(source = "moved", target = "hasMoved")
+    @Mapping(source = "moved", target = "moved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
     protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap) {
@@ -145,7 +145,7 @@ public abstract class DTOMapper {
     public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
 
     protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
-        if (unitHealthsMap.size() == 0)
+        if (unitHealthsMap == null)
             return null;
         List<UnitHealthDTO> unitHealthsList = new ArrayList<>();
         for (var uh : unitHealthsMap.entrySet()) {

@@ -72,27 +72,27 @@ public class Game {
     }
 
     public Map<String, PlayerDecorator> getDecoratedPlayers() {
-        return this.decoratedPlayers;
+        return decoratedPlayers;
     }
 
     public GameMode getGameMode() {
-        return this.gameMode;
+        return gameMode;
     }
 
     public GameType getGameType() {
-        return this.gameType;
+        return gameType;
     }
 
     public GameMap getGameMap() {
-        return this.gameMap;
+        return gameMap;
     }
 
     public int getTurnNumber() {
-        return this.turnNumber;
+        return turnNumber;
     }
 
     public long getPlayerIdCurrentTurn() {
-        return this.playerIdCurrentTurn;
+        return playerIdCurrentTurn;
     }
 
     /**
@@ -194,7 +194,7 @@ public class Game {
     }
 
     public IGameStatistics getStatistics() {
-        return this.gameLogger;
+        return gameLogger;
     }
 
     private Unit getUnitAtPosition(Position position) {

@@ -17,7 +17,7 @@ public class UnitGetDTO {
     private int teamId;
     private long userId;
     private Position position;
-    private boolean hasMoved;
+    private boolean moved;
 
     public UnitType getType() {
         return type;
@@ -99,11 +99,11 @@ public class UnitGetDTO {
         this.position = position;
     }
 
-    public boolean hasMoved() {
-        return this.hasMoved;
+    public boolean getMoved() {
+        return moved;
     }
 
-    public void setHasMoved(boolean hasMoved) {
-        this.hasMoved = hasMoved;
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 }

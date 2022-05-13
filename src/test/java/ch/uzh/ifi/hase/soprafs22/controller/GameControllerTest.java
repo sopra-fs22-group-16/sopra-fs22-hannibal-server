@@ -167,7 +167,7 @@ class GameControllerTest {
                 .content(asJsonString(unitMoveDTO))
                 .header("token", TOKEN);
 
-        GameDelta gameDelta = new GameDelta(moveCommand, null, Map.of());
+        GameDelta gameDelta = new GameDelta(moveCommand, null);
 
         when(gameService.unitMove(any(), any(), any())).thenReturn(gameDelta);
 

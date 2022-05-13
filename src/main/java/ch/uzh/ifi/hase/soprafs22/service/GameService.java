@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
-import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,7 +58,6 @@ public class GameService {
         return game;
     }
 
-
     /**
      * Returns the list of units whose health got affected by the attack.
      */
@@ -72,8 +69,9 @@ public class GameService {
             Position arrival = game.unitMove(token, attacker, attackerDestination);
             Position defender = attackCommand.getDefender();
             List<Unit> units = game.unitAttack(token, arrival, defender);
+            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
-            return new GameDelta(attackCommand, maybeTurnInfo(game, token), unitHealths);
+            return new GameDelta(attackCommand, turnInfo, unitHealths);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -114,7 +112,8 @@ public class GameService {
             Position destination = moveCommand.getDestination();
             Position arrival = game.unitMove(token, start, destination);
             moveCommand.setDestination(arrival);
-            return new GameDelta(moveCommand, maybeTurnInfo(game, token), null); //Health does not change when moving
+            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
+            return new GameDelta(moveCommand, turnInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -141,18 +140,6 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getUnit() + DOES_NOT_BELONG_TO_THE_PLAYER, e);
         }
     }
-
-    // Doesnt this belong in Game?
-    private TurnInfo maybeTurnInfo(Game game, String token) {
-        TurnInfo turnInfo = null;
-        if (game.haveAllUnitsOfPlayerMoved(token)) {
-            if (game.resetUnitsFromPreviousTurn(token)) {
-                turnInfo = game.nextTurn();
-            }
-        }
-        return turnInfo;
-    }
-
 
     // Only for testing
     public void setLobbyManager(ILobbyManager lobbyManager) {

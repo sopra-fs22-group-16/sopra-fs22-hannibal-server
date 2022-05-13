@@ -44,7 +44,7 @@ public class Lobby implements ILobby {
         if (this.qrCode == null) {
             this.qrCode = InvitationCodeGenerator.getQr(invitationCode);
         }
-        return this.qrCode;
+        return qrCode;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class Lobby implements ILobby {
 
     @Override
     public GameMode getGameMode() {
-        return this.gameMode;
+        return gameMode;
     }
 
     @Override
@@ -86,15 +86,15 @@ public class Lobby implements ILobby {
 
     @Override
     public GameType getGameType() {
-        return this.gameType;
+        return gameType;
     }
 
     @Override
     public String getInvitationCode() {
         if (invitationCode == null) {
-            this.invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(this.id);
+            invitationCode = InvitationCodeGenerator.getAlphanumericIdCode(this.id);
         }
-        return this.invitationCode;
+        return invitationCode;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class Lobby implements ILobby {
 
     @Override
     public Game getGame() {
-        return this.game;
+        return game;
     }
 
     @Override
