@@ -118,7 +118,7 @@ public abstract class DTOMapper {
     @Mapping(source = "y", target = "y")
     public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    protected Position convertPositionPutDTOToPosition(PositionDTO position) {
+    protected Position convertPositionDTOToPosition(PositionDTO position) {
         return new Position(position.getX(), position.getY());
     }
 
@@ -135,9 +135,9 @@ public abstract class DTOMapper {
     @Mapping(source = "attackerDestination", target = "attackerDestination")
     public abstract AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO);
 
-    @Mapping(source = "start", target = "start")
-    @Mapping(source = "destination", target = "destination")
-    public abstract MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO);
+    public MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO) {
+        return new MoveCommand(convertPositionDTOToPosition(unitMoveDTO.getStart()), convertPositionDTOToPosition(unitMoveDTO.getDestination()));
+    }
 
     @Mapping(source = "moveCommand", target = "move")
     @Mapping(source = "turnInfo", target = "turnInfo")

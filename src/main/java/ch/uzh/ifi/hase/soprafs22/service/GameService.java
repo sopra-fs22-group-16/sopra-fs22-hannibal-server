@@ -69,9 +69,10 @@ public class GameService {
             Position arrival = game.unitMove(token, attacker, attackerDestination);
             Position defender = attackCommand.getDefender();
             List<Unit> units = game.unitAttack(token, arrival, defender);
+            MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
-            return new GameDelta(attackCommand, turnInfo, unitHealths);
+            return new GameDelta(moveCommand, turnInfo, unitHealths);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -111,9 +112,9 @@ public class GameService {
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();
             Position arrival = game.unitMove(token, start, destination);
-            moveCommand.setDestination(arrival);
+            MoveCommand executedMove = new MoveCommand(start, arrival);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            return new GameDelta(moveCommand, turnInfo);
+            return new GameDelta(executedMove, turnInfo, null);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
