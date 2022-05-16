@@ -2,13 +2,15 @@ package ch.uzh.ifi.hase.soprafs22.game.units;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.AttackOutOfRangeException;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.player.interfaces.IObserver;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
+import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IObservable;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
-public class Unit extends Observable {
+public class Unit implements IObservable {
     private UnitType type;
     private int health;
     private List<Double> defense;
@@ -20,6 +22,11 @@ public class Unit extends Observable {
     private long userId;
     private Position position;
     private boolean moved;
+    private List<IObserver> observers;
+
+    public Unit() {
+        observers = new ArrayList<>();
+    }
 
     public Position getPosition() {
         return position;
@@ -105,8 +112,8 @@ public class Unit extends Observable {
         victim.health -= this.attackDamage.get(victim.type.ordinal()) / victim.defense.get(this.type.ordinal());
         //counterattack
         this.health -= 1 / 3 * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
-        victim.notifyObservers(victim);
-        this.notifyObservers(this);
+        victim.notifyObservers();
+        this.notifyObservers();
     }
 
     public boolean getMoved() {
@@ -115,5 +122,22 @@ public class Unit extends Observable {
 
     public void setMoved(boolean moved) {
         this.moved = moved;
+    }
+
+    @Override
+    public void registerObserver(IObserver observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(IObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (IObserver o : this.observers) {
+            o.update(this);
+        }
     }
 }
