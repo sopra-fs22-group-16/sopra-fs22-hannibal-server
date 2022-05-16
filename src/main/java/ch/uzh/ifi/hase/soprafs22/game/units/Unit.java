@@ -22,7 +22,7 @@ public class Unit implements IObservable {
     private long userId;
     private Position position;
     private boolean moved;
-    private List<IObserver> observers;
+    private final List<IObserver> observers;
 
     public Unit() {
         observers = new ArrayList<>();

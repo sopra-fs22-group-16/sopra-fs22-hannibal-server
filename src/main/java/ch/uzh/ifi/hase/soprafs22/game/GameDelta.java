@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
-import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 
 import java.util.Map;
