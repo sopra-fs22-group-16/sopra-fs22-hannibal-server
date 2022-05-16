@@ -60,7 +60,7 @@ public class Game {
                     .filter(u -> u.getUserId() == player.getId()).collect(Collectors.toList());
             PlayerDecorator playerDecorator = new PlayerDecorator(player, filteredUnitList);
             for (Unit u : filteredUnitList) {
-                u.addObserver(playerDecorator);
+                u.registerObserver(playerDecorator);
             }
             this.decoratedPlayers.put(player.getToken(), playerDecorator);
         }

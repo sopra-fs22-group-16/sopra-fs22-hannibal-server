@@ -1,12 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.game.player;
 
+import ch.uzh.ifi.hase.soprafs22.game.player.interfaces.IObserver;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
-public class PlayerDecorator extends BasePlayerDecorator implements Observer {
+public class PlayerDecorator extends BasePlayerDecorator implements IObserver {
 
     private final List<Unit> units;
 
@@ -25,9 +24,9 @@ public class PlayerDecorator extends BasePlayerDecorator implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Unit && ((Unit) o).getHealth() <= 0) {
-            units.remove(o);
+    public void update(Unit unit) {
+        if (unit.getHealth() <= 0) {
+            units.remove(unit);
         }
     }
 }

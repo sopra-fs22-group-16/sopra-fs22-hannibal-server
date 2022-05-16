@@ -22,7 +22,7 @@ public class TurnInfo {
     }
 
     /**
-     * Get the player Id whose turn it is.
+     * Get the player's ID whose turn it is.
      *
      * @return the id of the player whose turn it is.
      */
