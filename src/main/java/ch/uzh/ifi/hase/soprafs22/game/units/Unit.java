@@ -13,6 +13,7 @@ import java.util.List;
 public class Unit implements IObservable {
     private UnitType type;
     private int health;
+    private int maxHealth;
     private List<Double> defense;
     private List<Double> attackDamage;
     private int attackRange;
@@ -50,6 +51,14 @@ public class Unit implements IObservable {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
     }
 
     public List<Double> getDefense() {

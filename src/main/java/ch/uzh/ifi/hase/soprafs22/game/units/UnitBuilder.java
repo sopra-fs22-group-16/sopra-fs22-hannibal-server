@@ -31,6 +31,11 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     @Override
+    public void setMaxHealth(int maxHealth) {
+        this.result.setMaxHealth(maxHealth);
+    }
+    
+    @Override
     public void setDefense(List<Double> defense) {
         this.result.setDefense(defense);
     }
