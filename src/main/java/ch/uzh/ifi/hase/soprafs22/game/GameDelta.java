@@ -9,10 +9,16 @@ public class GameDelta {
     private final Map<Position, Integer> unitHealths;
     private final TurnInfo turnInfo;
 
-    public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths) {
+    private final GameOverInfo gameOverInfo;
+
+    private final SurrenderInfo surrenderInfo;
+
+    public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths, GameOverInfo gameOverInfo, SurrenderInfo surrenderInfo) {
         this.turnInfo = turnInfo;
         this.moveCommand =  moveCommand;
         this.unitHealths = unitHealths;
+        this.gameOverInfo = gameOverInfo;
+        this.surrenderInfo = surrenderInfo;
     }
 
     public MoveCommand getMoveCommand() {
@@ -25,5 +31,13 @@ public class GameDelta {
 
     public TurnInfo getTurnInfo() {
         return turnInfo;
+    }
+
+    public GameOverInfo getGameOverInfo() {
+        return gameOverInfo;
+    }
+
+    public SurrenderInfo getSurrenderInfo() {
+        return surrenderInfo;
     }
 }

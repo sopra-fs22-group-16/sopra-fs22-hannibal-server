@@ -150,6 +150,8 @@ public abstract class DTOMapper {
     @Mapping(source = "moveCommand", target = "move")
     @Mapping(source = "turnInfo", target = "turnInfo")
     @Mapping(source = "unitHealths", target = "unitHealths")
+    @Mapping(source = "gameOverInfo", target = "gameOverInfo")
+    @Mapping(source = "surrenderInfo", target = "surrenderInfo")
     public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
 
     protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {
