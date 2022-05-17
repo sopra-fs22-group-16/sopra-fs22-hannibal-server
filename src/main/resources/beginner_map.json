@@ -1192,8 +1192,8 @@
       {
         "type": "grass",
         "variant": "flat",
-        "traversable": false,
-        "traversingCost": 999
+        "traversable": true,
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1507,6 +1507,7 @@
         "unit": {
           "type": "knight",
           "health": 100,
+          "maxHealth": 100,
           "defense": [
             1.25,
             1.0,
@@ -1626,6 +1627,7 @@
         "unit": {
           "type": "archer",
           "health": 75,
+          "maxHealth": 75,
           "defense": [
             1.0,
             1.5,
@@ -1893,6 +1895,7 @@
         "unit": {
           "type": "war_elephant",
           "health": 150,
+          "maxHealth": 150,
           "defense": [
             1.25,
             1.5,
@@ -2054,6 +2057,7 @@
         "unit": {
           "type": "war_elephant",
           "health": 150,
+          "maxHealth": 150,
           "defense": [
             1.25,
             1.5,
@@ -2321,6 +2325,7 @@
         "unit": {
           "type": "archer",
           "health": 75,
+          "maxHealth": 75,
           "defense": [
             1.0,
             1.5,
@@ -2440,6 +2445,7 @@
         "unit": {
           "type": "knight",
           "health": 100,
+          "maxHealth": 100,
           "defense": [
             1.25,
             1.0,

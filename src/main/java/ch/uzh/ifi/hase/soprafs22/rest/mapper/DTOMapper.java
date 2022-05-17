@@ -93,6 +93,7 @@ public abstract class DTOMapper {
 
     @Mapping(source = "type", target = "type")
     @Mapping(source = "health", target = "health")
+    @Mapping(source = "maxHealth", target = "maxHealth")
     @Mapping(source = "defense", target = "defense")
     @Mapping(source = "attackDamage", target = "attackDamage")
     @Mapping(source = "attackRange", target = "attackRange")
