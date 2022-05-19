@@ -5,20 +5,38 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import java.util.Map;
 
 public class GameDelta {
-    private final MoveCommand moveCommand;
-    private final Map<Position, Integer> unitHealths;
-    private final TurnInfo turnInfo;
+    private MoveCommand moveCommand = null;
+    private Map<Position, Integer> unitHealths = null;
+    private TurnInfo turnInfo = null;
 
-    private final GameOverInfo gameOverInfo;
+    private GameOverInfo gameOverInfo = null;
 
-    private final SurrenderInfo surrenderInfo;
+    private SurrenderInfo surrenderInfo = null;
 
-    public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths, GameOverInfo gameOverInfo, SurrenderInfo surrenderInfo) {
-        this.turnInfo = turnInfo;
-        this.moveCommand =  moveCommand;
+    public GameDelta() { }
+
+    public GameDelta setMoveCommand(MoveCommand moveCommand) {
+        this.moveCommand = moveCommand;
+        return this;
+    }
+
+    public GameDelta setUnitHealths(Map<Position, Integer> unitHealths) {
         this.unitHealths = unitHealths;
+        return this;
+    }
+    public GameDelta setTurnInfo(TurnInfo turnInfo) {
+        this.turnInfo = turnInfo;
+        return this;
+    }
+
+    public GameDelta setGameOverInfo(GameOverInfo gameOverInfo) {
         this.gameOverInfo = gameOverInfo;
+        return this;
+    }
+
+    public GameDelta setSurrenderInfo(SurrenderInfo surrenderInfo) {
         this.surrenderInfo = surrenderInfo;
+        return this;
     }
 
     public MoveCommand getMoveCommand() {

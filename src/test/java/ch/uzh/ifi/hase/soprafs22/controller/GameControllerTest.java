@@ -117,7 +117,7 @@ class GameControllerTest {
         when(unit2.getHealth()).thenReturn(2);
 
         MoveCommand move = new MoveCommand(attackCommand.getAttacker(), attackCommand.getAttackerDestination());
-        GameDelta gameDelta = new GameDelta(move, null, Map.of(position1, 1, position2, 2), null, null);
+        GameDelta gameDelta = new GameDelta().setMoveCommand(move).setUnitHealths(Map.of(position1, 1, position2, 2));
         when(gameService.unitAttack(any(), any(), any())).thenReturn(gameDelta);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
@@ -164,7 +164,7 @@ class GameControllerTest {
                 .content(asJsonString(unitMoveDTO))
                 .header("token", TOKEN);
 
-        GameDelta gameDelta = new GameDelta(moveCommand, null, null, null, null);
+        GameDelta gameDelta = new GameDelta().setMoveCommand(moveCommand);
 
         when(gameService.unitMove(any(), any(), any())).thenReturn(gameDelta);
 

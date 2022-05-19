@@ -70,7 +70,7 @@ public class GameService {
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
             GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta(moveCommand, turnInfo, unitHealths, gameOverInfo, null);
+            return new GameDelta().setMoveCommand(moveCommand).setTurnInfo(turnInfo).setUnitHealths(unitHealths).setGameOverInfo(gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -113,7 +113,7 @@ public class GameService {
             MoveCommand executedMove = new MoveCommand(start, arrival);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta(executedMove, turnInfo, null, gameOverInfo, null);
+            return new GameDelta().setMoveCommand(executedMove).setTurnInfo(turnInfo).setGameOverInfo(gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -148,7 +148,7 @@ public class GameService {
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             GameOverInfo gameOverInfo = game.getGameOverInfo();
             SurrenderInfo surrenderInfo = new SurrenderInfo(surrenderedId);
-            return new GameDelta(null, turnInfo, null, gameOverInfo, surrenderInfo);
+            return new GameDelta().setTurnInfo(turnInfo).setGameOverInfo(gameOverInfo).setSurrenderInfo(surrenderInfo);
         }
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
