@@ -79,7 +79,7 @@ public abstract class DTOMapper {
         lobbyGetDTO.setVisibility(lobby.getVisibility());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
-        lobbyGetDTO.setGameRunning(lobby.getGame() != null && !lobby.getGame().hasEnded() );
+        lobbyGetDTO.setGameRunning(lobby.getGame() != null && !lobby.getGame().hasEnded());
         return lobbyGetDTO;
     }
 
@@ -152,7 +152,6 @@ public abstract class DTOMapper {
     @Mapping(source = "turnInfo", target = "turnInfo")
     @Mapping(source = "unitHealths", target = "unitHealths")
     @Mapping(source = "gameOverInfo", target = "gameOverInfo")
-    @Mapping(source = "surrenderInfo", target = "surrenderInfo")
     public abstract GameDeltaWebSocketDTO convertGameDeltaToGameDeltaWebSocketDTO(GameDelta gameDelta);
 
     protected List<UnitHealthDTO> convertUnitHealthsMapToUnitHealthsList(Map<Position, Integer> unitHealthsMap) {

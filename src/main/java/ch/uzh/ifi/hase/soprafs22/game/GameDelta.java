@@ -5,38 +5,27 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import java.util.Map;
 
 public class GameDelta {
-    private MoveCommand moveCommand = null;
-    private Map<Position, Integer> unitHealths = null;
-    private TurnInfo turnInfo = null;
+    private MoveCommand moveCommand;
+    private Map<Position, Integer> unitHealths;
+    private final TurnInfo turnInfo;
+    private final GameOverInfo gameOverInfo;
 
-    private GameOverInfo gameOverInfo = null;
-
-    private SurrenderInfo surrenderInfo = null;
-
-    public GameDelta() { }
-
-    public GameDelta setMoveCommand(MoveCommand moveCommand) {
+    public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, Map<Position, Integer> unitHealths, GameOverInfo gameOverInfo) {
         this.moveCommand = moveCommand;
-        return this;
-    }
-
-    public GameDelta setUnitHealths(Map<Position, Integer> unitHealths) {
-        this.unitHealths = unitHealths;
-        return this;
-    }
-    public GameDelta setTurnInfo(TurnInfo turnInfo) {
         this.turnInfo = turnInfo;
-        return this;
-    }
-
-    public GameDelta setGameOverInfo(GameOverInfo gameOverInfo) {
+        this.unitHealths = unitHealths;
         this.gameOverInfo = gameOverInfo;
-        return this;
     }
 
-    public GameDelta setSurrenderInfo(SurrenderInfo surrenderInfo) {
-        this.surrenderInfo = surrenderInfo;
-        return this;
+    public GameDelta(MoveCommand moveCommand, TurnInfo turnInfo, GameOverInfo gameOverInfo) {
+        this.moveCommand = moveCommand;
+        this.turnInfo = turnInfo;
+        this.gameOverInfo = gameOverInfo;
+    }
+
+    public GameDelta(TurnInfo turnInfo, GameOverInfo gameOverInfo) {
+        this.turnInfo = turnInfo;
+        this.gameOverInfo = gameOverInfo;
     }
 
     public MoveCommand getMoveCommand() {
@@ -53,9 +42,5 @@ public class GameDelta {
 
     public GameOverInfo getGameOverInfo() {
         return gameOverInfo;
-    }
-
-    public SurrenderInfo getSurrenderInfo() {
-        return surrenderInfo;
     }
 }

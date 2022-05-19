@@ -28,9 +28,9 @@ public class Game {
     private long playerIdCurrentTurn;
     private final Long[] turnOrder;
     private final boolean running;
-
     private final GameLogger gameLogger;
-
+    private SurrenderInfo surrenderInfo;
+    private static final String GAME_IS_OVER = "Game is over!";
 
     public Game(GameMode gameMode, GameType gameType, Map<String, IPlayer> decoratedPlayers) {
         this.gameMode = gameMode;
@@ -139,7 +139,7 @@ public class Game {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
-            throw new GameOverException();
+            throw new GameOverException(GAME_IS_OVER);
         if (!isPlayersTurn(token)) {
             throw new NotPlayersTurnException();
         }
@@ -173,7 +173,7 @@ public class Game {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
-            throw new GameOverException();
+            throw new GameOverException(GAME_IS_OVER);
         if (!isPlayersTurn(token)) {
             throw new NotPlayersTurnException();
         }
@@ -193,16 +193,16 @@ public class Game {
         return movingUnit.getPosition();
     }
 
-    public long surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
+    public void playerSurrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
-            throw new GameOverException();
+            throw new GameOverException(GAME_IS_OVER);
         if (!isPlayersTurn(token))
             throw new NotPlayersTurnException();
         PlayerDecorator player = decoratedPlayers.get(token);
         player.surrender();
-        return player.getId();
+        this.surrenderInfo = new SurrenderInfo(player.getId());
     }
 
 
@@ -233,13 +233,21 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public GameOverInfo getGameOverInfo() {
-        if (running)
-            return null;
-        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
-        Team winnerTeam = playerWithUnits.get().getTeam();
-        List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam)).map(PlayerDecorator::getId).collect(Collectors.toList());
-        return new GameOverInfo(winners);
+    public GameOverInfo getGameOverInfo() throws GameOverException {
+        if (running) {
+            throw new GameOverException("Game is not over yet!");
+        }
+        PlayerDecorator playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst().orElse(null);
+        if (playerWithUnits == null) {
+            throw new GameOverException("No player with remaining units found.");
+        }
+        Team winnerTeam = playerWithUnits.getTeam();
+        List<Long> winners = getAllPlayersThat(player -> player.getTeam() == winnerTeam).map(PlayerDecorator::getId).collect(Collectors.toList());
+        GameOverInfo gameOverInfo = new GameOverInfo(winners);
+        if (this.surrenderInfo != null) {
+            gameOverInfo.setSurrenderInfo(this.surrenderInfo);
+        }
+        return gameOverInfo;
     }
 
     private Stream<PlayerDecorator> getAllPlayersThat(Predicate<PlayerDecorator> predicate) {

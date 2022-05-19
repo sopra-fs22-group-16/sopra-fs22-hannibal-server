@@ -6,8 +6,6 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Game Controller
@@ -63,11 +58,11 @@ public class GameController {
         sendThroughSocket(id, gameDelta);
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/surrender")
+    @PutMapping("/{apiVersion}/game/match/{id}/command/playerSurrender")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void surrender(@RequestHeader("token") String token, @PathVariable Long id) {
 
-        GameDelta gameDelta = this.gameService.surrender(id, token);
+        GameDelta gameDelta = this.gameService.playerSurrender(id, token);
 
         sendThroughSocket(id, gameDelta);
     }

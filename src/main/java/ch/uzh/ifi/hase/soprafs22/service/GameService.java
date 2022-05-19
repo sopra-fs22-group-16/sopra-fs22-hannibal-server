@@ -34,7 +34,6 @@ public class GameService {
     private static final String TILE = "Tile ";
     private static final String IS_OUT_OF_RANGE = " is out of range.";
     private static final String NOT_A_MEMBER_OF_THE_GAME = "Not a member of the game.";
-    private static final String GAME_IS_OVER = "Game is over.";
     private static final String UNIT_NOT_FOUND_IN = "Unit not found in ";
     private static final String NOT_FOUND = " not found.";
     private static final String GAME_WITH_ID = "Game with id ";
@@ -63,14 +62,14 @@ public class GameService {
             Game game = getGameById(id);
             Position attacker = attackCommand.getAttacker();
             Position attackerDestination = attackCommand.getAttackerDestination();
-            Position arrival = game.unitMove(token, attacker, attackerDestination);
+            Position attackerArrival = game.unitMove(token, attacker, attackerDestination);
             Position defender = attackCommand.getDefender();
-            List<Unit> units = game.unitAttack(token, arrival, defender);
+            List<Unit> units = game.unitAttack(token, attackerArrival, defender);
             MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
-            GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta().setMoveCommand(moveCommand).setTurnInfo(turnInfo).setUnitHealths(unitHealths).setGameOverInfo(gameOverInfo);
+            GameOverInfo gameOverInfo = game.hasEnded() ? game.getGameOverInfo() : null;
+            return new GameDelta(moveCommand, turnInfo, unitHealths, gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -85,7 +84,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_A_MEMBER_OF_THE_GAME, e);
         }
         catch (GameOverException e) {
-            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, e.getMessage(), e);
         }
         catch (UnitNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT_NOT_FOUND_IN + e.getPosition() + ".", e);
@@ -109,11 +108,11 @@ public class GameService {
             Game game = getGameById(id);
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();
-            Position arrival = game.unitMove(token, start, destination);
-            MoveCommand executedMove = new MoveCommand(start, arrival);
+            Position unitArrival = game.unitMove(token, start, destination);
+            MoveCommand executedMove = new MoveCommand(start, unitArrival);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta().setMoveCommand(executedMove).setTurnInfo(turnInfo).setGameOverInfo(gameOverInfo);
+            GameOverInfo gameOverInfo = game.hasEnded() ? game.getGameOverInfo() : null;
+            return new GameDelta(executedMove, turnInfo, gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -125,7 +124,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_A_MEMBER_OF_THE_GAME, e);
         }
         catch (GameOverException e) {
-            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, e.getMessage(), e);
         }
         catch (UnitNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT_NOT_FOUND_IN + e.getPosition() + ".", e);
@@ -141,14 +140,13 @@ public class GameService {
         }
     }
 
-    public GameDelta surrender(Long id, String token) {
+    public GameDelta playerSurrender(Long id, String token) {
         try {
             Game game = getGameById(id);
-            long surrenderedId = game.surrender(token);
+            game.playerSurrender(token);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             GameOverInfo gameOverInfo = game.getGameOverInfo();
-            SurrenderInfo surrenderInfo = new SurrenderInfo(surrenderedId);
-            return new GameDelta().setTurnInfo(turnInfo).setGameOverInfo(gameOverInfo).setSurrenderInfo(surrenderInfo);
+            return new GameDelta(turnInfo, gameOverInfo);
         }
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
@@ -157,7 +155,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
         }
         catch (GameOverException e) {
-            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, e.getMessage(), e);
         }
         catch (NotAMemberOfGameException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_A_MEMBER_OF_THE_GAME, e);

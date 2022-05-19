@@ -5,6 +5,7 @@ import java.util.List;
 
 public class GameOverInfo {
     private final List<Long> winners;
+    private SurrenderInfo surrenderInfo;
 
     public GameOverInfo(Collection<Long> winners) {
         this.winners = List.copyOf(winners);
@@ -12,5 +13,13 @@ public class GameOverInfo {
 
     public List<Long> getWinners() {
         return winners;
+    }
+
+    public SurrenderInfo getSurrenderInfo() {
+        return surrenderInfo;
+    }
+
+    public void setSurrenderInfo(SurrenderInfo surrenderInfo) {
+        this.surrenderInfo = surrenderInfo;
     }
 }

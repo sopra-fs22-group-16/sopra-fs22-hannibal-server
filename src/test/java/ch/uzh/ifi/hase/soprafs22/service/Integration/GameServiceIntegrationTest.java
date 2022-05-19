@@ -204,7 +204,7 @@ class GameServiceIntegrationTest {
     }
 
     @Test
-    void wait_OK() {
+    void move_OK() {
         moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand);
     }
@@ -214,7 +214,7 @@ class GameServiceIntegrationTest {
                 .filter(player -> player.getTeam().equals(team)) // Get all players in team.
                 .flatMap(player -> player.getUnits().stream()) // Get their units
                 .map(Unit::getPosition) // Get their positions
-                .findAny() //Find the first one
+                .findFirst() //Find the first one
                 .get();
     }
 
