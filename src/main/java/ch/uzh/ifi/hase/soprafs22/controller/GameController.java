@@ -58,7 +58,7 @@ public class GameController {
         sendThroughSocket(id, gameDelta);
     }
 
-    @PutMapping("/{apiVersion}/game/match/{id}/command/playerSurrender")
+    @PutMapping("/{apiVersion}/game/match/{id}/command/surrender")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void surrender(@RequestHeader("token") String token, @PathVariable Long id) {
 
