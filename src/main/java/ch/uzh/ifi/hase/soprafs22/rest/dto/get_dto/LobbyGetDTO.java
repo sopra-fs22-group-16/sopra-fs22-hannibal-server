@@ -16,6 +16,7 @@ public class LobbyGetDTO {
     private GameMode gameMode;
     private GameType gameType;
     private String invitationCode;
+    private boolean gameRunning;
 
     public Long getId() {
         return id;
@@ -79,5 +80,13 @@ public class LobbyGetDTO {
 
     public void setGameType(GameType gameType) {
         this.gameType = gameType;
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    public void setGameRunning(boolean gameRunning) {
+        this.gameRunning = gameRunning;
     }
 }
