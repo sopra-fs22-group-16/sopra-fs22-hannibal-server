@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.lobby;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.LobbyNameConflictException;
 import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
@@ -9,6 +10,8 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.Test;
 
+
+import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,7 +91,7 @@ class LobbyTest {
 
 
     @Test
-    void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException {
+    void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException, LobbyNameConflictException {
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         IPlayer host = lobby.getHost();
@@ -96,6 +99,38 @@ class LobbyTest {
         lobby.addPlayer(newPlayer);
 
         assertThrows(DuplicateUserNameInLobbyException.class, () -> lobby.setUserName(host.getToken(), newPlayer.getName()));
+    }
+
+    @Test
+    void generateUniqueName() throws LobbyNameConflictException, FullLobbyException {
+        // Create new lobby
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        lobby.setGameMode(GameMode.TWO_VS_TWO);
+
+        lobby.getHost().setName("Player-0");
+        System.out.println(lobby.getHost().getName());
+
+        IPlayer player = lobby.generatePlayer();
+        player.setName("Player-1");
+        System.out.println(player.getName());
+        lobby.addPlayer(player);
+
+        player = lobby.generatePlayer();
+        player.setName("Player-2");
+        System.out.println(player.getName());
+        lobby.addPlayer(player);
+
+        player = lobby.generatePlayer();
+        player.setName("Player-2");
+        System.out.println(player.getName());
+        lobby.addPlayer(player);
+
+        System.out.println("");
+
+        for (IPlayer p : lobby) {
+            System.out.println(p.getName());
+        }
+
     }
 
 

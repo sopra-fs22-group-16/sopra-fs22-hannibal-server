@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.lobby;
 
-import ch.uzh.ifi.hase.soprafs22.exceptions.DuplicateUserNameInLobbyException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.FullLobbyException;
-import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
+import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.Player;
@@ -12,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -28,6 +27,7 @@ public class Lobby implements ILobby {
     private GameType gameType;
     private String invitationCode;
     private byte[] qrCode;
+    private Random random;
 
     public Lobby(Long id, String name, Visibility visibility) {
         this.id = id;
@@ -37,6 +37,7 @@ public class Lobby implements ILobby {
         // Generate the host player
         this.host = generatePlayer();
         playerMap.put(host.getToken(), host);
+        this.random = new Random();
     }
 
     @Override
@@ -129,14 +130,17 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public int reducePlayersInLobby() {
+    public List<Long> reducePlayersInLobby() {
+        List<Long> removedPlayerIds = new LinkedList<>();
         Iterator <IPlayer> it = iterator();
         while(it.hasNext()){
-            if(it.next() != host && lobbyCapacity < getNumberOfPlayers()){
+            IPlayer player = it.next();
+            if(player != host && lobbyCapacity < getNumberOfPlayers()){
+                removedPlayerIds.add(player.getId());
                 it.remove();
             }
         }
-        return getNumberOfPlayers();
+        return removedPlayerIds;
     }
 
     @Override
@@ -235,7 +239,7 @@ public class Lobby implements ILobby {
             ++generatedId;
         }
 
-        String username = "Player-" + generatedId;
+        String username = generateUniqueNameInLobby();
 
         String token = UUID.randomUUID().toString();
 
@@ -250,12 +254,62 @@ public class Lobby implements ILobby {
         return new Player(generatedId, username, token, team);
     }
 
+    private String generateUniqueNameInLobby(){
+        String playerName = "Player-";
+        int playerNumber = 0;
+        boolean uniqueNameFound = false;
 
-    public void addPlayer(IPlayer player) throws FullLobbyException {
+        String newName = "";
+        while (!uniqueNameFound) {
+            newName = playerName + playerNumber;
+
+            uniqueNameFound = true;
+            for(IPlayer player : playerMap.values()){
+               if(player.getName().equals(newName)){
+                   uniqueNameFound = false;
+                   ++playerNumber;
+                   break;
+               }
+            }
+        }
+        return newName;
+    }
+
+    /**
+     * Add a player to the lobby
+     * @param player the player which should be added to the lobby
+     * @return  null, if there was no name conflict
+     *          IPlayer, if there was a name conflict, the returned object is the player of which the name was changed
+     * @throws LobbyNameConflictException If there were multiple name conflicts, or a nameConflict between two registered players
+     * @throws FullLobbyException If the lobby is already full
+     */
+    @Override
+    public IPlayer addPlayer(IPlayer player) throws FullLobbyException, LobbyNameConflictException {
+        IPlayer playerWithNameConflict = null;
+        for(IPlayer lobbyPlayer : playerMap.values()){
+            // Check if there is a name conflict
+            if(lobbyPlayer.getName().equals(player.getName())){
+
+                // Check if there was already a name conflict
+                if(playerWithNameConflict != null) throw new LobbyNameConflictException();
+
+                // Check if user with conflict is a registered user.
+                if(lobbyPlayer.getRegisteredUser() != null) throw new LobbyRegisteredUsersNameConflictException();
+
+                playerWithNameConflict = lobbyPlayer;
+            }
+        }
+
         if (playerMap.size() >= lobbyCapacity) {
             throw new FullLobbyException();
         }
+
         playerMap.put(player.getToken(), player);
+
+        if(playerWithNameConflict != null)
+            playerWithNameConflict.setName(generateUniqueNameInLobby());
+
+        return playerWithNameConflict;
     }
 
     @Override
