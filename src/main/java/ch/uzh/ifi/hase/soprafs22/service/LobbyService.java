@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
-import ch.uzh.ifi.hase.soprafs22.lobby.PlayerJoinDelta;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -334,7 +334,7 @@ public class LobbyService {
         return lobbyManager.getLobbiesCollection();
     }
 
-    public PlayerJoinDelta addPlayer(String invitationCode, Long lobbyId, String token) {
+    public LobbyDelta addPlayer(String invitationCode, Long lobbyId, String token) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         if (invitationCode != null && !lobby.getInvitationCode().equals(invitationCode)) {
@@ -376,7 +376,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The player name " + e.getConflictingName() + " is already taken!");
         }
 
-        return new PlayerJoinDelta(newPlayer, playerWithNameChanged);
+        return new LobbyDelta(newPlayer, playerWithNameChanged);
     }
 
 }

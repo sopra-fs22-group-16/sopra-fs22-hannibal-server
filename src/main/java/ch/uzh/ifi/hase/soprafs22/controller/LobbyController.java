@@ -4,7 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
-import ch.uzh.ifi.hase.soprafs22.lobby.PlayerJoinDelta;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.GameGetDTO;
@@ -203,17 +203,17 @@ public class LobbyController {
     @ResponseBody
     public PlayerWithTokenGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
 
-        PlayerJoinDelta playerJoinDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, null);
+        LobbyDelta lobbyDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, null);
 
-        IPlayer newPlayer = playerJoinDelta.getNewPlayer();
+        IPlayer newPlayer = lobbyDelta.getNewPlayer();
 
         // Construct return value
         PlayerWithTokenGetDTO playerWithTokenGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerWithTokenGetDTO(newPlayer);
 
         LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
         lobbyDeltaWebSocketDTO.setPullUpdate(true);
-        if (playerJoinDelta.getPlayerWithChangedName() != null) {
-            lobbyDeltaWebSocketDTO.setNameChangedOfPlayerWithId(playerJoinDelta.getPlayerWithChangedName().getId());
+        if (lobbyDelta.getPlayerWithChangedName() != null) {
+            lobbyDeltaWebSocketDTO.setNameChangedOfPlayerWithId(lobbyDelta.getPlayerWithChangedName().getId());
         }
 
         // send message to client via socket
