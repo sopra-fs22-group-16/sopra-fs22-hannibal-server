@@ -19,7 +19,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -374,7 +373,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby is already full!");
         }
         catch (LobbyNameConflictException e){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This playerName is already taken!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The player name " + e.getConflictingName() + " is already taken!");
         }
 
         return new PlayerJoinDelta(newPlayer, playerWithNameChanged);

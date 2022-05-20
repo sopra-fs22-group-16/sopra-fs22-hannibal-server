@@ -10,7 +10,6 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -291,10 +290,10 @@ public class Lobby implements ILobby {
             if(lobbyPlayer.getName().equals(player.getName())){
 
                 // Check if there was already a name conflict
-                if(playerWithNameConflict != null) throw new LobbyNameConflictException();
+                if(playerWithNameConflict != null) throw new LobbyNameConflictException("Multiple name conflicts with name " + lobbyPlayer.getName(), lobbyPlayer.getName());
 
                 // Check if user with conflict is a registered user.
-                if(lobbyPlayer.getRegisteredUser() != null) throw new LobbyRegisteredUsersNameConflictException();
+                if(lobbyPlayer.getRegisteredUser() != null) throw new LobbyRegisteredUsersNameConflictException("Name conflict with registered user with name: " + lobbyPlayer.getName(), lobbyPlayer.getName());
 
                 playerWithNameConflict = lobbyPlayer;
             }

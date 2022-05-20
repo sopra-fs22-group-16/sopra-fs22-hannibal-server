@@ -102,36 +102,56 @@ class LobbyTest {
     }
 
     @Test
-    void generateUniqueName() throws LobbyNameConflictException, FullLobbyException {
+    void generatePlayer_generate_UniqueName() throws LobbyNameConflictException, FullLobbyException {
         // Create new lobby
         Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
         lobby.setGameMode(GameMode.TWO_VS_TWO);
 
         lobby.getHost().setName("Player-0");
-        System.out.println(lobby.getHost().getName());
 
         IPlayer player = lobby.generatePlayer();
         player.setName("Player-1");
-        System.out.println(player.getName());
         lobby.addPlayer(player);
 
         player = lobby.generatePlayer();
         player.setName("Player-2");
-        System.out.println(player.getName());
+        lobby.addPlayer(player);
+
+        IPlayer testSubject = lobby.generatePlayer();
+
+        for (IPlayer playerInLobby : lobby) {
+            assertNotEquals(testSubject.getName(), playerInLobby.getName());
+        }
+    }
+
+    @Test
+    void addPlayer_resolveNameConflict() throws LobbyNameConflictException, FullLobbyException {
+        // Create new lobby
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        lobby.setGameMode(GameMode.TWO_VS_TWO);
+
+        lobby.getHost().setName("Player-0");
+
+        IPlayer player = lobby.generatePlayer();
+        player.setName("Player-1");
         lobby.addPlayer(player);
 
         player = lobby.generatePlayer();
         player.setName("Player-2");
-        System.out.println(player.getName());
         lobby.addPlayer(player);
 
-        System.out.println("");
+        player = lobby.generatePlayer();
+        player.setName("Player-2");
+        lobby.addPlayer(player);
 
-        for (IPlayer p : lobby) {
-            System.out.println(p.getName());
+        for (IPlayer testSubject : lobby) {
+            for (IPlayer playerInLobby : lobby) {
+                if(testSubject != playerInLobby){
+                    assertNotEquals(testSubject.getName(), playerInLobby.getName());
+                }
+            }
         }
 
     }
-
 
 }
