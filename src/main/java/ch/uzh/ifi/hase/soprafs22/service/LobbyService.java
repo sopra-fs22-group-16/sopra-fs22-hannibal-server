@@ -167,6 +167,10 @@ public class LobbyService {
         catch (DuplicateUserNameInLobbyException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + e.userName() + " is already taken.");
         }
+        catch (RegisteredUserLobbyNameChangeException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with id " + e.getIdRegisteredPlayer() + " is a registered player, " +
+                    "and thus can not change his name in the lobby!");
+        }
     }
 
     public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
