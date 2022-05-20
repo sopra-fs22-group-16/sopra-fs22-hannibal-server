@@ -168,7 +168,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + e.userName() + " is already taken.");
         }
         catch (RegisteredUserLobbyNameChangeException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with id " + e.getIdRegisteredPlayer() + " is a registered player, " +
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with id " + e.getIdRegisteredPlayer() + " is a registered player, " +
                     "and thus can not change his name in the lobby!");
         }
     }
