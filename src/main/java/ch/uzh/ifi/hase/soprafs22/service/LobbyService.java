@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Lobby Service
@@ -80,7 +82,11 @@ public class LobbyService {
             }
         }
 
-
+        // Check if gameType equals ranked and the request is form an unregistered user
+        if(gameType.equals(GameType.RANKED) && registeredUser == null){
+            String errorMessage = "An guest user can not create a ranked lobby. Therefore, the lobby could not be created!";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+        }
 
         // Check if lobby name already exists
         if (lobbyManager.getLobbyWithName(lobbyName) != null) {
@@ -193,14 +199,16 @@ public class LobbyService {
         }
     }
 
-    public int checkPlayersInLobby(ILobby lobby) {
+    public List<Long> checkPlayersInLobby(ILobby lobby) {
         int numberPlayers = lobby.getNumberOfPlayers();
         if(lobby.getLobbyCapacity() < numberPlayers){
-            numberPlayers = lobby.reducePlayersInLobby();
+            List<Long> removedPlayerList = lobby.reducePlayersInLobby();
             lobby.setAllPlayersNotReady();
             lobby.balanceTeams();
+            return removedPlayerList;
+        }else{
+            return null;
         }
-        return numberPlayers;
     }
 
     public void removePlayerFromLobby(String token, Long lobbyId) {
@@ -326,22 +334,49 @@ public class LobbyService {
         return lobbyManager.getLobbiesCollection();
     }
 
-    public IPlayer addPlayer(String invitationCode, Long lobbyId) {
+    public LobbyDelta addPlayer(String invitationCode, Long lobbyId, String token) {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         if (invitationCode != null && !lobby.getInvitationCode().equals(invitationCode)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
         }
+
+        RegisteredUser registeredUser = null;
+        // Check if token is set, then find user with token and link him to the host player
+        if (token != null && !token.isEmpty()) {
+            registeredUser = userRepository.findRegisteredUserByToken(token);
+            if (registeredUser == null) {
+                String errorMessage = "The provided authentication was incorrect. Therefore, you could not join the lobby!";
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+            }
+        }
+
+        // Check if gameType equals ranked and the request is form an unregistered user
+        if(lobby.getGameType().equals(GameType.RANKED) && registeredUser == null){
+            String errorMessage = "A guest user can not join a ranked lobby. Therefore, you could not join the lobby!";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+        }
+
         IPlayer newPlayer = lobby.generatePlayer();
 
+        // Link the newPlayer to the registered user
+        if (registeredUser != null) {
+            newPlayer.linkRegisteredUser(registeredUser);
+        }
+
+        IPlayer playerWithNameChanged;
+
         try {
-            lobby.addPlayer(newPlayer);
+            playerWithNameChanged = lobby.addPlayer(newPlayer);
         }
         catch (FullLobbyException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby is already full!");
         }
+        catch (LobbyNameConflictException e){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The player name " + e.getConflictingName() + " is already taken!");
+        }
 
-        return newPlayer;
+        return new LobbyDelta(newPlayer, playerWithNameChanged);
     }
 
 }
