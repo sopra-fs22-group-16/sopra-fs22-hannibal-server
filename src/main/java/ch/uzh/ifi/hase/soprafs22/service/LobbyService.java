@@ -83,7 +83,7 @@ public class LobbyService {
         }
 
         // Check if gameType equals ranked and the request is form an unregistered user
-        if(gameType.equals(GameType.RANKED) && registeredUser == null){
+        if (gameType.equals(GameType.RANKED) && registeredUser == null) {
             String errorMessage = "An guest user can not create a ranked lobby. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
         }
@@ -174,6 +174,7 @@ public class LobbyService {
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
         }
+
         checkStringConfigNullOrEmpty(lobbyName, "name", UPDATED);
         checkEnumConfigNull(visibility, "visibility", UPDATED);
         checkEnumConfigNull(gameMode, "game mode", UPDATED);
@@ -183,6 +184,18 @@ public class LobbyService {
         if (lobbyManager.getLobbyWithName(lobbyName) != null && !lobbyManager.getLobbyWithName(lobbyName).equals(lobby)) {
             String errorMessage = "The lobby name provided is not unique. Therefore, the lobby could not be updated!";
             throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
+        }
+
+        // Check if lobby type is allowed
+        if (gameType != lobby.getGameType() && gameType == GameType.RANKED) {
+            for (IPlayer player : lobby) {
+                if (player.getRegisteredUser() == null) {
+                    String errorMessage = "GameType RANKED can only be played by registered users, " +
+                            "but there are unregistered users in the lobby. " +
+                            "Therefore, the lobby could not be updated!";
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+                }
+            }
         }
 
         if (!lobbyName.equals(lobby.getName())) {
@@ -201,12 +214,13 @@ public class LobbyService {
 
     public List<Long> checkPlayersInLobby(ILobby lobby) {
         int numberPlayers = lobby.getNumberOfPlayers();
-        if(lobby.getLobbyCapacity() < numberPlayers){
+        if (lobby.getLobbyCapacity() < numberPlayers) {
             List<Long> removedPlayerList = lobby.reducePlayersInLobby();
             lobby.setAllPlayersNotReady();
             lobby.balanceTeams();
             return removedPlayerList;
-        }else{
+        }
+        else {
             return null;
         }
     }
@@ -352,7 +366,7 @@ public class LobbyService {
         }
 
         // Check if gameType equals ranked and the request is form an unregistered user
-        if(lobby.getGameType().equals(GameType.RANKED) && registeredUser == null){
+        if (lobby.getGameType().equals(GameType.RANKED) && registeredUser == null) {
             String errorMessage = "A guest user can not join a ranked lobby. Therefore, you could not join the lobby!";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
         }
@@ -372,7 +386,7 @@ public class LobbyService {
         catch (FullLobbyException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This lobby is already full!");
         }
-        catch (LobbyNameConflictException e){
+        catch (LobbyNameConflictException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The player name " + e.getConflictingName() + " is already taken!");
         }
 
