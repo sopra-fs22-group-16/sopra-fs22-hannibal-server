@@ -24,13 +24,13 @@ public class RegisteredUser implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(columnDefinition = "integer default 1000")
     private int rankedScore;
 
-    @Column
+    @Column(columnDefinition = "integer default 0")
     private int wins;
 
-    @Column
+    @Column(columnDefinition = "integer default 0")
     private int losses;
 
     public Long getId() {

@@ -118,6 +118,25 @@ class LobbyServiceIntegrationTests {
     }
 
     @Test
+    void createRankedLobby_withoutToken_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.RANKED;
+
+        // create lobby with same name
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
+
+        // attempt to create second lobby with same name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.createLobby("token", lobbyName, visibility, gameMode, gameType));
+
+        // Check https status code
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
     void getLobby_validInputs_success() throws SmallestIdNotCreatableException {
         // given
         String lobbyName = "lobbyName";
@@ -223,13 +242,13 @@ class LobbyServiceIntegrationTests {
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
-        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED);
+        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.UNRANKED);
 
         assertEquals(createdLobby.getId(), id);
         assertEquals(createdLobby.getName(), "newLobbyName");
         assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
         assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
-        assertEquals(createdLobby.getGameType(), GameType.RANKED);
+        assertEquals(createdLobby.getGameType(), GameType.UNRANKED);
     }
 
     @Test
@@ -293,6 +312,28 @@ class LobbyServiceIntegrationTests {
 
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
+    void updateLobby_toRankedLobby_withUnregisteredUsers_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+
     }
 
     @ParameterizedTest
@@ -400,7 +441,7 @@ class LobbyServiceIntegrationTests {
         ILobby lobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
 
         //add new player
-        IPlayer newPlayer = lobbyService.addPlayer(null, lobby.getId());
+        IPlayer newPlayer = lobbyService.addPlayer(null, lobby.getId(), null).getNewPlayer();
 
         // remove host of the lobby
         lobbyService.removePlayerFromLobby(lobby.getHost().getToken(), lobby.getId());
@@ -419,7 +460,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
 
         // set players ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
@@ -447,7 +488,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null);
 
         // set only host ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
@@ -470,7 +511,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
 
         // set gameType to ranked
         createdLobby.setGameType(GameType.RANKED);
@@ -521,7 +562,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
 
         // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
@@ -547,7 +588,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
 
         // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
@@ -585,7 +626,7 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId());
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
 
         // set members ready
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
@@ -604,7 +645,7 @@ class LobbyServiceIntegrationTests {
     }
 
     @Test
-    void createLobby_exceedCapacityWhenChangingMode(){
+    void createLobby_exceedCapacityWhenChangingMode() {
 
         // given
         String lobbyName = "lobbyName";
@@ -614,9 +655,9 @@ class LobbyServiceIntegrationTests {
 
         // set up a full lobby
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
-        lobbyService.addPlayer(null, createdLobby.getId());
-        lobbyService.addPlayer(null, createdLobby.getId());
-        lobbyService.addPlayer(null, createdLobby.getId());
+        lobbyService.addPlayer(null, createdLobby.getId(), null);
+        lobbyService.addPlayer(null, createdLobby.getId(), null);
+        lobbyService.addPlayer(null, createdLobby.getId(), null);
 
         // change game mode to 1v1
         lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, visibility, GameMode.ONE_VS_ONE, gameType);
@@ -625,10 +666,10 @@ class LobbyServiceIntegrationTests {
         assert createdLobby.getNumberOfPlayers() > createdLobby.getLobbyCapacity();
 
         // check lobby capacity
-        int numberPlayers = lobbyService.checkPlayersInLobby(createdLobby);
+        lobbyService.checkPlayersInLobby(createdLobby);
 
         // check that the number of players has been reduced to the maximum capacity
-        assertEquals(numberPlayers, createdLobby.getLobbyCapacity());
+        assertEquals(createdLobby.getNumberOfPlayers(), createdLobby.getLobbyCapacity());
 
     }
 }

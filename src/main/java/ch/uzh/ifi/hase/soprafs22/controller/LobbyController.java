@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.GameGetDTO;
@@ -12,6 +13,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.PlayerWithTokenGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.PlayerPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.LobbyDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,7 +75,7 @@ public class LobbyController {
         returnMap.put("token", token);
         returnMap.put("playerId", lobby.getHost().getId());
 
-        if(lobbyGetDTO.getVisibility() == Visibility.PUBLIC) {
+        if (lobbyGetDTO.getVisibility() == Visibility.PUBLIC) {
             socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
         }
 
@@ -97,8 +99,11 @@ public class LobbyController {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
 
+        LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
+        lobbyDeltaWebSocketDTO.setPullUpdate(true);
+
         // send message to client via socket
-        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, lobbyDeltaWebSocketDTO);
     }
 
     @PutMapping("/{apiVersion}/game/lobby/{id}")
@@ -115,10 +120,16 @@ public class LobbyController {
         GameType gameType = lobbyPutDTO.getGameType();
 
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
-        lobbyService.checkPlayersInLobby(lobby);
+        List<Long> removedPlayerIds = lobbyService.checkPlayersInLobby(lobby);
+
+
+        LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
+        lobbyDeltaWebSocketDTO.setPullUpdate(true);
+        lobbyDeltaWebSocketDTO.setRemovedPlayerIdList(removedPlayerIds);
 
         // send messages to client via socket
-        socketMessage.convertAndSend(TOPIC_LOBBY + id, DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(lobby, token));
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, lobbyDeltaWebSocketDTO);
+
         socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
     }
 
@@ -154,8 +165,11 @@ public class LobbyController {
 
         lobbyService.createGame(token, lobbyId);
 
+        LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
+        lobbyDeltaWebSocketDTO.setRedirectToGame(true);
+
         // send message to client via socket
-        socketMessage.convertAndSend(TOPIC_LOBBY + lobbyId, "GameCreated");
+        socketMessage.convertAndSend(TOPIC_LOBBY + lobbyId, lobbyDeltaWebSocketDTO);
     }
 
     @GetMapping("/{apiVersion}/game/match/{lobbyId}")
@@ -175,8 +189,11 @@ public class LobbyController {
 
         lobbyService.removePlayerFromLobby(token, id);
 
+        LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
+        lobbyDeltaWebSocketDTO.setPullUpdate(true);
+
         // send message to client via socket
-        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, lobbyDeltaWebSocketDTO);
         socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
 
     }
@@ -186,13 +203,21 @@ public class LobbyController {
     @ResponseBody
     public PlayerWithTokenGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
 
-        IPlayer newPlayer = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id);
+        LobbyDelta lobbyDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, null);
+
+        IPlayer newPlayer = lobbyDelta.getNewPlayer();
 
         // Construct return value
         PlayerWithTokenGetDTO playerWithTokenGetDTO = DTOMapper.INSTANCE.convertIPlayerToPlayerWithTokenGetDTO(newPlayer);
 
+        LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
+        lobbyDeltaWebSocketDTO.setPullUpdate(true);
+        if (lobbyDelta.getPlayerWithChangedName() != null) {
+            lobbyDeltaWebSocketDTO.setNameChangedOfPlayerWithId(lobbyDelta.getPlayerWithChangedName().getId());
+        }
+
         // send message to client via socket
-        socketMessage.convertAndSend(TOPIC_LOBBY + id, "");
+        socketMessage.convertAndSend(TOPIC_LOBBY + id, lobbyDeltaWebSocketDTO);
         socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
 
         return playerWithTokenGetDTO;
