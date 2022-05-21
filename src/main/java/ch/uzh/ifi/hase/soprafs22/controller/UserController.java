@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * User Controller
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
  * The controller will receive the request and delegate the execution to the
  * UserService and finally return the result.
  */
+@RestController
 public class UserController {
 
     @Value("${api.version}")
