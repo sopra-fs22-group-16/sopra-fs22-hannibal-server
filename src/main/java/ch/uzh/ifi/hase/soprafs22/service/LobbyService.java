@@ -83,7 +83,7 @@ public class LobbyService {
         }
 
         // Check if gameType equals ranked and the request is form an unregistered user
-        if (gameType.equals(GameType.RANKED) && registeredUser == null) {
+        if (gameType == GameType.RANKED && registeredUser == null) {
             String errorMessage = "An guest user can not create a ranked lobby. Therefore, the lobby could not be created!";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
         }
@@ -292,7 +292,7 @@ public class LobbyService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
             }
             // player is the correct type (registered for ranked game)
-            if (lobby.getGameType().equals(GameType.RANKED) && player.getRegisteredUser() == null) {
+            if (lobby.getGameType() == GameType.RANKED && player.getRegisteredUser() == null) {
                 String errorMessage = "Not all players are registered in the lobby. Therefore, the game could not be created!";
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
             }
@@ -370,7 +370,7 @@ public class LobbyService {
         }
 
         // Check if gameType equals ranked and the request is form an unregistered user
-        if (lobby.getGameType().equals(GameType.RANKED) && registeredUser == null) {
+        if (lobby.getGameType() == GameType.RANKED && registeredUser == null) {
             String errorMessage = "A guest user can not join a ranked lobby. Therefore, you could not join the lobby!";
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
         }
