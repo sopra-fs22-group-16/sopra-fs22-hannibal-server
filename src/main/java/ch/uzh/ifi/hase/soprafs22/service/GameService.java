@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
@@ -145,5 +146,14 @@ public class GameService {
     // Only for testing
     public void setLobbyManager(ILobbyManager lobbyManager) {
         this.lobbyManager = lobbyManager;
+    }
+
+    public IGameStatistics getGameStats(Long id, String token) {
+        try {
+            return getGameById(id).getStatistics();
+        }
+        catch (GameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
+        }
     }
 }

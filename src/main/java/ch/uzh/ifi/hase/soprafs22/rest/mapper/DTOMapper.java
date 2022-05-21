@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
@@ -163,5 +164,15 @@ public abstract class DTOMapper {
             unitHealthsList.add(new UnitHealthDTO(p, health));
         }
         return unitHealthsList;
+    }
+
+    public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
+        // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
+        GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
+        gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
+        gameStatisticsGetDTO.setAverageUnitsPerTurn(gameStatistics.averageUnitsPerTurn());
+        gameStatisticsGetDTO.setAverageKillsPerTurn(gameStatistics.averageKillsPerTurn());
+        gameStatisticsGetDTO.setTotalMoves(gameStatistics.totalMoves());
+        return gameStatisticsGetDTO;
     }
 }
