@@ -71,6 +71,15 @@ public class GameController {
         return DTOMapper.INSTANCE.convertIGameStatisticsToGameStatisticsGetDTO(gameStatistics);
     }
 
+    @PutMapping("/{apiVersion}/game/match/{id}/command/surrender")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void surrender(@RequestHeader("token") String token, @PathVariable Long id) {
+
+        GameDelta gameDelta = this.gameService.surrender(id, token);
+
+        sendThroughSocket(id, gameDelta);
+    }
+
     /**
      * All socket info should be sent through this method to ensure format consistency.
      */
