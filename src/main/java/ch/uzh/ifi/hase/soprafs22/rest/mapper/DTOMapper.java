@@ -16,6 +16,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -164,4 +165,12 @@ public abstract class DTOMapper {
         }
         return unitHealthsList;
     }
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target="username")
+    @Mapping(source = "rankedScore", target="rankedScore")
+    @Mapping(source = "wins", target = "wins")
+    @Mapping(source = "losses", target = "losses")
+    public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
+
 }
