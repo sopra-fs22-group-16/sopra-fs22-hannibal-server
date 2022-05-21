@@ -98,11 +98,14 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException {
+    public void setUserName(String token, String newName) throws DuplicateUserNameInLobbyException, PlayerNotFoundException, RegisteredUserLobbyNameChangeException {
         for (IPlayer player : playerMap.values())
             if (player.getName().equals(newName))
                 throw new DuplicateUserNameInLobbyException(newName);
         IPlayer player = getPlayer(token);
+        if(player.getRegisteredUser() != null){
+            throw new RegisteredUserLobbyNameChangeException(player.getId());
+        }
         player.setName(newName);
     }
 

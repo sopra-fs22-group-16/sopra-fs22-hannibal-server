@@ -242,13 +242,13 @@ class LobbyServiceIntegrationTests {
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
 
-        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED);
+        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.UNRANKED);
 
         assertEquals(createdLobby.getId(), id);
         assertEquals(createdLobby.getName(), "newLobbyName");
         assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
         assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
-        assertEquals(createdLobby.getGameType(), GameType.RANKED);
+        assertEquals(createdLobby.getGameType(), GameType.UNRANKED);
     }
 
     @Test
@@ -312,6 +312,28 @@ class LobbyServiceIntegrationTests {
 
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+    }
+
+    @Test
+    void updateLobby_toRankedLobby_withUnregisteredUsers_throwsException() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+
+        // Attempt to update lobby with empty name
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED));
+
+        // Check https status code
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+
     }
 
     @ParameterizedTest
