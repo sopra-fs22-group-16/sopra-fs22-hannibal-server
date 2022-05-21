@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
@@ -14,7 +15,9 @@ import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Game {
     private final GameMode gameMode;
@@ -104,6 +107,7 @@ public class Game {
      */
     public TurnInfo nextTurn() {
         ++this.turnNumber;
+        // This won't work for players who have surrendered or have no units!
         this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
         this.gameLogger.nextTurn();
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
@@ -189,6 +193,19 @@ public class Game {
         return movingUnit.getPosition();
     }
 
+    public long surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
+        if (!this.decoratedPlayers.containsKey(token))
+            throw new NotAMemberOfGameException();
+        if (hasEnded())
+            throw new GameOverException();
+        if (!isPlayersTurn(token))
+            throw new NotPlayersTurnException();
+        PlayerDecorator player = decoratedPlayers.get(token);
+        player.surrender();
+        return player.getId();
+    }
+
+
     public boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
     }
@@ -214,5 +231,18 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
         if (position.getX() >= tiles.get(position.getY()).size())
             throw new TileOutOfRangeException(position, xRange, yRange);
+    }
+
+    public GameOverInfo getGameOverInfo() {
+        if (running)
+            return null;
+        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
+        Team winnerTeam = playerWithUnits.get().getTeam();
+        List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam)).map(PlayerDecorator::getId).collect(Collectors.toList());
+        return new GameOverInfo(winners);
+    }
+
+    private Stream<PlayerDecorator> getAllPlayersThat(Predicate<PlayerDecorator> predicate) {
+        return this.decoratedPlayers.values().stream().filter(predicate);
     }
 }
