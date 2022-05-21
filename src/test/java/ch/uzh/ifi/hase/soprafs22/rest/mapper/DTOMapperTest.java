@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.PlayerGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Test;
 
@@ -104,5 +105,20 @@ class DTOMapperTest {
         assertEquals(registeredUser.getRankedScore(), registeredUserGetDTO.getRankedScore());
         assertEquals(registeredUser.getWins(), registeredUserGetDTO.getWins());
         assertEquals(registeredUser.getLosses(), registeredUserGetDTO.getLosses());
+    }
+
+    @Test
+    void testUpdateUser_fromRegisteredUserPutDTO_toRegisteredUser_success() {
+        RegisteredUserPutDTO registeredUserPutDTO = new RegisteredUserPutDTO();
+        registeredUserPutDTO.setUsername("username");
+        registeredUserPutDTO.setPassword("password");
+
+        // Map registeredUserPutDTO -> registeredUser
+        RegisteredUser registeredUser = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
+
+        // check content
+        assertEquals(registeredUserPutDTO.getUsername(), registeredUser.getUsername());
+        assertEquals(registeredUserPutDTO.getPassword(), registeredUser.getPassword());
+
     }
 }
