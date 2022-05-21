@@ -144,7 +144,7 @@ public class Unit implements IObservable {
     private boolean inAttackRange(Unit attacker, Unit target){
         int distance = Math.abs(target.getPosition().getX()-attacker.getPosition().getX())
                 + Math.abs(target.getPosition().getY()-attacker.getPosition().getY());
-        
+
         return distance <= attacker.getAttackRange();
     }
 

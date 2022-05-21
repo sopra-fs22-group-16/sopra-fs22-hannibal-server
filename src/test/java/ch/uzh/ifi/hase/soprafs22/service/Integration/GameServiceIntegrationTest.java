@@ -142,9 +142,11 @@ class GameServiceIntegrationTest {
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
+    // TODO: Make this test work correctly at the moment it just uses that unit movement range is not checked
     @Test
     void attack_OK() {
-        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
+        Position newPos = new Position(blueUnitPosition.getX()-1, blueUnitPosition.getY());
+        attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, newPos);
         gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand);
     }
 
