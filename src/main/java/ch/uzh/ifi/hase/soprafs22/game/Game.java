@@ -155,7 +155,9 @@ public class Game {
             throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
+
         attackingUnit.attack(defendingUnit);
+
         if (defendingUnit.getHealth() <= 0)
             gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)

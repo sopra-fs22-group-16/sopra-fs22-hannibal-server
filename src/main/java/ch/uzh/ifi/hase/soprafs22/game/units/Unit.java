@@ -118,9 +118,17 @@ public class Unit implements IObservable {
     }
 
     public void attack(Unit victim) throws AttackOutOfRangeException {
+
+        if(!inAttackRange(this, victim)){
+            throw new AttackOutOfRangeException(this, victim);
+        }
         victim.health -= this.attackDamage.get(victim.type.ordinal()) / victim.defense.get(this.type.ordinal());
+
         //counterattack
-        this.health -= 1 / 3 * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
+        if(inAttackRange(victim, this)){
+            this.health -= (1.0f / 3.0f) * victim.attackDamage.get(this.type.ordinal()) / this.defense.get(victim.type.ordinal());
+        }
+
         victim.notifyObservers();
         this.notifyObservers();
     }
@@ -131,6 +139,17 @@ public class Unit implements IObservable {
 
     public void setMoved(boolean moved) {
         this.moved = moved;
+    }
+
+    private boolean inAttackRange(Unit attacker, Unit target){
+        int distance = Math.abs(target.getPosition().getX()-attacker.getPosition().getX())
+                + Math.abs(target.getPosition().getY()-attacker.getPosition().getY());
+
+        System.out.println(attacker.position);
+        System.out.println(target.position);
+        System.out.println(distance);
+        System.out.println(attacker.getAttackRange());
+        return distance <= attacker.getAttackRange();
     }
 
     @Override
