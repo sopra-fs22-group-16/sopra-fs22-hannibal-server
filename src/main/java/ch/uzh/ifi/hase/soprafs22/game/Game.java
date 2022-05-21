@@ -23,6 +23,7 @@ public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
     private final Map<String, PlayerDecorator> decoratedPlayers;
+    private int turnIndex;
     private GameMap gameMap;
     private int turnNumber;
     private long playerIdCurrentTurn;
@@ -67,8 +68,8 @@ public class Game {
             }
             this.decoratedPlayers.put(player.getToken(), playerDecorator);
         }
-
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        this.turnIndex = this.turnNumber % this.turnOrder.length;
+        this.playerIdCurrentTurn = this.turnOrder[this.turnIndex];
         Map<Long, Integer> numberOfUnitsPerPlayerId = this.decoratedPlayers.values().stream().
                 collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
         this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
@@ -107,10 +108,22 @@ public class Game {
      */
     public TurnInfo nextTurn() {
         ++this.turnNumber;
-        // This won't work for players who have surrendered or have no units!
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        this.turnIndex = ++this.turnIndex % this.turnOrder.length;
+
+        // advance index until player has units.
+        while(!playerByIdHasUnits(this.turnOrder[turnIndex]))
+            this.turnIndex = ++this.turnIndex % this.turnOrder.length;
+        this.playerIdCurrentTurn = this.turnOrder[turnIndex];
         this.gameLogger.nextTurn();
         return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
+    }
+
+    private boolean playerByIdHasUnits(long id ) {
+        //get player with id
+        Optional<PlayerDecorator> player = getAllPlayersThat(p -> p.getId() == id).findAny();
+
+        //return true if more than 0 units
+        return player.map(p -> p.getUnits().size() > 0).orElse(false);
     }
 
     public boolean resetUnitsFromPreviousTurn(String token) {
