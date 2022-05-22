@@ -273,4 +273,20 @@ class GameTest {
     private void blueMove(int x1, int y1, int x2, int y2) throws Exception {
         game.unitMove("token1", new Position(x1, y1), new Position(x2, y2));
     }
+
+    @Test
+    void test_NextTurn() throws Exception {
+        playerMap.put("token2", new Player(2L, "user2", "token2", Team.RED));
+        playerMap.put("token3", new Player(3L, "user3", "token3", Team.BLUE));
+        game = new Game(GameMode.TWO_VS_TWO, GameType.UNRANKED, playerMap);
+        game.surrender("token0"); // player 0 surrenders, turn = 0
+        game.nextTurn(); // player 1 skips turn, turn = 1
+        game.nextTurn(); // player 2 skips turn, turn = 2
+
+        // Get the turn for player after 3 (who surrendered at the start!)
+        TurnInfo turnInfo = game.nextTurn(); // player 3 skips turn, turn = 3
+
+        assertEquals(1L, turnInfo.getPlayerId());
+        assertEquals(4, turnInfo.getTurn());
+    }
 }

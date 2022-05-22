@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
@@ -16,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -41,10 +43,15 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    @Mapping(source = "registeredUser", target="registered")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
     protected int convertTeamToTeamNumber(Team team) {
         return team.ordinal();
+    }
+
+    protected boolean convertRegisteredUserToBooleanRegistered(RegisteredUser registeredUser){
+        return registeredUser != null;
     }
 
     @Mapping(source = "id", target = "id")
@@ -165,5 +172,16 @@ public abstract class DTOMapper {
             unitHealthsList.add(new UnitHealthDTO(p, health));
         }
         return unitHealthsList;
+    }
+
+    public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
+        // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
+        GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
+        gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
+        gameStatisticsGetDTO.setKillsPerPlayer(gameStatistics.killsPerPlayer());
+        gameStatisticsGetDTO.setAverageUnitsPerTurn(gameStatistics.averageUnitsPerTurn());
+        gameStatisticsGetDTO.setAverageKillsPerTurn(gameStatistics.averageKillsPerTurn());
+        gameStatisticsGetDTO.setTotalMoves(gameStatistics.totalMoves());
+        return gameStatisticsGetDTO;
     }
 }

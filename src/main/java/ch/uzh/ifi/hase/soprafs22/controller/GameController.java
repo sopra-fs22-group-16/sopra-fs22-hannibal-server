@@ -1,13 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.GameStatisticsGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Game Controller
@@ -63,6 +61,12 @@ public class GameController {
         sendThroughSocket(id, gameDelta);
     }
 
+    @GetMapping("/{apiVersion}/game/match/{id}/stats")
+    public GameStatisticsGetDTO getGameStats(@RequestHeader("token") String token, @PathVariable Long id) {
+        IGameStatistics gameStatistics =  this.gameService.getGameStats(id, token);
+        return DTOMapper.INSTANCE.convertIGameStatisticsToGameStatisticsGetDTO(gameStatistics);
+    }
+
     @PutMapping("/{apiVersion}/game/match/{id}/command/surrender")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void surrender(@RequestHeader("token") String token, @PathVariable Long id) {
@@ -71,7 +75,6 @@ public class GameController {
 
         sendThroughSocket(id, gameDelta);
     }
-
 
     /**
      * All socket info should be sent through this method to ensure format consistency.

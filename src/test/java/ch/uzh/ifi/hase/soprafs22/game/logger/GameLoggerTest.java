@@ -21,7 +21,7 @@ public class GameLoggerTest {
 
     @Test
     void unitKilledAtTurn_wrongTurn() {
-        assertThrows(IllegalStateException.class, () ->gameLogger.unitKilledAtTurn(1,1L));
+        assertThrows(IllegalStateException.class, () ->gameLogger.unitKilledAtTurn(1,2L, 1L));
     }
 
     @Test
@@ -31,14 +31,14 @@ public class GameLoggerTest {
 
     private static void logGame(IGameLogger gameLogger) {
         // Turn 0
-        gameLogger.unitKilledAtTurn(0, 2L);
+        gameLogger.unitKilledAtTurn(0, 1L, 2L);
         gameLogger.move(0);
         gameLogger.move(0);
         gameLogger.nextTurn();
 
         // Turn 1
-        gameLogger.unitKilledAtTurn(1, 1L);
-        gameLogger.unitKilledAtTurn(1, 1L);
+        gameLogger.unitKilledAtTurn(1, 2L, 1L);
+        gameLogger.unitKilledAtTurn(1, 2L, 1L);
         gameLogger.move(1);
         gameLogger.move(1);
         gameLogger.move(1);
@@ -46,7 +46,7 @@ public class GameLoggerTest {
 
 
         // Turn 2
-        gameLogger.unitKilledAtTurn(2, 2L);
+        gameLogger.unitKilledAtTurn(2, 1L, 2L);
         gameLogger.move(2);
         gameLogger.nextTurn();
     }
@@ -59,6 +59,16 @@ public class GameLoggerTest {
 
         assertEquals(List.of(10, 10, 8, 8), units.get(1L));
         assertEquals(List.of(8, 7, 7, 6), units.get(2L));
+    }
+
+    @Test
+    void killsPerPlayer() {
+        logGame(gameLogger);
+
+        Map<Long, List<Integer>> kills = gameLogger.killsPerPlayer();
+
+        assertEquals(List.of(1, 0, 1, 0), kills.get(1L));
+        assertEquals(List.of(0, 2, 0, 0), kills.get(2L));
     }
 
     @Test
