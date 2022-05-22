@@ -8,9 +8,10 @@ public interface IGameLogger {
     /**
      * Inform that a unit was killed.
      * @param turn in which it was killed.
-     * @param playerId id of player that lost the unit.
+     * @param attackingPlayer id of player that killed the unit.
+     * @param defendingPlayer id of player that lost the unit.
      */
-    void unitKilledAtTurn(int turn, long playerId);
+    void unitKilledAtTurn(int turn, long attackingPlayer, long defendingPlayer);
 
     /**
      * Inform that a unit moved.

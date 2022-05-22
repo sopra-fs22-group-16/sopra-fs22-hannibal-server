@@ -1,10 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
-import ch.uzh.ifi.hase.soprafs22.game.Game;
-import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
-import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.*;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
@@ -72,7 +70,8 @@ public class GameService {
             MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
             Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
-            return new GameDelta(moveCommand, turnInfo, unitHealths);
+            GameOverInfo gameOverInfo = game.getGameOverInfo();
+            return new GameDelta(moveCommand, unitHealths, turnInfo, gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -114,7 +113,8 @@ public class GameService {
             Position arrival = game.unitMove(token, start, destination);
             MoveCommand executedMove = new MoveCommand(start, arrival);
             TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            return new GameDelta(executedMove, turnInfo, null);
+            GameOverInfo gameOverInfo = game.getGameOverInfo();
+            return new GameDelta(executedMove, turnInfo, gameOverInfo);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -142,8 +142,40 @@ public class GameService {
         }
     }
 
+    public GameDelta surrender(Long id, String token) {
+        try {
+            Game game = getGameById(id);
+            long surrenderedId = game.surrender(token);
+            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
+            GameOverInfo gameOverInfo = game.getGameOverInfo();
+            SurrenderInfo surrenderInfo = new SurrenderInfo(surrenderedId);
+            return new GameDelta(turnInfo, gameOverInfo, surrenderInfo);
+        }
+        catch (GameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
+        }
+        catch (NotPlayersTurnException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
+        }
+        catch (GameOverException e) {
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
+        }
+        catch (NotAMemberOfGameException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_A_MEMBER_OF_THE_GAME, e);
+        }
+    }
+
     // Only for testing
     public void setLobbyManager(ILobbyManager lobbyManager) {
         this.lobbyManager = lobbyManager;
+    }
+
+    public IGameStatistics getGameStats(Long id, String token) {
+        try {
+            return getGameById(id).getStatistics();
+        }
+        catch (GameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
+        }
     }
 }

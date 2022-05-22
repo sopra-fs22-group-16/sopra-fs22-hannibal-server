@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
@@ -32,11 +33,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -117,7 +120,8 @@ class GameControllerTest {
         when(unit2.getHealth()).thenReturn(2);
 
         MoveCommand move = new MoveCommand(attackCommand.getAttacker(), attackCommand.getAttackerDestination());
-        GameDelta gameDelta = new GameDelta(move, null, Map.of(position1, 1, position2, 2));
+
+        GameDelta gameDelta = new GameDelta(move, Map.of(position1, 1, position2, 2), /*turnInfo=*/ null, /*gameOverInfo=*/ null);
         when(gameService.unitAttack(any(), any(), any())).thenReturn(gameDelta);
 
         mockMvc.perform(request).andExpect(status().is2xxSuccessful());
@@ -163,8 +167,7 @@ class GameControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(unitMoveDTO))
                 .header("token", TOKEN);
-
-        GameDelta gameDelta = new GameDelta(moveCommand, null, null);
+        GameDelta gameDelta = new GameDelta(moveCommand, /*turnInfo=*/ null, /*gameOver=*/ null);
 
         when(gameService.unitMove(any(), any(), any())).thenReturn(gameDelta);
 
@@ -181,6 +184,62 @@ class GameControllerTest {
         assertEquals(2, moveSock.getStart().getY());
         assertEquals(3, moveSock.getDestination().getX());
         assertEquals(4, moveSock.getDestination().getY());
+    }
+
+    @Test
+    void test_getStats() throws Exception {
+        IGameStatistics gameStatistics = new IGameStatistics() {
+            @Override
+            public Map<Long, List<Integer>> unitsPerPlayer() {
+                return Map.of(1L, List.of(6, 4, 2, 0), 2L, List.of(7, 5, 3, 1));
+            }
+
+            @Override
+            public Map<Long, List<Integer>> killsPerPlayer() {
+                return Map.of(1L, List.of(0, 1, 2, 3), 2L, List.of(4, 5, 6, 7));
+            }
+
+            @Override
+            public float averageUnitsPerTurn() {
+                return 0.42f;
+            }
+
+            @Override
+            public float averageKillsPerTurn() {
+                return 3.14f;
+            }
+
+            @Override
+            public int totalMoves() {
+                return 43;
+            }
+        };
+        when(gameService.getGameStats(any(), any())).thenReturn(gameStatistics);
+        MockHttpServletRequestBuilder getRequest = get("/v1/game/match/1/stats")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "tuktuk");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.unitsPerPlayer.1[0]", is(6)))
+                .andExpect(jsonPath("$.unitsPerPlayer.1[1]", is(4)))
+                .andExpect(jsonPath("$.unitsPerPlayer.1[2]", is(2)))
+                .andExpect(jsonPath("$.unitsPerPlayer.1[3]", is(0)))
+                .andExpect(jsonPath("$.unitsPerPlayer.2[0]", is(7)))
+                .andExpect(jsonPath("$.unitsPerPlayer.2[1]", is(5)))
+                .andExpect(jsonPath("$.unitsPerPlayer.2[2]", is(3)))
+                .andExpect(jsonPath("$.unitsPerPlayer.2[3]", is(1)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[0]", is(0)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[1]", is(1)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[2]", is(2)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[3]", is(3)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[0]", is(4)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[1]", is(5)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[2]", is(6)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[3]", is(7)))
+                .andExpect(jsonPath("$.averageUnitsPerTurn", is(0.42)))
+                .andExpect(jsonPath("$.averageKillsPerTurn", is(3.14)))
+                .andExpect(jsonPath("$.totalMoves", is(43)));
     }
 
     /**
