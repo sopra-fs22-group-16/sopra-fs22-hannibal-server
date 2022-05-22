@@ -174,6 +174,13 @@ public abstract class DTOMapper {
         return unitHealthsList;
     }
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target="username")
+    @Mapping(source = "rankedScore", target="rankedScore")
+    @Mapping(source = "wins", target = "wins")
+    @Mapping(source = "losses", target = "losses")
+    public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
+
     public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
         // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
         GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();

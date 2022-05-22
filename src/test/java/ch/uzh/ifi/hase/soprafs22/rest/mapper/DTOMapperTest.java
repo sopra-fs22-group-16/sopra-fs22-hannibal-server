@@ -8,6 +8,8 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.PlayerGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,5 +82,27 @@ class DTOMapperTest {
         LobbyGetDTO lobbyGetDTO = DTOMapper.INSTANCE.convertILobbyToLobbyGetDTO(LOBBY, "WrongToken");
 
         assertNull(lobbyGetDTO.getInvitationCode());
+    }
+
+    @Test
+    void testGetUser_fromRegisteredUser_toRegisteredUserGetDTO_success() {
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setId(1L);
+        registeredUser.setToken("token");
+        registeredUser.setUsername("username");
+        registeredUser.setPassword("password");
+        registeredUser.setRankedScore(2000);
+        registeredUser.setWins(150);
+        registeredUser.setLosses(120);
+
+        // MAP -> registeredUser
+        RegisteredUserGetDTO registeredUserGetDTO = DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(registeredUser);
+
+        // check content
+        assertEquals(registeredUser.getId(), registeredUserGetDTO.getId());
+        assertEquals(registeredUser.getUsername(), registeredUserGetDTO.getUsername());
+        assertEquals(registeredUser.getRankedScore(), registeredUserGetDTO.getRankedScore());
+        assertEquals(registeredUser.getWins(), registeredUserGetDTO.getWins());
+        assertEquals(registeredUser.getLosses(), registeredUserGetDTO.getLosses());
     }
 }
