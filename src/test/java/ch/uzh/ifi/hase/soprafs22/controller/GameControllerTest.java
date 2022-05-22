@@ -195,6 +195,11 @@ class GameControllerTest {
             }
 
             @Override
+            public Map<Long, List<Integer>> killsPerPlayer() {
+                return Map.of(1L, List.of(0, 1, 2, 3), 2L, List.of(4, 5, 6, 7));
+            }
+
+            @Override
             public float averageUnitsPerTurn() {
                 return 0.42f;
             }
@@ -224,6 +229,14 @@ class GameControllerTest {
                 .andExpect(jsonPath("$.unitsPerPlayer.2[1]", is(5)))
                 .andExpect(jsonPath("$.unitsPerPlayer.2[2]", is(3)))
                 .andExpect(jsonPath("$.unitsPerPlayer.2[3]", is(1)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[0]", is(0)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[1]", is(1)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[2]", is(2)))
+                .andExpect(jsonPath("$.killsPerPlayer.1[3]", is(3)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[0]", is(4)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[1]", is(5)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[2]", is(6)))
+                .andExpect(jsonPath("$.killsPerPlayer.2[3]", is(7)))
                 .andExpect(jsonPath("$.averageUnitsPerTurn", is(0.42)))
                 .andExpect(jsonPath("$.averageKillsPerTurn", is(3.14)))
                 .andExpect(jsonPath("$.totalMoves", is(43)));

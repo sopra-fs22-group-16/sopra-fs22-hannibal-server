@@ -178,6 +178,7 @@ public abstract class DTOMapper {
         // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
         GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
         gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
+        gameStatisticsGetDTO.setKillsPerPlayer(gameStatistics.killsPerPlayer());
         gameStatisticsGetDTO.setAverageUnitsPerTurn(gameStatistics.averageUnitsPerTurn());
         gameStatisticsGetDTO.setAverageKillsPerTurn(gameStatistics.averageKillsPerTurn());
         gameStatisticsGetDTO.setTotalMoves(gameStatistics.totalMoves());

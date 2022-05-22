@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class GameStatisticsGetDTO {
     private Map<Long, List<Integer>> unitsPerPlayer;
+
+    private Map<Long, List<Integer>> killsPerPlayer;
     private float averageUnitsPerTurn;
     private float averageKillsPerTurn;
     private int totalMoves;
@@ -39,5 +41,13 @@ public class GameStatisticsGetDTO {
 
     public void setTotalMoves(int totalMoves) {
         this.totalMoves = totalMoves;
+    }
+
+    public Map<Long, List<Integer>> getKillsPerPlayer() {
+        return killsPerPlayer;
+    }
+
+    public void setKillsPerPlayer(Map<Long, List<Integer>> killsPerPlayer) {
+        this.killsPerPlayer = killsPerPlayer;
     }
 }

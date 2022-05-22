@@ -140,9 +140,9 @@ public class Game {
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
         if (defendingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), defendingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), attackingUnit.getUserId(), defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), attackingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), defendingUnit.getUserId(), attackingUnit.getUserId());
         return List.of(defendingUnit, attackingUnit);
     }
 
