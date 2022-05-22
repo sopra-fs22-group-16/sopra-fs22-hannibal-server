@@ -29,4 +29,7 @@ public class PlayerDecorator extends BasePlayerDecorator implements IObserver {
             units.remove(unit);
         }
     }
+    public void surrender() {
+        units.clear();
+    }
 }

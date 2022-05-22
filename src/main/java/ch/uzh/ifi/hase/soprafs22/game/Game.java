@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
@@ -14,16 +15,17 @@ import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
     private final Map<String, PlayerDecorator> decoratedPlayers;
+    private final Turn turn;
+    private int turnIndex;
     private GameMap gameMap;
-    private int turnNumber;
-    private long playerIdCurrentTurn;
-    private final Long[] turnOrder;
     private final boolean running;
 
     private final GameLogger gameLogger;
@@ -33,19 +35,7 @@ public class Game {
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.decoratedPlayers = new HashMap<>();
-        this.turnNumber = 0;
-        this.turnOrder = new Long[decoratedPlayers.size()];
         this.running = true;
-
-        for (IPlayer player : decoratedPlayers.values()) {
-            int teamNumber = player.getTeam().ordinal();
-            if (this.turnOrder[teamNumber] == null) {
-                this.turnOrder[teamNumber] = player.getId();
-            }
-            else if (this.turnOrder.length > 2 && this.turnOrder[teamNumber + 2] == null) {
-                this.turnOrder[teamNumber + 2] = player.getId();
-            }
-        }
 
         List<Unit> unitList = new ArrayList<>();
         //TODO Potential Feature: RANKED games get a harder map
@@ -64,8 +54,7 @@ public class Game {
             }
             this.decoratedPlayers.put(player.getToken(), playerDecorator);
         }
-
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        this.turn = new Turn(this.decoratedPlayers.values());
         Map<Long, Integer> numberOfUnitsPerPlayerId = this.decoratedPlayers.values().stream().
                 collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
         this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
@@ -88,11 +77,11 @@ public class Game {
     }
 
     public int getTurnNumber() {
-        return turnNumber;
+        return this.turn.getTurnNumber();
     }
 
     public long getPlayerIdCurrentTurn() {
-        return playerIdCurrentTurn;
+        return turn.getPlayerId();
     }
 
     /**
@@ -103,10 +92,8 @@ public class Game {
      * @return The current TurnInfo
      */
     public TurnInfo nextTurn() {
-        ++this.turnNumber;
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
         this.gameLogger.nextTurn();
-        return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
+        return this.turn.nextTurn();
     }
 
     public boolean resetUnitsFromPreviousTurn(String token) {
@@ -118,7 +105,7 @@ public class Game {
     }
 
     public boolean isPlayersTurn(String token) {
-        return this.decoratedPlayers.get(token).getId() == this.turnOrder[this.turnNumber % this.turnOrder.length];
+        return turn.getPlayerId() == this.decoratedPlayers.get(token).getId();
     }
 
     /**
@@ -151,11 +138,13 @@ public class Game {
             throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
         if (attackingUnit.getTeamId() == defendingUnit.getTeamId())
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
+
         attackingUnit.attack(defendingUnit);
+
         if (defendingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), attackingUnit.getUserId(), defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), defendingUnit.getUserId(), attackingUnit.getUserId());
         return List.of(defendingUnit, attackingUnit);
     }
 
@@ -184,10 +173,23 @@ public class Game {
         }
         movingUnit.setPosition(end);
         if (!start.equals(end))
-            gameLogger.move(turnNumber);
+            gameLogger.move(turn.getTurnNumber());
         movingUnit.setMoved(true);
         return movingUnit.getPosition();
     }
+
+    public long surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
+        if (!this.decoratedPlayers.containsKey(token))
+            throw new NotAMemberOfGameException();
+        if (hasEnded())
+            throw new GameOverException();
+        if (!isPlayersTurn(token))
+            throw new NotPlayersTurnException();
+        PlayerDecorator player = decoratedPlayers.get(token);
+        player.surrender();
+        return player.getId();
+    }
+
 
     public boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
@@ -214,5 +216,18 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
         if (position.getX() >= tiles.get(position.getY()).size())
             throw new TileOutOfRangeException(position, xRange, yRange);
+    }
+
+    public GameOverInfo getGameOverInfo() {
+        if (running)
+            return null;
+        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
+        Team winnerTeam = playerWithUnits.get().getTeam();
+        List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam)).map(PlayerDecorator::getId).collect(Collectors.toList());
+        return new GameOverInfo(winners);
+    }
+
+    private Stream<PlayerDecorator> getAllPlayersThat(Predicate<PlayerDecorator> predicate) {
+        return this.decoratedPlayers.values().stream().filter(predicate);
     }
 }

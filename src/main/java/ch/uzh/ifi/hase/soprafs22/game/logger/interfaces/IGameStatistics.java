@@ -13,6 +13,11 @@ public interface IGameStatistics {
     Map<Long, List<Integer>> unitsPerPlayer();
 
     /**
+     * Returns the number of kills per player each turn.
+     */
+    Map<Long, List<Integer>> killsPerPlayer();
+
+    /**
      * Average alive units at every turn.
      */
     float averageUnitsPerTurn();

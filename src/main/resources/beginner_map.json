@@ -229,13 +229,13 @@
         "type": "river",
         "variant": "border_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "border_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -411,13 +411,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -593,13 +593,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -775,55 +775,55 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_inverted_top_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_top_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -957,55 +957,55 @@
         "type": "river",
         "variant": "corner_bottom_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_inverted_bottom_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1181,13 +1181,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1363,13 +1363,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1569,13 +1569,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -1775,13 +1775,13 @@
         "type": "bridge",
         "variant": "top_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "bridge",
         "variant": "top_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -2187,13 +2187,13 @@
         "type": "bridge",
         "variant": "bottom_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "bridge",
         "variant": "bottom_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -2393,13 +2393,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -2599,13 +2599,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -2781,13 +2781,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -2963,55 +2963,55 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_inverted_top_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "top",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_top_right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -3145,55 +3145,55 @@
         "type": "river",
         "variant": "corner_bottom_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "bottom",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "corner_inverted_bottom_left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -3369,13 +3369,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -3551,13 +3551,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
@@ -3733,13 +3733,13 @@
         "type": "river",
         "variant": "left",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "river",
         "variant": "right",
         "traversable": false,
-        "traversingCost": 999
+        "traversingCost": 1
       },
       {
         "type": "grass",
