@@ -194,6 +194,83 @@ class GameTest {
     void gameIsOver_surrender() throws Exception {
         GameDelta delta = game.surrender("token0");
 
-        assertEquals(delta.getGameOverInfo().getWinners().get(0), 1L);
+        assertEquals(1L, delta.getGameOverInfo().getWinners().get(0));
+    }
+
+    @Test
+    void gameIsOver_gameplay() throws Exception {
+        GameDelta gameDelta = null;
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(6,12,9,12); // archer
+
+        bluePass();
+
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(9,12,12,12); // archer
+
+        bluePass();
+
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(12,12,13,10); // archer
+
+        bluePass();
+
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(13,10,16,10); // archer
+
+        bluePass();
+
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(16,10,19,10); // archer
+
+        // Kill blue knight
+        for (int i = 0; i < 4; i++) {
+            bluePass();
+            redMove(7,8,7,8); // knight
+            redMove(3,10,3,10); // elephant
+            redAttack(19,10, 22, 12); // archer attacks knight
+        }
+
+        // kill blue elephant
+        for (int i = 0; i < 5; i++) {
+            blueMove(23, 8, 23, 8); // archer
+            blueMove(26, 10, 26, 10); // elephant
+            redMove(7,8,7,8); // knight
+            redMove(3,10,3,10); // elephant
+            redAttack(19,10, 26, 10); // archer attacks elephant
+        }
+
+        // kill blue archer
+        for (int i = 0; i < 8; i++) {
+            blueMove(23, 8, 23, 8); // archer
+            redMove(7,8,7,8); // knight
+            redMove(3,10,3,10); // elephant
+            gameDelta = redAttack(19,10, 23, 8); // archer attacks elephant
+        }
+
+        assertEquals(0L, gameDelta.getGameOverInfo().getWinners().get(0));
+    }
+
+
+    private void bluePass() throws Exception {
+        blueMove(22, 12, 22, 12); // knight
+        blueMove(23, 8, 23, 8); // archer
+        blueMove(26, 10, 26, 10); // elephant
+    }
+    private void redMove(int x1, int y1, int x2, int y2) throws Exception {
+        game.unitMove("token0", new Position(x1, y1), new Position(x2, y2));
+    }
+
+    private GameDelta redAttack(int x1, int y1, int x2, int y2) throws Exception {
+        return game.unitAttack("token0", new Position(x1, y1), new Position(x1, y1), new Position(x2, y2));
+    }
+
+    private void blueMove(int x1, int y1, int x2, int y2) throws Exception {
+        game.unitMove("token1", new Position(x1, y1), new Position(x2, y2));
     }
 }
