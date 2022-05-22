@@ -73,7 +73,7 @@ class GameTest {
     }
 
     @Test
-    void nextTurn_1v1_nextTurn() {
+    void nextTurn_1v1_nextTurn() throws Exception {
         Map<String, IPlayer> playerMap = new HashMap<>();
         playerMap.put("token0", new Player(0L, "user0", "token0", Team.RED));
         playerMap.put("token1", new Player(1L, "user1", "token1", Team.BLUE));
@@ -84,7 +84,6 @@ class GameTest {
 
         assertEquals(1, turn.getTurn()); // Games start at turn 0, not turn 1.
         assertEquals(1, turn.getPlayerId());
-        assertTrue(game.isPlayersTurn("token1"));
     }
 
     @Test
@@ -132,37 +131,37 @@ class GameTest {
 
     @Test
     void attack_nonMember_throwsNotAMemberOfGameException() {
-        assertThrows(NotAMemberOfGameException.class, () -> game.unitAttack("badToken", redUnitPosition, blueUnitPosition));
+        assertThrows(NotAMemberOfGameException.class, () -> game.unitAttack("badToken", redUnitPosition, noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_noTurn_throwsNotPlayersTurnException() {
-        assertThrows(NotPlayersTurnException.class, () -> game.unitAttack("token1", redUnitPosition, blueUnitPosition));
+        assertThrows(NotPlayersTurnException.class, () -> game.unitAttack("token1", redUnitPosition, noUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_nonAttacker_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", noUnitPosition, blueUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", noUnitPosition, redUnitPosition, blueUnitPosition));
     }
 
     @Test
     void attack_noDefender_throwsUnitNotFoundException() {
-        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", redUnitPosition, noUnitPosition));
+        assertThrows(UnitNotFoundException.class, () -> game.unitAttack("token0", redUnitPosition, blueUnitPosition, noUnitPosition));
     }
 
     @Test
     void attack_notOwner_throwsWrongUnitOwnerException() {
-        assertThrows(WrongUnitOwnerException.class, () -> game.unitAttack("token0", blueUnitPosition, redUnitPosition));
+        assertThrows(WrongUnitOwnerException.class, () -> game.unitAttack("token0", blueUnitPosition, noUnitPosition, redUnitPosition));
     }
 
     @Test
     void attack_notEnemy_throwsWrongTargetTeamException() {
-        assertThrows(WrongTargetTeamException.class, () -> game.unitAttack("token0", redUnitPosition, redUnitPosition));
+        assertThrows(WrongTargetTeamException.class, () -> game.unitAttack("token0", redUnitPosition, noUnitPosition, noUnitPosition));
     }
 
     @Test
     void attack_good() throws Exception {
-        game.unitAttack("token0", redUnitPosition, blueUnitPosition);
+        game.unitAttack("token0", redUnitPosition, noUnitPosition, blueUnitPosition);
     }
 
     // TODO test TargetUnreachableException for move.
@@ -189,5 +188,12 @@ class GameTest {
     @Test
     void wait_good() throws Exception {
         game.unitMove("token0", redUnitPosition, noUnitPosition);
+    }
+
+    @Test
+    void gameIsOver_surrender() throws Exception {
+        GameDelta delta = game.surrender("token0");
+
+        assertEquals(delta.getGameOverInfo().getWinners().get(0), 1L);
     }
 }

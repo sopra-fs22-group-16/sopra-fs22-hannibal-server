@@ -60,17 +60,10 @@ public class GameService {
      */
     public GameDelta unitAttack(Long id, String token, AttackCommand attackCommand) {
         try {
-            Game game = getGameById(id);
             Position attacker = attackCommand.getAttacker();
             Position attackerDestination = attackCommand.getAttackerDestination();
-            Position arrival = game.unitMove(token, attacker, attackerDestination);
             Position defender = attackCommand.getDefender();
-            List<Unit> units = game.unitAttack(token, arrival, defender);
-            MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
-            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            Map<Position, Integer> unitHealths = units.stream().collect(Collectors.toMap(Unit::getPosition, Unit::getHealth));
-            GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta(moveCommand, unitHealths, turnInfo, gameOverInfo);
+            return getGameById(id).unitAttack(token, attacker, attackerDestination, defender);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -106,14 +99,9 @@ public class GameService {
 
     public GameDelta unitMove(Long id, String token, MoveCommand moveCommand) {
         try {
-            Game game = getGameById(id);
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();
-            Position arrival = game.unitMove(token, start, destination);
-            MoveCommand executedMove = new MoveCommand(start, arrival);
-            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            GameOverInfo gameOverInfo = game.getGameOverInfo();
-            return new GameDelta(executedMove, turnInfo, gameOverInfo);
+            return getGameById(id).unitMove(token, start, destination);
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -143,12 +131,7 @@ public class GameService {
 
     public GameDelta surrender(Long id, String token) {
         try {
-            Game game = getGameById(id);
-            long surrenderedId = game.surrender(token);
-            TurnInfo turnInfo = game.haveAllUnitsOfPlayerMoved(token) && game.resetUnitsFromPreviousTurn(token) ? game.nextTurn() : null;
-            GameOverInfo gameOverInfo = game.getGameOverInfo();
-            SurrenderInfo surrenderInfo = new SurrenderInfo(surrenderedId);
-            return new GameDelta(turnInfo, gameOverInfo, surrenderInfo);
+            return getGameById(id).surrender(token);
         }
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
