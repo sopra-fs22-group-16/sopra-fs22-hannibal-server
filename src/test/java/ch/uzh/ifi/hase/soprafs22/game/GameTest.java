@@ -160,9 +160,11 @@ class GameTest {
         assertThrows(WrongTargetTeamException.class, () -> game.unitAttack("token0", redUnitPosition, redUnitPosition));
     }
 
+    // TODO: Make this test work correctly at the moment it just uses that unit movement range is not checked
     @Test
     void attack_good() throws Exception {
-        game.unitAttack("token0", redUnitPosition, blueUnitPosition);
+        game.unitMove("token0", redUnitPosition, new Position(blueUnitPosition.getX()-1, blueUnitPosition.getY()));
+        game.unitAttack("token0",  new Position(blueUnitPosition.getX()-1, blueUnitPosition.getY()), blueUnitPosition);
     }
 
     // TODO test TargetUnreachableException for move.
