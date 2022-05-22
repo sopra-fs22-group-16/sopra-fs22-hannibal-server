@@ -13,6 +13,7 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
@@ -173,15 +174,8 @@ public abstract class DTOMapper {
         }
         return unitHealthsList;
     }
-
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "username", target="username")
-    @Mapping(source = "rankedScore", target="rankedScore")
-    @Mapping(source = "wins", target = "wins")
-    @Mapping(source = "losses", target = "losses")
-    public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
-
-    public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
+  
+  public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
         // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
         GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
         gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
@@ -191,4 +185,16 @@ public abstract class DTOMapper {
         gameStatisticsGetDTO.setTotalMoves(gameStatistics.totalMoves());
         return gameStatisticsGetDTO;
     }
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target="username")
+    @Mapping(source = "rankedScore", target="rankedScore")
+    @Mapping(source = "wins", target = "wins")
+    @Mapping(source = "losses", target = "losses")
+    public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
+
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "password", target = "password")
+    public abstract RegisteredUser convertRegisteredUserPutDTOToRegisteredUser(RegisteredUserPutDTO registeredUserPutDTO);
+
 }

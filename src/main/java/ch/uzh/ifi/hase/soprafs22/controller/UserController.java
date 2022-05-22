@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
@@ -37,6 +39,19 @@ public class UserController {
         RegisteredUser registeredUser = userService.getRegisteredUserWithId(id);
 
         return DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(registeredUser);
+    }
+
+    @PutMapping("/{apiVersion}/users/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void updateUserById(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody RegisteredUserPutDTO registeredUserPutDTO) {
+
+        // convert API user to internal representation
+        RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
+
+        // update user
+        userService.updateRegisteredUser(id, token, userInput);
+
     }
 
 }
