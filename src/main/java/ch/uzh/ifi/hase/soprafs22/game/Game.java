@@ -13,20 +13,23 @@ import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.uzh.ifi.hase.soprafs22.game.enums.Team.BLUE;
+import static ch.uzh.ifi.hase.soprafs22.game.enums.Team.RED;
+
 public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
     private final Map<String, PlayerDecorator> decoratedPlayers;
     private final Turn turn;
-    private int turnIndex;
     private GameMap gameMap;
-    private final boolean running;
+    private boolean running;
 
     private final GameLogger gameLogger;
 
@@ -84,19 +87,12 @@ public class Game {
         return turn.getPlayerId();
     }
 
-    /**
-     * Make sure that this info makes it to GameController *EVERY* time there is a next turn.
-     * For example, if a movement ends the turn, this needs to be passed to GameController, if a player ends the turn,
-     * this needs to be returned to GameController.
-     *
-     * @return The current TurnInfo
-     */
     public TurnInfo nextTurn() {
         this.gameLogger.nextTurn();
         return this.turn.nextTurn();
     }
 
-    public boolean resetUnitsFromPreviousTurn(String token) {
+    private boolean resetUnitsFromPreviousTurn(String token) {
         return this.decoratedPlayers.get(token).resetUnitsMovedStatus();
     }
 
@@ -111,14 +107,14 @@ public class Game {
     /**
      * Returns the units whose health got affected.
      */
-    public List<Unit> unitAttack(String token, Position attacker, Position defender) throws NotPlayersTurnException,
+    public GameDelta unitAttack(String token, Position attacker, Position attackerDestination, Position defender) throws NotPlayersTurnException,
             TileOutOfRangeException,
             AttackOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
             UnitNotFoundException,
             WrongUnitOwnerException,
-            WrongTargetTeamException {
+            WrongTargetTeamException, TargetUnreachableException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
@@ -127,10 +123,18 @@ public class Game {
             throw new NotPlayersTurnException();
         }
         ensureWithinRange(attacker);
+        ensureWithinRange(attackerDestination);
         ensureWithinRange(defender);
         Unit attackingUnit = getUnitAtPosition(attacker);
         if (attackingUnit == null)
             throw new UnitNotFoundException(attacker);
+        if (this.decoratedPlayers.get(token).getId() != attackingUnit.getUserId()) {
+            throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
+        }
+        attackingUnit.setPosition(attackerDestination);
+        if (!attacker.equals(attackerDestination))
+            gameLogger.move(turn.getTurnNumber());
+        attackingUnit.setMoved(true);
         Unit defendingUnit = getUnitAtPosition(defender);
         if (defendingUnit == null)
             throw new UnitNotFoundException(defender);
@@ -145,10 +149,13 @@ public class Game {
             gameLogger.unitKilledAtTurn(turn.getTurnNumber(), attackingUnit.getUserId(), defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
             gameLogger.unitKilledAtTurn(turn.getTurnNumber(), defendingUnit.getUserId(), attackingUnit.getUserId());
-        return List.of(defendingUnit, attackingUnit);
+        checkGameOver();
+        MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
+        Map<Position, Integer> unitHealths = Map.of(defendingUnit.getPosition(), defendingUnit.getHealth(), attackingUnit.getPosition(), attackingUnit.getHealth());
+        return new GameDelta(moveCommand, unitHealths, checkNextTurn(token), getGameOverInfo());
     }
 
-    public Position unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
+    public GameDelta unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
             TileOutOfRangeException,
             NotAMemberOfGameException,
             GameOverException,
@@ -175,10 +182,11 @@ public class Game {
         if (!start.equals(end))
             gameLogger.move(turn.getTurnNumber());
         movingUnit.setMoved(true);
-        return movingUnit.getPosition();
+        MoveCommand executedMove = new MoveCommand(start, movingUnit.getPosition());
+        return new GameDelta(executedMove, checkNextTurn(token), getGameOverInfo());
     }
 
-    public long surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
+    public GameDelta surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
@@ -187,11 +195,26 @@ public class Game {
             throw new NotPlayersTurnException();
         PlayerDecorator player = decoratedPlayers.get(token);
         player.surrender();
-        return player.getId();
+        checkGameOver();
+        SurrenderInfo surrenderInfo = new SurrenderInfo(player.getId());
+        return new GameDelta(checkNextTurn(token), getGameOverInfo(), surrenderInfo);
     }
 
+    private TurnInfo checkNextTurn(String token){
+        return haveAllUnitsOfPlayerMoved(token) && resetUnitsFromPreviousTurn(token) ? nextTurn() : null;
+    }
 
-    public boolean haveAllUnitsOfPlayerMoved(String token) {
+    private void checkGameOver() {
+        boolean redUnitAlive = getAllPlayersThat(player -> player.getTeam() == RED)
+                .flatMap(player -> player.getUnits().stream())
+                .anyMatch(unit -> unit.getHealth() > 0);
+        boolean blueUnitAlive = getAllPlayersThat(player -> player.getTeam() == BLUE)
+                .flatMap(player -> player.getUnits().stream())
+                .anyMatch(unit -> unit.getHealth() > 0);
+        running = blueUnitAlive  && redUnitAlive;
+    }
+
+    private boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
     }
 
@@ -218,7 +241,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    public GameOverInfo getGameOverInfo() {
+    private GameOverInfo getGameOverInfo() {
         if (running)
             return null;
         Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();

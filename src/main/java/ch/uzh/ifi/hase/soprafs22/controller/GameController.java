@@ -8,8 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.GameStatisticsGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Game Controller
