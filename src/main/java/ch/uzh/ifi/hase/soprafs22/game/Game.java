@@ -23,10 +23,9 @@ public class Game {
     private final GameMode gameMode;
     private final GameType gameType;
     private final Map<String, PlayerDecorator> decoratedPlayers;
+    private final Turn turn;
+    private int turnIndex;
     private GameMap gameMap;
-    private int turnNumber;
-    private long playerIdCurrentTurn;
-    private final Long[] turnOrder;
     private final boolean running;
 
     private final GameLogger gameLogger;
@@ -36,19 +35,7 @@ public class Game {
         this.gameMode = gameMode;
         this.gameType = gameType;
         this.decoratedPlayers = new HashMap<>();
-        this.turnNumber = 0;
-        this.turnOrder = new Long[decoratedPlayers.size()];
         this.running = true;
-
-        for (IPlayer player : decoratedPlayers.values()) {
-            int teamNumber = player.getTeam().ordinal();
-            if (this.turnOrder[teamNumber] == null) {
-                this.turnOrder[teamNumber] = player.getId();
-            }
-            else if (this.turnOrder.length > 2 && this.turnOrder[teamNumber + 2] == null) {
-                this.turnOrder[teamNumber + 2] = player.getId();
-            }
-        }
 
         List<Unit> unitList = new ArrayList<>();
         //TODO Potential Feature: RANKED games get a harder map
@@ -67,8 +54,7 @@ public class Game {
             }
             this.decoratedPlayers.put(player.getToken(), playerDecorator);
         }
-
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
+        this.turn = new Turn(this.decoratedPlayers.values());
         Map<Long, Integer> numberOfUnitsPerPlayerId = this.decoratedPlayers.values().stream().
                 collect(Collectors.toMap(PlayerDecorator::getId, player -> player.getUnits().size()));
         this.gameLogger = new GameLogger(numberOfUnitsPerPlayerId);
@@ -91,11 +77,11 @@ public class Game {
     }
 
     public int getTurnNumber() {
-        return turnNumber;
+        return this.turn.getTurnNumber();
     }
 
     public long getPlayerIdCurrentTurn() {
-        return playerIdCurrentTurn;
+        return turn.getPlayerId();
     }
 
     /**
@@ -106,11 +92,8 @@ public class Game {
      * @return The current TurnInfo
      */
     public TurnInfo nextTurn() {
-        ++this.turnNumber;
-        // This won't work for players who have surrendered or have no units!
-        this.playerIdCurrentTurn = this.turnOrder[this.turnNumber % this.turnOrder.length];
         this.gameLogger.nextTurn();
-        return new TurnInfo(this.turnNumber, this.playerIdCurrentTurn);
+        return this.turn.nextTurn();
     }
 
     public boolean resetUnitsFromPreviousTurn(String token) {
@@ -122,7 +105,7 @@ public class Game {
     }
 
     public boolean isPlayersTurn(String token) {
-        return this.decoratedPlayers.get(token).getId() == this.turnOrder[this.turnNumber % this.turnOrder.length];
+        return turn.getPlayerId() == this.decoratedPlayers.get(token).getId();
     }
 
     /**
@@ -157,9 +140,9 @@ public class Game {
             throw new WrongTargetTeamException(attackingUnit, defendingUnit);
         attackingUnit.attack(defendingUnit);
         if (defendingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turnNumber, defendingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), defendingUnit.getUserId());
         if (attackingUnit.getHealth() <= 0)
-            gameLogger.unitKilledAtTurn(turnNumber, attackingUnit.getUserId());
+            gameLogger.unitKilledAtTurn(turn.getTurnNumber(), attackingUnit.getUserId());
         return List.of(defendingUnit, attackingUnit);
     }
 
@@ -188,7 +171,7 @@ public class Game {
         }
         movingUnit.setPosition(end);
         if (!start.equals(end))
-            gameLogger.move(turnNumber);
+            gameLogger.move(turn.getTurnNumber());
         movingUnit.setMoved(true);
         return movingUnit.getPosition();
     }

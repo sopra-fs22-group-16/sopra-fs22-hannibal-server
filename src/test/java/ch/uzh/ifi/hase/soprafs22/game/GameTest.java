@@ -190,4 +190,33 @@ class GameTest {
     void wait_good() throws Exception {
         game.unitMove("token0", redUnitPosition, noUnitPosition);
     }
+
+    @Test
+    void test_surrender() throws Exception {
+        playerMap.put("token2", new Player(2L, "user2", "token2", Team.RED));
+        playerMap.put("token3", new Player(3L, "user3", "token3", Team.BLUE));
+        game = new Game(GameMode.TWO_VS_TWO, GameType.UNRANKED, playerMap);
+
+        long surrenderId = game.surrender("token0");
+
+        assertEquals(0L, surrenderId);
+    }
+
+    @Test
+    void test_NextTurn() throws Exception {
+        playerMap.put("token2", new Player(2L, "user2", "token2", Team.RED));
+        playerMap.put("token3", new Player(3L, "user3", "token3", Team.BLUE));
+        game = new Game(GameMode.TWO_VS_TWO, GameType.UNRANKED, playerMap);
+        game.surrender("token0"); // player 0 surrenders, turn = 0
+        game.nextTurn(); // player 0 ends turn (does not happen in game, service does it!)
+        game.nextTurn(); // player 1 skips turn, turn = 1
+        game.nextTurn(); // player 2 skips turn, turn = 2
+
+        // Get the turn for player after 3 (who surrendered at the start!)
+        TurnInfo turnInfo = game.nextTurn(); // player 3 skips turn, turn = 3
+
+        assertEquals(1L, turnInfo.getPlayerId());
+        assertEquals(4, turnInfo.getTurn());
+    }
+
 }
