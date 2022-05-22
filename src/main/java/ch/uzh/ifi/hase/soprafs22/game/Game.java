@@ -141,11 +141,18 @@ public class Game {
             throw new NotPlayersTurnException();
         }
         ensureWithinRange(attacker);
+        ensureWithinRange(attackerDestination);
         ensureWithinRange(defender);
-        Position arrival = unitMove(token, attacker, attackerDestination).getMoveCommand().getDestination();
-        Unit attackingUnit = getUnitAtPosition(arrival);
+        Unit attackingUnit = getUnitAtPosition(attacker);
         if (attackingUnit == null)
             throw new UnitNotFoundException(attacker);
+        if (this.decoratedPlayers.get(token).getId() != attackingUnit.getUserId()) {
+            throw new WrongUnitOwnerException(attackingUnit, this.decoratedPlayers.get(token).getId());
+        }
+        attackingUnit.setPosition(attackerDestination);
+        if (!attacker.equals(attackerDestination))
+            gameLogger.move(turnNumber);
+        attackingUnit.setMoved(true);
         Unit defendingUnit = getUnitAtPosition(defender);
         if (defendingUnit == null)
             throw new UnitNotFoundException(defender);
