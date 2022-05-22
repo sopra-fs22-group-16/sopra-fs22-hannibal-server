@@ -6,6 +6,7 @@ public class PlayerGetDTO {
     private String name;
     private boolean ready;
     private int team;
+    private boolean registered;
 
     public Long getId() {
         return id;
@@ -37,5 +38,13 @@ public class PlayerGetDTO {
 
     public void setTeam(int team) {
         this.team = team;
+    }
+
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
 }

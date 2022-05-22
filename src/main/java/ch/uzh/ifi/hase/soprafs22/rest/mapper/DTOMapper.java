@@ -17,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -42,10 +43,15 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
+    @Mapping(source = "registeredUser", target="registered")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
     protected int convertTeamToTeamNumber(Team team) {
         return team.ordinal();
+    }
+
+    protected boolean convertRegisteredUserToBooleanRegistered(RegisteredUser registeredUser){
+        return registeredUser != null;
     }
 
     @Mapping(source = "id", target = "id")
