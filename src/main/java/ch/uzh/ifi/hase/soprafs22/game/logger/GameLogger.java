@@ -12,6 +12,7 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
     private final Map<Long, Integer> unitsPerPlayer;
 
     private final List<Map<Long, Integer>> turnSnapshots = new ArrayList<>();
+    private final Map<Long, List<Integer>> killsPerPlayer = new HashMap<>();
     private int totalMoves = 0;
     private int turn = 0;
 
@@ -20,6 +21,10 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
         this.unitsPerPlayer.putAll(unitsPerPlayer);
         // Add a ghost entry with the initial state, so we can compute kills in first turn.
         turnSnapshots.add(Map.copyOf(unitsPerPlayer));
+        for (long player : unitsPerPlayer.keySet())
+            this.killsPerPlayer.put(player, new ArrayList<>());
+        for (List<Integer> kills : this.killsPerPlayer.values())
+            kills.add(0);
     }
 
     @Override
@@ -31,6 +36,11 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
             for (long player : turnSnapshot.keySet())
                 result.get(player).add(turnSnapshot.get(player));
         return result;
+    }
+
+    @Override
+    public Map<Long, List<Integer>> killsPerPlayer() {
+        return killsPerPlayer;
     }
 
     @Override
@@ -82,10 +92,12 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
     }
 
     @Override
-    public void unitKilledAtTurn(int turn, long playerId) {
+    public void unitKilledAtTurn(int turn, long attackingPlayer, long defendingPlayer) {
         if (turn != this.turn)
             throw new IllegalStateException("Wrong turn!");
-        unitsPerPlayer.replace(playerId, unitsPerPlayer.get(playerId) -1);
+        unitsPerPlayer.replace(defendingPlayer, unitsPerPlayer.get(defendingPlayer) -1);
+        List<Integer> kills = killsPerPlayer.get(attackingPlayer);
+        kills.set(kills.size()-1, kills.get(kills.size()-1) + 1);
     }
 
     @Override
@@ -99,6 +111,10 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
     public void nextTurn() {
         // Take a snapshot with the units per player!
         turnSnapshots.add(Map.copyOf(unitsPerPlayer));
+        // Add a new entry to kills per player.
+        for (List<Integer> kills : killsPerPlayer.values()) {
+            kills.add(0);
+        }
         turn++;
     }
 }
