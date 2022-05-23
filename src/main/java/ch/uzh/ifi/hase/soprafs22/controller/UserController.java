@@ -48,20 +48,10 @@ public class UserController {
                                              @RequestParam(name = "pageNumber", defaultValue = "0") @Min(0) int pageNumber,
                                              @RequestParam(name = "perPage", defaultValue = "10") @Min(1) @Max(50) int perPage) {
 
-        List<RegisteredUser> users = userService.getRegisteredUsers(sortBy, ascending, pageNumber, perPage);
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers(sortBy, ascending, pageNumber, perPage);
         long totalRegisteredUsers = userService.getTotalRegisteredUsers();
 
-        List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
-        for (RegisteredUser user : users) {
-            registeredUserGetDTOList.add(DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(user));
-        }
-
-        RegisteredUserPageGetDTO registeredUserPageGetDTO = new RegisteredUserPageGetDTO();
-        registeredUserPageGetDTO.setLimit(perPage);
-        registeredUserPageGetDTO.setUsers(registeredUserGetDTOList);
-        registeredUserPageGetDTO.setLength(registeredUserGetDTOList.size());
-        registeredUserPageGetDTO.setTotal(totalRegisteredUsers);
-        return registeredUserPageGetDTO;
+        return DTOMapper.INSTANCE.convertToRegisteredUserPageGetDTO(perPage, totalRegisteredUsers, registeredUsers);
     }
 
     @GetMapping("/{apiVersion}/users/{id}")
