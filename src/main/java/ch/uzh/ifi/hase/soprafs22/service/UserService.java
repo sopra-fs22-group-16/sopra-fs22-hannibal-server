@@ -40,7 +40,6 @@ public class UserService {
 
         switch (orderBy) {
             case "RANKED_SCORE" -> {
-                System.out.println("RANKED SCORE");
                 if (ascending) {
                     return userRepository.findAllByOrderByRankedScoreAsc(page);
                 }
@@ -49,7 +48,6 @@ public class UserService {
                 }
             }
             case "WINS" -> {
-                System.out.println("WINS SCORE");
                 if (ascending) {
                     return userRepository.findAllByOrderByWinsAsc(page);
                 }
@@ -58,7 +56,6 @@ public class UserService {
                 }
             }
             case "LOSSES" -> {
-                System.out.println("LOSSES SCORE");
                 if (ascending) {
                     return userRepository.findAllByOrderByLossesAsc(page);
                 }
