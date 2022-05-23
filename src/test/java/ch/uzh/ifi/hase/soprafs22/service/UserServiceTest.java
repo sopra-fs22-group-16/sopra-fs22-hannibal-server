@@ -237,7 +237,7 @@ public class UserServiceTest {
 
     @Test
     public void getRegisteredUsers_Unknown_Field_throwsException() {
-        
+
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> userService.getRegisteredUsers("????", false, 0, 10));
 
