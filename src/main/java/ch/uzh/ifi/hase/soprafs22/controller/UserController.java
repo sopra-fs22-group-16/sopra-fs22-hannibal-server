@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserPageGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -8,8 +9,12 @@ import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * User Controller
@@ -29,6 +34,23 @@ public class UserController {
 
     UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/{apiVersion}/users")
+    @ResponseStatus(HttpStatus.OK)
+    @Validated
+    @ResponseBody
+    public RegisteredUserPageGetDTO getUsers(@RequestParam(name = "sortBy", defaultValue = "RANKED_SCORE") String sortBy,
+                                             @RequestParam(name = "ascending", defaultValue = "true") boolean ascending,
+                                             @RequestParam(name = "pageNumber", defaultValue = "0") @Min(0) int pageNumber,
+                                             @RequestParam(name = "per_page", defaultValue = "10") @Min(0) @Max(50) int per_page) {
+
+        RegisteredUserPageGetDTO registeredUserPageGetDTO = new RegisteredUserPageGetDTO();
+        registeredUserPageGetDTO.setLimit(per_page);
+
+        
+
+        return registeredUserPageGetDTO;
     }
 
     @GetMapping("/{apiVersion}/users/{id}")
