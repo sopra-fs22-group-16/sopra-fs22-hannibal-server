@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserPageGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserLoginGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserRegistrationGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
@@ -19,7 +18,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * User Controller

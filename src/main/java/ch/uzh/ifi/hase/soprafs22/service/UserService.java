@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserRegistrationGetDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -169,15 +168,15 @@ public class UserService {
      * This is a helper method that will check the uniqueness criteria of the username and the name defined in the User
      * entity. The method will do nothing if the input is unique and throw an error otherwise.
      *
-     * @param desiredUserName
-     * @throws org.springframework.web.server.ResponseStatusException
+     * @param desiredUserName The desired username of the new user
+     * @throws org.springframework.web.server.ResponseStatusException The username is already taken.
      * @see RegisteredUser
      */
     private void checkDuplicateUsername(String desiredUserName) {
         RegisteredUser userByUsername = userRepository.findRegisteredUserByUsername(desiredUserName);
 
         if (userByUsername != null) {
-            throwResponseStatusException(HttpStatus.CONFLICT, "The username provided is not unique.", "created");
+            throwResponseStatusException(HttpStatus.CONFLICT, "The username provided is already taken.", "created");
         }
     }
 }
