@@ -16,6 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -67,6 +70,53 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.rankedScore", is(registeredUser.getRankedScore())))
                 .andExpect(jsonPath("$.wins", is(registeredUser.getWins())))
                 .andExpect(jsonPath("$.losses", is(registeredUser.getLosses())));
+
+    }
+
+    @Test
+    void getRegisteredUsers_validInput_thenReturnJsonArray() throws Exception {
+        // given
+
+        long totalUsers = 100;
+        int page = 0;
+        int pageSize = 10;
+        boolean ascending = true;
+        String orderBy = "RANKED_SCORE";
+
+        List<RegisteredUser> users = new LinkedList<>();
+        for(int i = 0; i < pageSize; ++i){
+            RegisteredUser registeredUser = new RegisteredUser();
+            registeredUser.setId((long)i);
+            registeredUser.setToken("token-"+i);
+            registeredUser.setUsername("username-"+i);
+            registeredUser.setPassword("password");
+            registeredUser.setRankedScore(i);
+            registeredUser.setWins(i);
+            registeredUser.setLosses(i);
+            users.add(registeredUser);
+        }
+
+        // this mocks the UserService -> we define above what the userService should
+        // return when getRegisteredUsers() or getTotalRegisteredUsers() is called
+        given(userService.getRegisteredUsers(orderBy, true, page, pageSize)).willReturn(users);
+        given(userService.getTotalRegisteredUsers()).willReturn(totalUsers);
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/v1/users?sortBy="+orderBy+"&ascending=true&pageNumber="+page+"&per_page="+pageSize)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.limit", is(pageSize)))
+                .andExpect(jsonPath("$.length", is(users.size())))
+                .andExpect(jsonPath("$.total", is((int)totalUsers)))
+                .andExpect(jsonPath("$.users").isArray())
+                .andExpect(jsonPath("$.users[0].id", is(users.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.users[0].username", is(users.get(0).getUsername())))
+                .andExpect(jsonPath("$.users[0].rankedScore", is(users.get(0).getRankedScore())))
+                .andExpect(jsonPath("$.users[0].wins", is(users.get(0).getWins())))
+                .andExpect(jsonPath("$.users[0].losses", is(users.get(0).getLosses())));
 
     }
 

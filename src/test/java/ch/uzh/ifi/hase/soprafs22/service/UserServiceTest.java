@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalMatchers.and;
@@ -34,6 +34,7 @@ public class UserServiceTest {
 
     private RegisteredUser testUser1;
     private RegisteredUser testUser2;
+    private RegisteredUser testUser3;
     private final long idNotInRepository = 999;
 
 
@@ -53,9 +54,9 @@ public class UserServiceTest {
         testUser1.setToken("token1");
         testUser1.setPassword("password1");
         testUser1.setUsername("testUsername1");
-        testUser1.setRankedScore(2000);
-        testUser1.setWins(100);
-        testUser1.setLosses(50);
+        testUser1.setRankedScore(100);
+        testUser1.setWins(20);
+        testUser1.setLosses(30);
 
         // given user2 in db
         testUser2 = new RegisteredUser();
@@ -63,9 +64,19 @@ public class UserServiceTest {
         testUser2.setToken("token2");
         testUser2.setPassword("password2");
         testUser2.setUsername("testUsername2");
-        testUser2.setRankedScore(784932);
-        testUser2.setWins(443);
-        testUser2.setLosses(92);
+        testUser2.setRankedScore(200);
+        testUser2.setWins(30);
+        testUser2.setLosses(10);
+
+        // given user3 in db
+        testUser3 = new RegisteredUser();
+        testUser3.setId(3L);
+        testUser3.setToken("token3");
+        testUser3.setPassword("password3");
+        testUser3.setUsername("testUsername3");
+        testUser3.setRankedScore(300);
+        testUser3.setWins(10);
+        testUser3.setLosses(20);
 
         Mockito.when(userRepository.findById(testUser1.getId())).thenReturn(Optional.of(testUser1));
         Mockito.when(userRepository.findById(testUser2.getId())).thenReturn(Optional.of(testUser2));
@@ -77,6 +88,14 @@ public class UserServiceTest {
 
         Mockito.when(userRepository.findRegisteredUserByUsername(and(not(eq(testUser1.getUsername())), not(eq(testUser2.getUsername()))))).thenReturn(null);
 
+        Mockito.when(userRepository.findAllByOrderByRankedScoreAsc(Mockito.any())).thenReturn(List.of(testUser1, testUser2, testUser3));
+        Mockito.when(userRepository.findAllByOrderByRankedScoreDesc(Mockito.any())).thenReturn(List.of(testUser3, testUser2, testUser1));
+
+        Mockito.when(userRepository.findAllByOrderByWinsAsc(Mockito.any())).thenReturn(List.of(testUser3, testUser1, testUser2));
+        Mockito.when(userRepository.findAllByOrderByWinsDesc(Mockito.any())).thenReturn(List.of(testUser2, testUser1, testUser3));
+
+        Mockito.when(userRepository.findAllByOrderByLossesAsc(Mockito.any())).thenReturn(List.of(testUser2, testUser3, testUser1));
+        Mockito.when(userRepository.findAllByOrderByLossesDesc(Mockito.any())).thenReturn(List.of(testUser1, testUser3, testUser2));
 
     }
 
@@ -94,6 +113,135 @@ public class UserServiceTest {
         assertEquals(testUser1.getRankedScore(), registeredUser.getRankedScore());
         assertEquals(testUser1.getWins(), registeredUser.getWins());
         assertEquals(testUser1.getLosses(), registeredUser.getLosses());
+    }
+
+    @Test
+    public void getRegisteredUsers_RankedScore_Ascending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort(Comparator.comparingInt(RegisteredUser::getRankedScore));
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("RANKED_SCORE", true, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_RankedScore_Descending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort((o1, o2) -> o2.getRankedScore() - o1.getRankedScore());
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("RANKED_SCORE", false, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_Wins_Ascending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort(Comparator.comparingInt(RegisteredUser::getWins));
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("WINS", true, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_Wins_Descending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort(Comparator.comparingInt(RegisteredUser::getWins).reversed());
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("WINS", false, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_Losses_Ascending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort(Comparator.comparingInt(RegisteredUser::getLosses));
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("LOSSES", true, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_Losses_Descending_success() {
+
+        // given
+        List<RegisteredUser> users = new LinkedList<>();
+        users.add(testUser1);
+        users.add(testUser2);
+        users.add(testUser3);
+        users.sort(Comparator.comparingInt(RegisteredUser::getLosses).reversed());
+
+        // when
+        List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("LOSSES", false, 0, 10);
+
+        // then
+        assertEquals(registeredUsers.size(), 3);
+        for(int i = 0; i < 3; ++i){
+            assertEquals(registeredUsers.get(i), users.get(i));
+        }
+    }
+
+    @Test
+    public void getRegisteredUsers_Unknown_Field_throwsException() {
+        
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
+                () -> userService.getRegisteredUsers("????", false, 0, 10));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
