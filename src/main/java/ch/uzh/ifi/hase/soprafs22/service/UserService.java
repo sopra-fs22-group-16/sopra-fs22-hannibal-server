@@ -3,12 +3,14 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.*;
 
 /**
  * User Service
@@ -32,6 +34,45 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public List<RegisteredUser> getRegisteredUsers(String orderBy, boolean ascending, int pageNumber, int perPage) {
+
+        Pageable page = PageRequest.of(pageNumber, perPage);
+
+        switch (orderBy) {
+            case "RANKED_SCORE" -> {
+                if (ascending) {
+                    return userRepository.findAllByOrderByRankedScoreAsc(page);
+                }
+                else {
+                    return userRepository.findAllByOrderByRankedScoreDesc(page);
+                }
+            }
+            case "WINS" -> {
+                if (ascending) {
+                    return userRepository.findAllByOrderByWinsAsc(page);
+                }
+                else {
+                    return userRepository.findAllByOrderByWinsDesc(page);
+                }
+            }
+            case "LOSSES" -> {
+                if (ascending) {
+                    return userRepository.findAllByOrderByLossesAsc(page);
+                }
+                else {
+                    return userRepository.findAllByOrderByLossesDesc(page);
+                }
+            }
+            default -> throwResponseStatusException(HttpStatus.BAD_REQUEST, "The data can not be sorted by the field" + orderBy, ACCESSED);
+        }
+        return new LinkedList<>();
+    }
+
+    public long getTotalRegisteredUsers() {
+
+        return userRepository.count();
+    }
+
     public RegisteredUser getRegisteredUserWithId(long id) {
         return getRegisteredUserByIdElseThrowNotFoundException(id, ACCESSED);
     }
@@ -46,9 +87,9 @@ public class UserService {
 
         checkStringNotNullOrEmpty(userInput.getUsername(), "username", UPDATED);
 
-        if(!userToUpdate.getUsername().equals(userInput.getUsername())){
+        if (!userToUpdate.getUsername().equals(userInput.getUsername())) {
             RegisteredUser potentialRegisteredUserWithSameNewName = userRepository.findRegisteredUserByUsername(userInput.getUsername());
-            if(potentialRegisteredUserWithSameNewName != null && !potentialRegisteredUserWithSameNewName.equals(userToUpdate)){
+            if (potentialRegisteredUserWithSameNewName != null && !potentialRegisteredUserWithSameNewName.equals(userToUpdate)) {
                 String errorMessageBeginning = String.format("The username %s is not unique.", userInput.getUsername());
                 throwResponseStatusException(HttpStatus.CONFLICT, errorMessageBeginning, UPDATED);
             }
@@ -56,7 +97,7 @@ public class UserService {
 
         userToUpdate.setUsername(userInput.getUsername());
         // Update password only if it is set
-        if(userInput.getPassword() != null && !userInput.getPassword().isEmpty()){
+        if (userInput.getPassword() != null && !userInput.getPassword().isEmpty()) {
             userToUpdate.setPassword(userInput.getPassword());
         }
     }
@@ -92,7 +133,8 @@ public class UserService {
     }
 
     private void throwResponseStatusException(HttpStatus errorStatus, String errorMessageBeginning, String errorMessageEnding) {
-        String errorMessage = errorMessageBeginning + " Therefore, the user could not be " + errorMessageEnding + " !";
+        String errorMessage = errorMessageBeginning + " Therefore, the user(s) could not be " + errorMessageEnding + " !";
         throw new ResponseStatusException(errorStatus, errorMessage);
     }
+
 }

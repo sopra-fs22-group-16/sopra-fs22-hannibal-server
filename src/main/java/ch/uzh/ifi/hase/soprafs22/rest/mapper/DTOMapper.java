@@ -193,8 +193,13 @@ public abstract class DTOMapper {
     @Mapping(source = "losses", target = "losses")
     public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "token", ignore = true)
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
+    @Mapping(target = "rankedScore", ignore = true)
+    @Mapping(target = "wins", ignore = true)
+    @Mapping(target = "losses", ignore = true)
     public abstract RegisteredUser convertRegisteredUserPutDTOToRegisteredUser(RegisteredUserPutDTO registeredUserPutDTO);
 
 }

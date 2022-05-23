@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserPageGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -8,8 +9,15 @@ import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User Controller
@@ -29,6 +37,31 @@ public class UserController {
 
     UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/{apiVersion}/users")
+    @ResponseStatus(HttpStatus.OK)
+    @Validated
+    @ResponseBody
+    public RegisteredUserPageGetDTO getUsers(@RequestParam(name = "sortBy", defaultValue = "RANKED_SCORE") String sortBy,
+                                             @RequestParam(name = "ascending", defaultValue = "true") boolean ascending,
+                                             @RequestParam(name = "pageNumber", defaultValue = "0") @Min(0) int pageNumber,
+                                             @RequestParam(name = "perPage", defaultValue = "10") @Min(1) @Max(50) int perPage) {
+
+        List<RegisteredUser> users = userService.getRegisteredUsers(sortBy, ascending, pageNumber, perPage);
+        long totalRegisteredUsers = userService.getTotalRegisteredUsers();
+
+        List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
+        for (RegisteredUser user : users) {
+            registeredUserGetDTOList.add(DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(user));
+        }
+
+        RegisteredUserPageGetDTO registeredUserPageGetDTO = new RegisteredUserPageGetDTO();
+        registeredUserPageGetDTO.setLimit(perPage);
+        registeredUserPageGetDTO.setUsers(registeredUserGetDTOList);
+        registeredUserPageGetDTO.setLength(registeredUserGetDTOList.size());
+        registeredUserPageGetDTO.setTotal(totalRegisteredUsers);
+        return registeredUserPageGetDTO;
     }
 
     @GetMapping("/{apiVersion}/users/{id}")
