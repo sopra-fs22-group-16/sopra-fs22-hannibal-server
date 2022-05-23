@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserRegistrationGetDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class UserService {
     private static final String TOKEN = "token";
     private static final String UPDATED = "updated";
     private static final String ACCESSED = "accessed";
+    private static final String CREATED = "created";
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -69,7 +71,6 @@ public class UserService {
     }
 
     public long getTotalRegisteredUsers() {
-
         return userRepository.count();
     }
 
@@ -137,4 +138,46 @@ public class UserService {
         throw new ResponseStatusException(errorStatus, errorMessage);
     }
 
+    public RegisteredUser registerUser(RegisteredUser userInput) {
+        checkStringNotNullOrEmpty(userInput.getUsername(), "username", CREATED);
+        checkStringNotNullOrEmpty(userInput.getPassword(), "password", CREATED);
+        checkDuplicateUsername(userInput.getUsername());
+        userInput.setToken(UUID.randomUUID().toString());
+        userInput.setLoggedIn(true);
+        RegisteredUser registeredUser = userRepository.save(userInput);
+        userRepository.flush();
+        return registeredUser;
+    }
+
+    public RegisteredUser loginUser(RegisteredUser userInput) {
+        checkStringNotNullOrEmpty(userInput.getUsername(), "username", ACCESSED);
+        checkStringNotNullOrEmpty(userInput.getPassword(), "password", ACCESSED);
+        RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(userInput.getUsername());
+        if (registeredUser == null) {
+            throwResponseStatusException(HttpStatus.NOT_FOUND, "The username provided does not exist.", ACCESSED);
+        }
+        if (!registeredUser.getPassword().equals(userInput.getPassword())) {
+            throwResponseStatusException(HttpStatus.UNAUTHORIZED, "The password provided does not match.", ACCESSED);
+        }
+        registeredUser.setLoggedIn(true);
+        registeredUser = userRepository.save(registeredUser);
+        userRepository.flush();
+        return registeredUser;
+    }
+
+    /**
+     * This is a helper method that will check the uniqueness criteria of the username and the name defined in the User
+     * entity. The method will do nothing if the input is unique and throw an error otherwise.
+     *
+     * @param desiredUserName
+     * @throws org.springframework.web.server.ResponseStatusException
+     * @see RegisteredUser
+     */
+    private void checkDuplicateUsername(String desiredUserName) {
+        RegisteredUser userByUsername = userRepository.findRegisteredUserByUsername(desiredUserName);
+
+        if (userByUsername != null) {
+            throwResponseStatusException(HttpStatus.CONFLICT, "The username provided is not unique.", "created");
+        }
+    }
 }

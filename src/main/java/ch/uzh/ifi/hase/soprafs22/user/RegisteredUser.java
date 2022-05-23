@@ -1,8 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.user;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "REGISTEREDUSER")
@@ -23,6 +26,14 @@ public class RegisteredUser implements Serializable {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "logged_in", nullable = false)
+    private boolean loggedIn;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.DATE)
+    @Column(name = "creation_date")
+    private Date creationDate;
 
     @Column(columnDefinition = "integer default 1000")
     private int rankedScore;
@@ -87,5 +98,21 @@ public class RegisteredUser implements Serializable {
 
     public void setLosses(int losses) {
         this.losses = losses;
+    }
+
+    public boolean getLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
