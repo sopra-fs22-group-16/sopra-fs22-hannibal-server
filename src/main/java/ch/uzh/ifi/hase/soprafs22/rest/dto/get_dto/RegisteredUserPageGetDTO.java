@@ -1,22 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class RegisteredUserPageGetDTO {
 
-    private int start;
     private int limit;
     private int length;
-    private int total;
-    private LinkedList<RegisteredUserGetDTO> users;
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
+    private long total;
+    private List<RegisteredUserGetDTO> users;
 
     public int getLimit() {
         return limit;
@@ -34,19 +25,19 @@ public class RegisteredUserPageGetDTO {
         this.length = length;
     }
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
-    public LinkedList<RegisteredUserGetDTO> getUsers() {
+    public List<RegisteredUserGetDTO> getUsers() {
         return users;
     }
 
-    public void setUsers(LinkedList<RegisteredUserGetDTO> users) {
+    public void setUsers(List<RegisteredUserGetDTO> users) {
         this.users = users;
     }
 }

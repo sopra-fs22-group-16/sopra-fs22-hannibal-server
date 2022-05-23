@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User Controller
@@ -43,13 +46,21 @@ public class UserController {
     public RegisteredUserPageGetDTO getUsers(@RequestParam(name = "sortBy", defaultValue = "RANKED_SCORE") String sortBy,
                                              @RequestParam(name = "ascending", defaultValue = "true") boolean ascending,
                                              @RequestParam(name = "pageNumber", defaultValue = "0") @Min(0) int pageNumber,
-                                             @RequestParam(name = "per_page", defaultValue = "10") @Min(0) @Max(50) int per_page) {
+                                             @RequestParam(name = "per_page", defaultValue = "10") @Min(1) @Max(50) int per_page) {
+
+        List<RegisteredUser> users = userService.getRegisteredUsers(sortBy, ascending, pageNumber, per_page);
+        long totalRegisteredUsers = userService.getTotalRegisteredUsers();
+
+        List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
+        for (RegisteredUser user : users) {
+            registeredUserGetDTOList.add(DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(user));
+        }
 
         RegisteredUserPageGetDTO registeredUserPageGetDTO = new RegisteredUserPageGetDTO();
         registeredUserPageGetDTO.setLimit(per_page);
-
-        
-
+        registeredUserPageGetDTO.setUsers(registeredUserGetDTOList);
+        registeredUserPageGetDTO.setLength(registeredUserGetDTOList.size());
+        registeredUserPageGetDTO.setTotal(totalRegisteredUsers);
         return registeredUserPageGetDTO;
     }
 
