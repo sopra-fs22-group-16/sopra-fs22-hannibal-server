@@ -69,7 +69,7 @@ public class GameController {
 
     @PutMapping("/{apiVersion}/game/match/{id}/command/surrender")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void surrender(@RequestHeader("token") String token, @PathVariable Long id) {
+    public void playerSurrender(@RequestHeader("token") String token, @PathVariable Long id) {
 
         GameDelta gameDelta = this.gameService.surrender(id, token);
 
