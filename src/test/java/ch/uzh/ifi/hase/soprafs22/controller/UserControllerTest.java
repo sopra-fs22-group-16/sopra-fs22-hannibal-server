@@ -102,7 +102,7 @@ public class UserControllerTest {
         given(userService.getTotalRegisteredUsers()).willReturn(totalUsers);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/v1/users?sortBy="+orderBy+"&ascending=true&pageNumber="+page+"&per_page="+pageSize)
+        MockHttpServletRequestBuilder getRequest = get("/v1/users?sortBy="+orderBy+"&ascending=true&pageNumber="+page+"&perPage="+pageSize)
                 .contentType(MediaType.APPLICATION_JSON);
 
         // then

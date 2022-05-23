@@ -46,7 +46,7 @@ public class UserController {
     public RegisteredUserPageGetDTO getUsers(@RequestParam(name = "sortBy", defaultValue = "RANKED_SCORE") String sortBy,
                                              @RequestParam(name = "ascending", defaultValue = "true") boolean ascending,
                                              @RequestParam(name = "pageNumber", defaultValue = "0") @Min(0) int pageNumber,
-                                             @RequestParam(name = "per_page", defaultValue = "10") @Min(1) @Max(50) int perPage) {
+                                             @RequestParam(name = "perPage", defaultValue = "10") @Min(1) @Max(50) int perPage) {
 
         List<RegisteredUser> users = userService.getRegisteredUsers(sortBy, ascending, pageNumber, perPage);
         long totalRegisteredUsers = userService.getTotalRegisteredUsers();
@@ -57,7 +57,7 @@ public class UserController {
         }
 
         RegisteredUserPageGetDTO registeredUserPageGetDTO = new RegisteredUserPageGetDTO();
-        registeredUserPageGetDTO.setLimit(per_page);
+        registeredUserPageGetDTO.setLimit(perPage);
         registeredUserPageGetDTO.setUsers(registeredUserGetDTOList);
         registeredUserPageGetDTO.setLength(registeredUserGetDTOList.size());
         registeredUserPageGetDTO.setTotal(totalRegisteredUsers);
