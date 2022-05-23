@@ -199,7 +199,6 @@ class GameTest {
         assertEquals(1L, delta.getGameOverInfo().getWinners().get(0));
     }
 
-    /* TODO: fix gameplay test. was working before merging master.
     @Test
     void gameIsOver_gameplay() throws Exception {
         GameDelta gameDelta = null;
@@ -231,12 +230,18 @@ class GameTest {
         redMove(3,10,3,10); // elephant
         redMove(16,10,19,10); // archer
 
+        bluePass();
+
+        redMove(7,8,7,8); // knight
+        redMove(3,10,3,10); // elephant
+        redMove(19,10, 22, 10); // archer
+
         // Kill blue knight
         for (int i = 0; i < 4; i++) {
             bluePass();
             redMove(7,8,7,8); // knight
             redMove(3,10,3,10); // elephant
-            redAttack(19,10, 22, 12); // archer attacks knight
+            redAttack(22, 10, 22, 12); // archer attacks knight
         }
 
         // kill blue elephant
@@ -245,7 +250,7 @@ class GameTest {
             blueMove(26, 10, 26, 10); // elephant
             redMove(7,8,7,8); // knight
             redMove(3,10,3,10); // elephant
-            redAttack(19,10, 26, 10); // archer attacks elephant
+            redAttack(22, 10, 26, 10); // archer attacks elephant
         }
 
         // kill blue archer
@@ -253,12 +258,11 @@ class GameTest {
             blueMove(23, 8, 23, 8); // archer
             redMove(7,8,7,8); // knight
             redMove(3,10,3,10); // elephant
-            gameDelta = redAttack(19,10, 23, 8); // archer attacks elephant
+            gameDelta = redAttack(22,10, 23, 8); // archer attacks elephant
         }
 
         assertEquals(0L, gameDelta.getGameOverInfo().getWinners().get(0));
     }
-*/
 
     private void bluePass() throws Exception {
         blueMove(22, 12, 22, 12); // knight
