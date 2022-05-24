@@ -44,14 +44,14 @@ public abstract class DTOMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "ready", target = "ready")
     @Mapping(source = "team", target = "team")
-    @Mapping(source = "registeredUser", target="registered")
+    @Mapping(source = "registeredUser", target = "registered")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
     protected int convertTeamToTeamNumber(Team team) {
         return team.ordinal();
     }
 
-    protected boolean convertRegisteredUserToBooleanRegistered(RegisteredUser registeredUser){
+    protected boolean convertRegisteredUserToBooleanRegistered(RegisteredUser registeredUser) {
         return registeredUser != null;
     }
 
@@ -87,7 +87,7 @@ public abstract class DTOMapper {
         lobbyGetDTO.setVisibility(lobby.getVisibility());
         lobbyGetDTO.setGameMode(lobby.getGameMode());
         lobbyGetDTO.setGameType(lobby.getGameType());
-        lobbyGetDTO.setGameRunning(lobby.getGame() != null && !lobby.getGame().hasEnded() );
+        lobbyGetDTO.setGameRunning(lobby.getGame() != null && !lobby.getGame().hasEnded());
         return lobbyGetDTO;
     }
 
@@ -174,8 +174,8 @@ public abstract class DTOMapper {
         }
         return unitHealthsList;
     }
-  
-  public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics){
+
+    public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics) {
         // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
         GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
         gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
@@ -187,8 +187,8 @@ public abstract class DTOMapper {
     }
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "username", target="username")
-    @Mapping(source = "rankedScore", target="rankedScore")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "rankedScore", target = "rankedScore")
     @Mapping(source = "wins", target = "wins")
     @Mapping(source = "losses", target = "losses")
     public abstract RegisteredUserGetDTO convertRegisteredUserToRegisteredUserGetDTO(RegisteredUser registeredUser);
@@ -212,4 +212,12 @@ public abstract class DTOMapper {
 
     @Mapping(source = "token", target = "token")
     public abstract UserLoginGetDTO convertRegisteredUserToUserLoginGetDTO(RegisteredUser registeredUser);
+
+    public RegisteredUserPageGetDTO convertToRegisteredUserPageGetDTO(int perPage, long totalRegisteredUsers, List<RegisteredUser> registeredUsers) {
+        List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
+        for (RegisteredUser user : registeredUsers) {
+            registeredUserGetDTOList.add(DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(user));
+        }
+        return new RegisteredUserPageGetDTO(perPage, registeredUserGetDTOList.size(), totalRegisteredUsers, registeredUserGetDTOList);
+    }
 }

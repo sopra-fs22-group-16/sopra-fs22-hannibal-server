@@ -191,8 +191,6 @@ public class Game {
             throw new NotAMemberOfGameException();
         if (hasEnded())
             throw new GameOverException();
-        if (!isPlayersTurn(token))
-            throw new NotPlayersTurnException();
         PlayerDecorator player = decoratedPlayers.get(token);
         player.surrender();
         checkGameOver();

@@ -9,6 +9,13 @@ public class RegisteredUserPageGetDTO {
     private long total;
     private List<RegisteredUserGetDTO> users;
 
+    public RegisteredUserPageGetDTO(int limit, int length, long total, List<RegisteredUserGetDTO> users){
+        this.limit = limit;
+        this.length = length;
+        this.total = total;
+        this.users = users;
+    }
+
     public int getLimit() {
         return limit;
     }

@@ -109,6 +109,8 @@ public class UserService {
         if (userInput.getPassword() != null && !userInput.getPassword().isEmpty()) {
             userToUpdate.setPassword(userInput.getPassword());
         }
+
+        userRepository.saveAndFlush(userToUpdate);
     }
 
     private @NotNull RegisteredUser getRegisteredUserByIdElseThrowNotFoundException(long id, String errorMessageEnding) {
