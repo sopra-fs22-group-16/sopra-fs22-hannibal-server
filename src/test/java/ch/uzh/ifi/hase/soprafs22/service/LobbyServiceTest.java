@@ -34,7 +34,7 @@ class LobbyServiceTest {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = new Lobby(id, lobbyName, visibility);
+        ILobby createdLobby = new Lobby(id, lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         String hostToken = createdLobby.getHost().getToken();

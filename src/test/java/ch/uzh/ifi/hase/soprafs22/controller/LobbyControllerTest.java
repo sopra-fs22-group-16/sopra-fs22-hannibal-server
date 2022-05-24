@@ -48,7 +48,7 @@ class LobbyControllerTest {
     @Test
     void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -81,7 +81,7 @@ class LobbyControllerTest {
     @Test
     void unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -124,7 +124,7 @@ class LobbyControllerTest {
     @Test
     void registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
         String token = lobby.getHost().getToken();
@@ -167,7 +167,7 @@ class LobbyControllerTest {
     @Test
     void validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -204,7 +204,7 @@ class LobbyControllerTest {
     @Test
     void createLobby_thenLeaveLobby() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -228,7 +228,7 @@ class LobbyControllerTest {
     @Test
     void given1v1Game_whenGetGame_validInput_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.UNRANKED);
 

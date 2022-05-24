@@ -88,7 +88,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE, null);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -107,7 +107,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE, null);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -126,7 +126,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.RANKED;
 
         // create lobby with same name
-        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE);
+        LobbyManager.getInstance().createLobby(lobbyName, Visibility.PRIVATE, null);
 
         // attempt to create second lobby with same name
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
@@ -145,7 +145,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -172,7 +172,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -194,7 +194,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -215,7 +215,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -237,7 +237,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -260,7 +260,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -281,7 +281,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -302,7 +302,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -323,7 +323,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
 
@@ -346,7 +346,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         Long id = createdLobby.getId();
@@ -369,7 +369,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         long id = createdLobby.getId();
@@ -392,7 +392,7 @@ class LobbyServiceIntegrationTests {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility);
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         long id = createdLobby.getId();

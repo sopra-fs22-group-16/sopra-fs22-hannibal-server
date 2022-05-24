@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -52,10 +53,10 @@ public class LobbyManager implements ILobbyManager {
 
 
     @Override
-    public ILobby createLobby(String lobbyName, Visibility visibility) throws SmallestIdNotCreatableException {
+    public ILobby createLobby(String lobbyName, Visibility visibility, RegisteredUser registeredUserAsHost) throws SmallestIdNotCreatableException {
         long id = generateSmallestUniqueId();
 
-        ILobby lobby = new Lobby(id, lobbyName, visibility);
+        ILobby lobby = new Lobby(id, lobbyName, visibility, registeredUserAsHost);
         this.lobbyMap.put(id, lobby);
 
         return lobby;
