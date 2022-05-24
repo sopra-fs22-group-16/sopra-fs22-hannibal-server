@@ -52,6 +52,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.7.0'
+    implementation 'com.h2database:h2:2.1.212'
 }
 
 bootJar {

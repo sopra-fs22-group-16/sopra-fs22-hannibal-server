@@ -2,10 +2,15 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs22.user.UserAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,6 +27,8 @@ import java.util.*;
 @Service
 @Transactional
 public class UserService {
+
+
 
     private final UserRepository userRepository;
 
@@ -137,28 +144,33 @@ public class UserService {
         throw new ResponseStatusException(errorStatus, errorMessage);
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public RegisteredUser registerUser(RegisteredUser userInput) {
         checkStringNotNullOrEmpty(userInput.getUsername(), "username", CREATED);
         checkStringNotNullOrEmpty(userInput.getPassword(), "password", CREATED);
         checkDuplicateUsername(userInput.getUsername());
+        userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
         userInput.setToken(UUID.randomUUID().toString());
         userInput.setLoggedIn(true);
-        RegisteredUser registeredUser = userRepository.save(userInput);
+        userInput = userRepository.save(userInput);
         userRepository.flush();
-        return registeredUser;
+        return userInput;
     }
+
+    @Autowired
+    private DaoAuthenticationProvider authProvider;
 
     public RegisteredUser loginUser(RegisteredUser userInput) {
         checkStringNotNullOrEmpty(userInput.getUsername(), "username", ACCESSED);
         checkStringNotNullOrEmpty(userInput.getPassword(), "password", ACCESSED);
-        RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(userInput.getUsername());
+        /*RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(userInput.getUsername());
         if (registeredUser == null) {
             throwResponseStatusException(HttpStatus.NOT_FOUND, "The username provided does not exist.", ACCESSED);
-        }
-        if (!registeredUser.getPassword().equals(userInput.getPassword())) {
-            throwResponseStatusException(HttpStatus.UNAUTHORIZED, "The password provided does not match.", ACCESSED);
-        }
-        registeredUser.setLoggedIn(true);
+        }*/
+        Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userInput.getUsername(), userInput.getPassword()));
+        RegisteredUser registeredUser = (RegisteredUser) authentication.getPrincipal();
         registeredUser = userRepository.save(registeredUser);
         userRepository.flush();
         return registeredUser;
