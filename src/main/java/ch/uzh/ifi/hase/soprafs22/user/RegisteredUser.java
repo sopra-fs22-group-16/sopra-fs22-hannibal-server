@@ -47,6 +47,14 @@ public class RegisteredUser implements UserDetails {
     @Column(columnDefinition = "integer default 0")
     private int losses;
 
+    public RegisteredUser(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public RegisteredUser() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -69,22 +77,22 @@ public class RegisteredUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public void setUsername(String username) {
@@ -126,14 +134,6 @@ public class RegisteredUser implements UserDetails {
 
     public void setLosses(int losses) {
         this.losses = losses;
-    }
-
-    public boolean getLoggedIn() {
-        return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
     }
 
     public Date getCreationDate() {
