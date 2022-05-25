@@ -43,7 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin("https://sopra-fs22-group-16-client.herokuapp.com");
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.applyPermitDefaultValues();
