@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -292,7 +293,7 @@ public class Lobby implements ILobby {
      * @throws FullLobbyException If the lobby is already full
      */
     @Override
-    public IPlayer addPlayer(IPlayer player) throws FullLobbyException, LobbyNameConflictException {
+    public @Nullable IPlayer addPlayer(IPlayer player) throws FullLobbyException, LobbyNameConflictException {
         IPlayer playerWithNameConflict = null;
         for(IPlayer lobbyPlayer : playerMap.values()){
             // Check if there is a name conflict

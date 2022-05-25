@@ -4,12 +4,16 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
+import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
+import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.PlayerPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -22,6 +26,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -169,6 +175,90 @@ class LobbyControllerTest {
     }
 
     @Test
+    void unregistered_addPlayer_validInput_thenReturnJsonArray() throws Exception {
+        // given
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.UNRANKED);
+        String token = lobby.getHost().getToken();
+
+        PlayerPostDTO playerPostDTO = new PlayerPostDTO();
+        playerPostDTO.setInvitationCode(lobby.getInvitationCode());
+
+        IPlayer player = lobby.generatePlayer();
+
+        LobbyDelta lobbyDelta = new LobbyDelta(player, null);
+
+
+        // this mocks the LobbyService -> we define above what the userService should
+        // return when getUser() is called
+        given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), "")).willReturn(lobbyDelta);
+        given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), null)).willReturn(lobbyDelta);
+
+
+        // when
+        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/"+lobby.getId()+"/player")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(playerPostDTO))
+                .header("token", "");
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is((int) player.getId())))
+                .andExpect(jsonPath("$.name", is(player.getName())))
+                .andExpect(jsonPath("$.ready", is( player.isReady())))
+                .andExpect(jsonPath("$.team", is(player.getTeam().ordinal())))
+                .andExpect(jsonPath("$.token", is(player.getToken())));
+    }
+
+    @Test
+    void registered_addPlayer_validInput_thenReturnJsonArray() throws Exception {
+        // given
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.UNRANKED);
+        String token = lobby.getHost().getToken();
+
+        PlayerPostDTO playerPostDTO = new PlayerPostDTO();
+        playerPostDTO.setInvitationCode(lobby.getInvitationCode());
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setId(0L);
+        registeredUser.setUsername("user");
+        registeredUser.setPassword("password");
+        registeredUser.setToken(UUID.randomUUID().toString());
+        registeredUser.setRankedScore(1000);
+        registeredUser.setLosses(0);
+        registeredUser.setWins(99);
+
+        IPlayer player = lobby.generatePlayer();
+        player.linkRegisteredUser(registeredUser);
+
+        LobbyDelta lobbyDelta = new LobbyDelta(player, null);
+
+
+        // this mocks the LobbyService -> we define above what the userService should
+        // return when getUser() is called
+        given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), registeredUser.getToken())).willReturn(lobbyDelta);
+
+        // when
+        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/"+lobby.getId()+"/player")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(playerPostDTO))
+                .header("token", registeredUser.getToken());
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is((int) player.getId())))
+                .andExpect(jsonPath("$.name", is(player.getName())))
+                .andExpect(jsonPath("$.ready", is( player.isReady())))
+                .andExpect(jsonPath("$.team", is(player.getTeam().ordinal())))
+                .andExpect(jsonPath("$.token", is(player.getToken())));
+    }
+
+    @Test
     void validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
         // given
         ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
@@ -267,6 +357,7 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.gameMap").isNotEmpty())
                 .andExpect(jsonPath("$.units").isNotEmpty());
     }
+
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input
