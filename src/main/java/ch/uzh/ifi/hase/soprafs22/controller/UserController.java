@@ -61,17 +61,6 @@ public class UserController {
         return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(registeredUser);
     }
 
-    @PostMapping("/{apiVersion}/logout")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public UserLoginGetDTO logoutUser(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
-        RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
-
-        RegisteredUser registeredUser = userService.loginUser(userInput);
-
-        return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(registeredUser);
-    }
-
     @GetMapping("/{apiVersion}/users")
     @ResponseStatus(HttpStatus.OK)
     @Validated
