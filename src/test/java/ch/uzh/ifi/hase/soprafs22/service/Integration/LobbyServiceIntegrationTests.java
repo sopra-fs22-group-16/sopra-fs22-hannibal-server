@@ -479,6 +479,31 @@ class LobbyServiceIntegrationTests {
     }
 
     @Test
+    void createGame_1v1_unregisteredUser_validInputs_afterwardsAllPlayersNotReady() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        // set up a full lobby
+        ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+        IPlayer player2 = lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), null).getNewPlayer();
+
+        // set players ready
+        lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
+        lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
+
+        // create a game
+        lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId());
+
+        // Assert that all players are set to not ready after the game has started
+        for (IPlayer player: createdLobby) {
+            assertFalse(player.isReady());
+        }
+    }
+
+    @Test
     void createGame_1v1_unregisteredUser_not_ready_throwsException() {
         // given
         String lobbyName = "lobbyName";
@@ -643,6 +668,8 @@ class LobbyServiceIntegrationTests {
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
 
     }
+
+
 
     @Test
     void createLobby_exceedCapacityWhenChangingMode() {

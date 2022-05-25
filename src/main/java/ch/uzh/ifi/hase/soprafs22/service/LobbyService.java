@@ -274,7 +274,7 @@ public class LobbyService {
         }
 
         // Check if a game is already running
-        if (lobby.getGame() != null) {
+        if (lobby.getGame() != null && !lobby.getGame().hasEnded()) {
             String errorMessage = "There exists already a game for this lobby. Therefore, the game could not be created!";
             throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessage);
         }

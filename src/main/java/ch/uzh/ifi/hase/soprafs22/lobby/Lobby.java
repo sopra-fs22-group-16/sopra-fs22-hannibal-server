@@ -187,6 +187,7 @@ public class Lobby implements ILobby {
     @Override
     public void startGame(){
         this.game = new Game(this.gameMode, this.gameType, this.playerMap);
+        setAllPlayersNotReady();
     }
 
     @Override
