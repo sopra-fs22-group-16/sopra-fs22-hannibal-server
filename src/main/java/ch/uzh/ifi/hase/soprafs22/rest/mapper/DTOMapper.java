@@ -210,6 +210,7 @@ public abstract class DTOMapper {
     @Mapping(source = "token", target = "token")
     public abstract UserRegistrationGetDTO convertRegisteredUserToUserRegistrationGetDTO(RegisteredUser registeredUser);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "token", target = "token")
     public abstract UserLoginGetDTO convertRegisteredUserToUserLoginGetDTO(RegisteredUser registeredUser);
 
