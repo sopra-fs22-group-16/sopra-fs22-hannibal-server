@@ -200,7 +200,19 @@ public abstract class DTOMapper {
     @Mapping(target = "rankedScore", ignore = true)
     @Mapping(target = "wins", ignore = true)
     @Mapping(target = "losses", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     public abstract RegisteredUser convertRegisteredUserPutDTOToRegisteredUser(RegisteredUserPutDTO registeredUserPutDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target="username")
+    @Mapping(source = "creationDate", target="creationDate")
+    @Mapping(source = "token", target = "token")
+    public abstract UserRegistrationGetDTO convertRegisteredUserToUserRegistrationGetDTO(RegisteredUser registeredUser);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "token", target = "token")
+    public abstract UserLoginGetDTO convertRegisteredUserToUserLoginGetDTO(RegisteredUser registeredUser);
 
     public RegisteredUserPageGetDTO convertToRegisteredUserPageGetDTO(int perPage, long totalRegisteredUsers, List<RegisteredUser> registeredUsers) {
         List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
@@ -209,5 +221,4 @@ public abstract class DTOMapper {
         }
         return new RegisteredUserPageGetDTO(perPage, registeredUserGetDTOList.size(), totalRegisteredUsers, registeredUserGetDTOList);
     }
-
 }

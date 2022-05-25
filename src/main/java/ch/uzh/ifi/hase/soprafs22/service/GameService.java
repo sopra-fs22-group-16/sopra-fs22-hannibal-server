@@ -3,21 +3,15 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.*;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
-import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Game Service
@@ -29,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class GameService {
-    private final UserRepository userRepository;
     private ILobbyManager lobbyManager;
     private static final String NOT_PLAYERS_TURN = "Not player's turn";
     private static final String TILE = "Tile ";
@@ -43,8 +36,7 @@ public class GameService {
     private static final String DOES_NOT_BELONG_TO_THE_PLAYER = " does not belong to the player.";
 
     @Autowired
-    public GameService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public GameService() {
         this.lobbyManager = LobbyManager.getInstance();
     }
 

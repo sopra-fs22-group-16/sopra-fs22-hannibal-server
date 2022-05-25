@@ -1,12 +1,18 @@
 package ch.uzh.ifi.hase.soprafs22.user;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
 
 @Entity
 @Table(name = "REGISTEREDUSER")
-public class RegisteredUser implements Serializable {
+public class RegisteredUser implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -24,6 +30,14 @@ public class RegisteredUser implements Serializable {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "logged_in", nullable = false)
+    private boolean loggedIn;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.DATE)
+    @Column(name = "creation_date")
+    private Date creationDate;
+
     @Column(columnDefinition = "integer default 1000")
     private int rankedScore;
 
@@ -32,6 +46,14 @@ public class RegisteredUser implements Serializable {
 
     @Column(columnDefinition = "integer default 0")
     private int losses;
+
+    public RegisteredUser(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public RegisteredUser() {
+    }
 
     public Long getId() {
         return id;
@@ -53,8 +75,33 @@ public class RegisteredUser implements Serializable {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     public String getPassword() {
@@ -87,5 +134,13 @@ public class RegisteredUser implements Serializable {
 
     public void setLosses(int losses) {
         this.losses = losses;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

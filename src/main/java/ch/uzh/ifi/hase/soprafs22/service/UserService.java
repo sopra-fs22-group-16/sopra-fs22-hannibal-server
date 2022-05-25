@@ -2,10 +2,17 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,13 +35,14 @@ public class UserService {
     private static final String TOKEN = "token";
     private static final String UPDATED = "updated";
     private static final String ACCESSED = "accessed";
+    private static final String CREATED = "created";
 
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public List<RegisteredUser> getRegisteredUsers(String orderBy, boolean ascending, int pageNumber, int perPage) {
+    public List<RegisteredUser> getRegisteredUsers(@NotNull String orderBy, boolean ascending, int pageNumber, int perPage) {
 
         Pageable page = PageRequest.of(pageNumber, perPage);
 
@@ -69,7 +77,6 @@ public class UserService {
     }
 
     public long getTotalRegisteredUsers() {
-
         return userRepository.count();
     }
 
@@ -77,7 +84,7 @@ public class UserService {
         return getRegisteredUserByIdElseThrowNotFoundException(id, ACCESSED);
     }
 
-    public void updateRegisteredUser(Long id, String token, RegisteredUser userInput) {
+    public void updateRegisteredUser(Long id, String token, @NotNull RegisteredUser userInput) {
 
         checkTokenNullOrEmpty(token, UPDATED);
 
@@ -104,13 +111,13 @@ public class UserService {
         userRepository.saveAndFlush(userToUpdate);
     }
 
-    private RegisteredUser getRegisteredUserByIdElseThrowNotFoundException(long id, String errorMessageEnding) {
-        Optional<RegisteredUser> registeredUser = userRepository.findById(id);
-        if (registeredUser.isEmpty()) {
+    private @NotNull RegisteredUser getRegisteredUserByIdElseThrowNotFoundException(long id, String errorMessageEnding) {
+        Optional<RegisteredUser> optionalRegisteredUser = userRepository.findById(id);
+        if (optionalRegisteredUser.isEmpty()) {
             String errorMessageBeginning = String.format("The user with userId %d was not found.", id);
             throwResponseStatusException(HttpStatus.NOT_FOUND, errorMessageBeginning, errorMessageEnding);
         }
-        return registeredUser.get();
+        return optionalRegisteredUser.get();
     }
 
     private void checkTokenNullOrEmpty(String token, String errorMessageEnding) {
@@ -127,7 +134,7 @@ public class UserService {
         }
     }
 
-    private void checkTokenMatches(RegisteredUser registeredUser, String token, String errorMessageEnding) {
+    private void checkTokenMatches(@NotNull RegisteredUser registeredUser, String token, String errorMessageEnding) {
         if (!registeredUser.getToken().equals(token)) {
             String errorMessageBeginning = "The provided authentication was incorrect.";
             throwResponseStatusException(HttpStatus.FORBIDDEN, errorMessageBeginning, errorMessageEnding);
@@ -139,4 +146,52 @@ public class UserService {
         throw new ResponseStatusException(errorStatus, errorMessage);
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public RegisteredUser registerUser(@NotNull RegisteredUser userInput) {
+        checkStringNotNullOrEmpty(userInput.getUsername(), "username", CREATED);
+        checkStringNotNullOrEmpty(userInput.getPassword(), "password", CREATED);
+        checkDuplicateUsername(userInput.getUsername());
+        userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
+        userInput.setToken(UUID.randomUUID().toString());
+        userInput = userRepository.save(userInput);
+        userRepository.flush();
+        return userInput;
+    }
+
+    @Autowired
+    private DaoAuthenticationProvider authProvider;
+
+    public RegisteredUser loginUser(@NotNull RegisteredUser userInput) {
+        checkStringNotNullOrEmpty(userInput.getUsername(), "username", ACCESSED);
+        checkStringNotNullOrEmpty(userInput.getPassword(), "password", ACCESSED);
+        try {
+            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userInput, userInput.getPassword()));
+            return (RegisteredUser) authentication.getPrincipal();
+        }
+        catch (BadCredentialsException e) {
+            throwResponseStatusException(HttpStatus.NOT_FOUND, "The username provided does not exist.", ACCESSED);
+        }
+        catch (AuthenticationException e) {
+            throwResponseStatusException(HttpStatus.UNAUTHORIZED, "The password provided is not correct.", ACCESSED);
+        }
+        return userInput;
+    }
+
+    /**
+     * This is a helper method that will check the uniqueness criteria of the username and the name defined in the User
+     * entity. The method will do nothing if the input is unique and throw an error otherwise.
+     *
+     * @param desiredUserName The desired username of the new user
+     * @throws org.springframework.web.server.ResponseStatusException The username is already taken.
+     * @see RegisteredUser
+     */
+    private void checkDuplicateUsername(String desiredUserName) {
+        RegisteredUser userByUsername = userRepository.findRegisteredUserByUsername(desiredUserName);
+
+        if (userByUsername != null) {
+            throwResponseStatusException(HttpStatus.CONFLICT, "The username provided is already taken.", "created");
+        }
+    }
 }

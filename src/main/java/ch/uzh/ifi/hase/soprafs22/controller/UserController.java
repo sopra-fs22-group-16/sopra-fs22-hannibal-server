@@ -2,7 +2,8 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.RegisteredUserPageGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserLoginGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.get_dto.UserRegistrationGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.RegisteredUserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
@@ -17,7 +18,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * User Controller
@@ -37,6 +37,28 @@ public class UserController {
 
     UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/{apiVersion}/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public UserRegistrationGetDTO registerUser(@RequestBody RegisteredUserPutDTO unregisteredUserPutDTO){
+        RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(unregisteredUserPutDTO);
+
+        RegisteredUser registeredUser = userService.registerUser(userInput);
+
+        return DTOMapper.INSTANCE.convertRegisteredUserToUserRegistrationGetDTO(registeredUser);
+    }
+
+    @PostMapping("/{apiVersion}/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserLoginGetDTO loginUser(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
+        RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
+
+        RegisteredUser registeredUser = userService.loginUser(userInput);
+
+        return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(registeredUser);
     }
 
     @GetMapping("/{apiVersion}/users")
@@ -68,13 +90,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void updateUserById(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody RegisteredUserPutDTO registeredUserPutDTO) {
-
         // convert API user to internal representation
         RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
 
         // update user
         userService.updateRegisteredUser(id, token, userInput);
-
     }
 
 }

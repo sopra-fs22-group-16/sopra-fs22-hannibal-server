@@ -31,12 +31,12 @@ import java.util.List;
 @Service
 @Transactional
 public class LobbyService {
-    private final UserRepository userRepository;
     private final LobbyManager lobbyManager;
     private static final String CREATED = "created";
     private static final String ACCESSED = "accessed";
     private static final String TOKEN = "token";
     private static final String UPDATED = "updated";
+    private final UserRepository userRepository;
 
     @Autowired
     public LobbyService(UserRepository userRepository) {
