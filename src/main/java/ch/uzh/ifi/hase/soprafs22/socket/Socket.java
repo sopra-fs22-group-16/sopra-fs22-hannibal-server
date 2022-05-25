@@ -31,6 +31,7 @@ public class Socket implements WebSocketMessageBrokerConfigurer{
     @Override
     public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
         registry.addEndpoint(WEBSOCKET_SUFFIX)
+                .setAllowedOrigins(ORIGIN_LOCALHOST, ORIGIN_PROD)
                 .withSockJS();
     }
 }
