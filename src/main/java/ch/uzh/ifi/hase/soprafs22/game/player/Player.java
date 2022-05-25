@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.game.player;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import org.jetbrains.annotations.NotNull;
 
 public class Player implements IPlayer {
     private final long id;
@@ -71,7 +72,7 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void linkRegisteredUser(RegisteredUser registeredUser){
+    public void linkRegisteredUser(@NotNull RegisteredUser registeredUser){
         this.registeredUser = registeredUser;
         this.name = registeredUser.getUsername();
         this.token = registeredUser.getToken();

@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.game.player;
 
 import ch.uzh.ifi.hase.soprafs22.game.player.interfaces.IObserver;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class PlayerDecorator extends BasePlayerDecorator implements IObserver {
     }
 
     @Override
-    public void update(Unit unit) {
+    public void update(@NotNull Unit unit) {
         if (unit.getHealth() <= 0) {
             units.remove(unit);
         }

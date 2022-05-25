@@ -2,6 +2,8 @@ package ch.uzh.ifi.hase.soprafs22.game.logger;
 
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -28,7 +30,7 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
     }
 
     @Override
-    public Map<Long, List<Integer>> unitsPerPlayer() {
+    public @NotNull Map<Long, List<Integer>> unitsPerPlayer() {
         Map<Long, List<Integer>> result = new HashMap<>();
         for(long player : unitsPerPlayer.keySet())
             result.put(player, new ArrayList<>());
@@ -58,7 +60,7 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
         return (float) allUnitsInAllTurns / (float) (turnSnapshots.size() - 1); // -1 for the ghost entry.
     }
 
-    private List<Integer> killsPerTurn() {
+    private @NotNull List<Integer> killsPerTurn() {
         List<Integer> result = new ArrayList<>();
         for (int i = 1; i < turnSnapshots.size(); i++) {
             // All the units that were alive in previous turn
@@ -74,7 +76,8 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
         return aliveUnits(turnSnapshots.get(turn));
     }
 
-    private int aliveUnits(Map<Long, Integer> snapshot) {
+    @Contract(pure = true)
+    private int aliveUnits(@NotNull Map<Long, Integer> snapshot) {
         int sum = 0;
         for(int units : snapshot.values())
             sum += units;

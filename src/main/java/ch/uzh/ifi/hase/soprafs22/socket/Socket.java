@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.socket;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -22,12 +23,12 @@ public class Socket implements WebSocketMessageBrokerConfigurer{
     private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
+    public void configureMessageBroker(@NotNull MessageBrokerRegistry config) {
         config.enableSimpleBroker(WEBSOCKET_PREFIX);
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
         registry.addEndpoint(WEBSOCKET_SUFFIX)
                 .setAllowedOrigins(ORIGIN_LOCALHOST,ORIGIN_PROD)
                 .withSockJS();

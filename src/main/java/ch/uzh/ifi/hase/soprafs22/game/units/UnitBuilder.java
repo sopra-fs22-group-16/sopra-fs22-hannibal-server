@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.game.Position;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IUnitBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     @Override
-    public void setType(String type) {
+    public void setType(@NotNull String type) {
         switch (type) {
             case "archer" -> this.result.setType(UnitType.ARCHER);
             case "knight" -> this.result.setType(UnitType.KNIGHT);
@@ -56,7 +57,7 @@ public class UnitBuilder implements IUnitBuilder {
     }
 
     @Override
-    public void setCommandList(List<String> commands) {
+    public void setCommandList(@NotNull List<String> commands) {
         List<UnitCommands> unitCommandList = new ArrayList<>();
         for (String c : commands) {
             switch (c) {

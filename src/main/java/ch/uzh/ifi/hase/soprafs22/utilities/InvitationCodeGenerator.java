@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.utilities;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.SecureRandom;
@@ -23,7 +24,7 @@ public class InvitationCodeGenerator {
             return restTemplate.getForObject(url, byte[].class);
     }
 
-    private static String getAlphanumeric() {
+    private static @NotNull String getAlphanumeric() {
         //set limits for including only alphanumeric values
         int lowerLimit = 48;
         int upperLimit = 123;
@@ -38,7 +39,7 @@ public class InvitationCodeGenerator {
                 .toString().toUpperCase();
     }
 
-    public static String getAlphanumericIdCode(Long id) {
+    public static @NotNull String getAlphanumericIdCode(@NotNull Long id) {
         String alphaNumericPart = getAlphanumeric();
         return id.toString()+"-"+alphaNumericPart;
     }
