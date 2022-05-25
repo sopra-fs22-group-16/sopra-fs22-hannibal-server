@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22;
 import ch.uzh.ifi.hase.soprafs22.service.UserPropsService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,9 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Value("${api.version}")
+    private String apiVersion;
+    
     @Override
     protected void configure(@NotNull HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
@@ -43,9 +47,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.applyPermitDefaultValues();
-        source.registerCorsConfiguration("/api/**", configuration);
-        source.registerCorsConfiguration("/auth/*", configuration);
-        source.registerCorsConfiguration("/login", configuration);
+        source.registerCorsConfiguration("/"+apiVersion+"/**", configuration);
+        source.registerCorsConfiguration("/"+apiVersion+"/*", configuration);
+        source.registerCorsConfiguration("/v1/*", configuration);
+        source.registerCorsConfiguration("/v1/*", configuration);
         return source;
     }
 
