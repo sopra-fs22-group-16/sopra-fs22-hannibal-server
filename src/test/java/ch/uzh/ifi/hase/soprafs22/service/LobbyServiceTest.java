@@ -7,10 +7,19 @@ import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalMatchers.and;
+import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.ArgumentMatchers.eq;
 
 class LobbyServiceTest {
 
@@ -19,9 +28,9 @@ class LobbyServiceTest {
     private final LobbyService lobbyService;
 
     public LobbyServiceTest() {
-        lobbyManager = Mockito.mock(LobbyManager.class);
+        this.lobbyManager = Mockito.mock(LobbyManager.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
-        lobbyService = new LobbyService(userRepository, lobbyManager);
+        this.lobbyService = new LobbyService(userRepository, lobbyManager);
     }
 
     @Test

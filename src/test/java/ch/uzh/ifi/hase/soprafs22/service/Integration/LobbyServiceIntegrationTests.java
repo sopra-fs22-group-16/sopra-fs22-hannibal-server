@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service.Integration;
 
+import ch.uzh.ifi.hase.soprafs22.exceptions.PlayerNotFoundException;
 import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
@@ -8,18 +9,22 @@ import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SmallestIdNotCreatableException;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,10 +36,15 @@ class LobbyServiceIntegrationTests {
     @Autowired
     private LobbyService lobbyService;
 
+    @Qualifier("registeredUserRepository")
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     public void setup() {
         // Clear lobbyManager
         LobbyManager.getInstance().clear();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -47,6 +57,68 @@ class LobbyServiceIntegrationTests {
 
         // testUser
         ILobby createdLobby = lobbyService.createLobby("", lobbyName, visibility, gameMode, gameType);
+
+        assertEquals(0L, createdLobby.getId());
+        assertEquals(lobbyName, createdLobby.getName());
+        assertEquals(gameMode, createdLobby.getGameMode());
+        assertEquals(gameType, createdLobby.getGameType());
+        assertNotNull(createdLobby.getHost());
+        assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
+        assertNotNull(createdLobby.getHost().getTeam());
+
+    }
+
+    @Test
+    void createLobby_registeredUser_validInputs_success() throws PlayerNotFoundException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("registeredUser");
+        registeredUser.setPassword("password");
+        registeredUser.setToken(UUID.randomUUID().toString());
+
+        userRepository.saveAndFlush(registeredUser);
+
+        // testUser
+        ILobby createdLobby = lobbyService.createLobby(registeredUser.getToken(), lobbyName, visibility, gameMode, gameType);
+
+        assertEquals(0L, createdLobby.getId());
+        assertEquals(lobbyName, createdLobby.getName());
+        assertEquals(gameMode, createdLobby.getGameMode());
+        assertEquals(gameType, createdLobby.getGameType());
+        assertNotNull(createdLobby.getHost());
+        assertEquals(createdLobby.getHost(), createdLobby.iterator().next());
+        assertNotNull(createdLobby.getHost().getTeam());
+
+        RegisteredUser savedUser = createdLobby.getPlayer(registeredUser.getToken()).getRegisteredUser();
+        assertEquals(registeredUser.getUsername(), savedUser.getUsername());
+        assertEquals(registeredUser.getPassword(), savedUser.getPassword());
+        assertEquals(registeredUser.getRankedScore(), savedUser.getRankedScore());
+        assertEquals(registeredUser.getWins(), savedUser.getWins());
+        assertEquals(registeredUser.getLosses(), savedUser.getLosses());
+    }
+
+    @Test
+    void createRankedLobby_registeredUser_validInputs_success() {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.RANKED;
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("registeredUser");
+        registeredUser.setPassword("password");
+        registeredUser.setToken(UUID.randomUUID().toString());
+
+        userRepository.saveAndFlush(registeredUser);
+
+        // testUser
+        ILobby createdLobby = lobbyService.createLobby(registeredUser.getToken(), lobbyName, visibility, gameMode, gameType);
 
         assertEquals(0L, createdLobby.getId());
         assertEquals(lobbyName, createdLobby.getName());
@@ -249,6 +321,36 @@ class LobbyServiceIntegrationTests {
         assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
         assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
         assertEquals(createdLobby.getGameType(), GameType.UNRANKED);
+    }
+
+    @Test
+    void updateToRankedLobby_name_visibility_gameMode_gameType_success() throws SmallestIdNotCreatableException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.UNRANKED;
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("registeredUser");
+        registeredUser.setPassword("password");
+        registeredUser.setToken(UUID.randomUUID().toString());
+
+        userRepository.saveAndFlush(registeredUser);
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, registeredUser);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+        Long id = createdLobby.getId();
+
+        lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED);
+
+        assertEquals(createdLobby.getId(), id);
+        assertEquals(createdLobby.getName(), "newLobbyName");
+        assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
+        assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
+        assertEquals(createdLobby.getGameType(), GameType.RANKED);
     }
 
     @Test
@@ -671,5 +773,45 @@ class LobbyServiceIntegrationTests {
         // check that the number of players has been reduced to the maximum capacity
         assertEquals(createdLobby.getNumberOfPlayers(), createdLobby.getLobbyCapacity());
 
+    }
+
+    @Test
+    void joinRankedLobby_registeredUser_success() throws SmallestIdNotCreatableException, PlayerNotFoundException {
+        // given
+        String lobbyName = "lobbyName";
+        Visibility visibility = Visibility.PRIVATE;
+        GameMode gameMode = GameMode.ONE_VS_ONE;
+        GameType gameType = GameType.RANKED;
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("registeredUser");
+        registeredUser.setPassword("password");
+        registeredUser.setToken(UUID.randomUUID().toString());
+
+        userRepository.saveAndFlush(registeredUser);
+
+        // create lobby
+        ILobby createdLobby = LobbyManager.getInstance().createLobby(lobbyName, visibility, registeredUser);
+        createdLobby.setGameMode(gameMode);
+        createdLobby.setGameType(gameType);
+
+        // Create a second registered user
+
+        RegisteredUser registeredUser2 = new RegisteredUser();
+        registeredUser2.setUsername("registeredUser2");
+        registeredUser2.setPassword("password2");
+        registeredUser2.setToken(UUID.randomUUID().toString());
+
+        userRepository.saveAndFlush(registeredUser2);
+
+        lobbyService.addPlayer(createdLobby.getInvitationCode(), createdLobby.getId(), registeredUser2.getToken());
+
+        assertEquals(2, createdLobby.getNumberOfPlayers());
+        RegisteredUser savedUser = createdLobby.getPlayer(registeredUser2.getToken()).getRegisteredUser();
+        assertEquals(registeredUser2.getUsername(), savedUser.getUsername());
+        assertEquals(registeredUser2.getPassword(), savedUser.getPassword());
+        assertEquals(registeredUser2.getRankedScore(), savedUser.getRankedScore());
+        assertEquals(registeredUser2.getWins(), savedUser.getWins());
+        assertEquals(registeredUser2.getLosses(), savedUser.getLosses());
     }
 }
