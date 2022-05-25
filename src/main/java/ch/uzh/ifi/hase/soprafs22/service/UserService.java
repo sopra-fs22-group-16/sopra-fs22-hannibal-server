@@ -171,10 +171,7 @@ public class UserService {
             return (RegisteredUser) authentication.getPrincipal();
         }
         catch (BadCredentialsException e) {
-            throwResponseStatusException(HttpStatus.NOT_FOUND, "The username provided does not exist.", ACCESSED);
-        }
-        catch (AuthenticationException e) {
-            throwResponseStatusException(HttpStatus.UNAUTHORIZED, "The password provided is not correct.", ACCESSED);
+            throwResponseStatusException(HttpStatus.NOT_FOUND, "The credentials provided are not correct.", ACCESSED);
         }
         return userInput;
     }
