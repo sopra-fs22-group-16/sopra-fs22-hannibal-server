@@ -43,13 +43,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
 
 
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOriginPatterns(List.of(ORIGIN_LOCALHOST, ORIGIN_PROD));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setAllowedOrigins(List.of(ORIGIN_LOCALHOST, ORIGIN_PROD));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.applyPermitDefaultValues();
@@ -57,7 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/"+apiVersion+"/*", configuration);
         source.registerCorsConfiguration("/v1/*", configuration);
         source.registerCorsConfiguration("/v1/*", configuration);
-        source.registerCorsConfiguration("/hannibal-websocket/*", configuration);
+        source.registerCorsConfiguration("/hannibal-websocket/**", configuration);
         return source;
     }
 
