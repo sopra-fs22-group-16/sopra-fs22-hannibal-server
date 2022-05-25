@@ -28,7 +28,7 @@ class LobbyManagerCreateTest {
     void createLobby_emptyLobbyList() {
         try {
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName", Visibility.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName", Visibility.PRIVATE, null);
 
             // Assert that
             assertEquals(0L, lobby.getId());
@@ -45,10 +45,10 @@ class LobbyManagerCreateTest {
     void createLobby_idIncreases() {
         try {
             // Fill lobby list
-            lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
+            lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE, null);
 
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName2", Visibility.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName2", Visibility.PRIVATE, null);
 
             // Assert that
             assertEquals(1L, lobby.getId());
@@ -65,15 +65,15 @@ class LobbyManagerCreateTest {
     void createLobby_notContinuousIds_inList() {
         try {
             // Fill lobby list
-            lobbyManager.createLobby("lobbyName0", Visibility.PRIVATE); // id = 0
-            ILobby lobby1 = lobbyManager.createLobby("lobbyName1", Visibility.PRIVATE); // id = 1
-            lobbyManager.createLobby("lobbyName2", Visibility.PRIVATE); // id = 2
+            lobbyManager.createLobby("lobbyName0", Visibility.PRIVATE, null); // id = 0
+            ILobby lobby1 = lobbyManager.createLobby("lobbyName1", Visibility.PRIVATE, null); // id = 1
+            lobbyManager.createLobby("lobbyName2", Visibility.PRIVATE, null); // id = 2
 
             // Remove lobby1 to generate non-continuous lobby list
             lobbyManager.removeLobbyWithId(lobby1.getId());
 
             // Create a new lobby
-            ILobby lobby = lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE);
+            ILobby lobby = lobbyManager.createLobby("LobbyName1", Visibility.PRIVATE, null);
 
             // Assert that
             assertEquals(1L, lobby.getId());
@@ -90,7 +90,7 @@ class LobbyManagerCreateTest {
     void removeLobbyWithId_removed() {
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE, null); // id = 0
 
             // Remove from lobby list
             lobbyManager.removeLobbyWithId(lobby.getId());
@@ -109,7 +109,7 @@ class LobbyManagerCreateTest {
     void getLobbyWithId() {
         try {
             // Fill lobby list
-            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE); // id = 0
+            ILobby lobby = lobbyManager.createLobby("lobbyName", Visibility.PRIVATE, null); // id = 0
 
             // Remove from lobby list
             ILobby result = lobbyManager.getLobbyWithId(lobby.getId());

@@ -99,7 +99,7 @@ public class LobbyService {
 
         // Try to create a new lobby
         try {
-            newLobby = lobbyManager.createLobby(lobbyName, visibility);
+            newLobby = lobbyManager.createLobby(lobbyName, visibility, registeredUser);
         }
         catch (SmallestIdNotCreatableException e) {
             String errorMessage = "The server could not generate a unique id";
@@ -109,11 +109,6 @@ public class LobbyService {
         // Set the gameType and gameMode of the lobby
         newLobby.setGameMode(gameMode);
         newLobby.setGameType(gameType);
-
-        // Link the host to the registered user
-        if (registeredUser != null) {
-            newLobby.getHost().linkRegisteredUser(registeredUser);
-        }
 
         return newLobby;
     }

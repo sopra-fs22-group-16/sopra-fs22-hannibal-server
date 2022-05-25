@@ -9,8 +9,10 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -29,13 +31,17 @@ public class Lobby implements ILobby {
     private byte[] qrCode;
     private Random random;
 
-    public Lobby(Long id, String name, Visibility visibility) {
+    public Lobby(Long id, String name, Visibility visibility, RegisteredUser registeredUserAsHost) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
         this.playerMap = new HashMap<>();
         // Generate the host player
         this.host = generatePlayer();
+        // Link the host if the registered user is set
+        if (registeredUserAsHost != null) {
+            host.linkRegisteredUser(registeredUserAsHost);
+        }
         playerMap.put(host.getToken(), host);
         this.random = new Random();
     }
@@ -288,7 +294,7 @@ public class Lobby implements ILobby {
      * @throws FullLobbyException If the lobby is already full
      */
     @Override
-    public IPlayer addPlayer(IPlayer player) throws FullLobbyException, LobbyNameConflictException {
+    public @Nullable IPlayer addPlayer(IPlayer player) throws FullLobbyException, LobbyNameConflictException {
         IPlayer playerWithNameConflict = null;
         for(IPlayer lobbyPlayer : playerMap.values()){
             // Check if there is a name conflict

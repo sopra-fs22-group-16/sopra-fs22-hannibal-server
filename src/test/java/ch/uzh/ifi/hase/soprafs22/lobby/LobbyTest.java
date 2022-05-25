@@ -11,8 +11,6 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import org.junit.jupiter.api.Test;
 
 
-import java.util.Iterator;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class LobbyTest {
@@ -20,7 +18,7 @@ class LobbyTest {
     @Test
     void createLobby_hostSet() {
         // Create new lobby
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
 
         // Check
         IPlayer host = lobby.getHost();
@@ -31,7 +29,7 @@ class LobbyTest {
     @Test
     void createLobby_hostInformationSet() {
         // Create new lobby
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
 
         // Check
         IPlayer host = lobby.getHost();
@@ -44,7 +42,7 @@ class LobbyTest {
 
     @Test
     void updateLobbyPlayer_userName_OK() throws Exception {
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         IPlayer host = lobby.getHost();
 
         lobby.setUserName(host.getToken(), "new username");
@@ -55,7 +53,7 @@ class LobbyTest {
     @Test
     void updateLobbyPlayer_userNameDouble_OK() throws Exception {
         // Test that old names are available for usage.
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         IPlayer host = lobby.getHost();
         String oldUsername = host.getName();
 
@@ -67,7 +65,7 @@ class LobbyTest {
 
     @Test
     void updateLobbyPlayer_ready_OK() throws Exception {
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         IPlayer host = lobby.getHost();
 
         lobby.setReady(host.getToken(), true);
@@ -77,14 +75,14 @@ class LobbyTest {
 
     @Test
     void updateLobbyPlayer_ready_notFound() {
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
 
         assertThrows(PlayerNotFoundException.class, () -> lobby.setReady("invalid token", true));
     }
 
     @Test
     void updateLobbyPlayer_userName_notFound() {
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
 
         assertThrows(PlayerNotFoundException.class, () -> lobby.setUserName("invalid token", "new username"));
     }
@@ -92,7 +90,7 @@ class LobbyTest {
 
     @Test
     void updateLobbyPlayer_userNameNotUnique_conflict() throws FullLobbyException, LobbyNameConflictException {
-        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         IPlayer host = lobby.getHost();
         IPlayer newPlayer = lobby.generatePlayer();
@@ -104,7 +102,7 @@ class LobbyTest {
     @Test
     void generatePlayer_generate_UniqueName() throws LobbyNameConflictException, FullLobbyException {
         // Create new lobby
-        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.TWO_VS_TWO);
 
         lobby.getHost().setName("Player-0");
@@ -127,7 +125,7 @@ class LobbyTest {
     @Test
     void addPlayer_resolveNameConflict() throws LobbyNameConflictException, FullLobbyException {
         // Create new lobby
-        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE);
+        Lobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.TWO_VS_TWO);
 
         lobby.getHost().setName("Player-0");

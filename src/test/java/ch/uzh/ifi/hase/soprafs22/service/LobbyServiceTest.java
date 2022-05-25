@@ -19,9 +19,9 @@ class LobbyServiceTest {
     private final LobbyService lobbyService;
 
     public LobbyServiceTest() {
-        lobbyManager = Mockito.mock(LobbyManager.class);
+        this.lobbyManager = Mockito.mock(LobbyManager.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
-        lobbyService = new LobbyService(userRepository, lobbyManager);
+        this.lobbyService = new LobbyService(userRepository, lobbyManager);
     }
 
     @Test
@@ -34,7 +34,7 @@ class LobbyServiceTest {
         GameType gameType = GameType.UNRANKED;
 
         // create lobby
-        ILobby createdLobby = new Lobby(id, lobbyName, visibility);
+        ILobby createdLobby = new Lobby(id, lobbyName, visibility, null);
         createdLobby.setGameMode(gameMode);
         createdLobby.setGameType(gameType);
         String hostToken = createdLobby.getHost().getToken();

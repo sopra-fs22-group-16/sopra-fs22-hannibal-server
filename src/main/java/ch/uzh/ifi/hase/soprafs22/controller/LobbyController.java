@@ -203,7 +203,7 @@ public class LobbyController {
     @ResponseBody
     public PlayerWithTokenGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
 
-        LobbyDelta lobbyDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, null);
+        LobbyDelta lobbyDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, token);
 
         IPlayer newPlayer = lobbyDelta.getNewPlayer();
 
