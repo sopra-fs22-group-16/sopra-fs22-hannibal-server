@@ -56,6 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/"+apiVersion+"/*", configuration);
         source.registerCorsConfiguration("/v1/*", configuration);
         source.registerCorsConfiguration("/v1/*", configuration);
+        source.registerCorsConfiguration("/hannibal-websocket/*", configuration);
         return source;
     }
 
