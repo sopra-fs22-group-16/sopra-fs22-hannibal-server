@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -38,12 +39,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.headers().frameOptions().disable();
     }
 
+    private static final String ORIGIN_LOCALHOST = "http://localhost:3000";
+    private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
+
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
-        configuration.addAllowedOrigin("*");
+        configuration.setAllowedOriginPatterns(List.of(ORIGIN_LOCALHOST, ORIGIN_PROD));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.applyPermitDefaultValues();
