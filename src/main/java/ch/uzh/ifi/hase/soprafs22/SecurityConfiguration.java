@@ -26,32 +26,12 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Value("${api.version}")
-    private String apiVersion;
-    
     @Override
-    protected void configure(@NotNull HttpSecurity httpSecurity) throws Exception {
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
-                .authorizeRequests().antMatchers("/console/**").permitAll()
-                .and().cors();
+                .authorizeRequests().antMatchers("/console/**").permitAll();
         httpSecurity.csrf().disable();
         httpSecurity.headers().frameOptions().disable();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.applyPermitDefaultValues();
-        source.registerCorsConfiguration("/"+apiVersion+"/**", configuration);
-        source.registerCorsConfiguration("/"+apiVersion+"/*", configuration);
-        source.registerCorsConfiguration("/v1/*", configuration);
-        source.registerCorsConfiguration("/v1/*", configuration);
-        return source;
     }
 
     @Bean
@@ -68,7 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Override
-    protected void configure(@NotNull AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(encoder());
         auth.userDetailsService(userDetailsService);
     }
