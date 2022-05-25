@@ -30,8 +30,6 @@ import java.util.*;
 @Transactional
 public class UserService {
 
-
-
     private final UserRepository userRepository;
 
     private static final String TOKEN = "token";
@@ -168,14 +166,14 @@ public class UserService {
     public RegisteredUser loginUser(@NotNull RegisteredUser userInput) {
         checkStringNotNullOrEmpty(userInput.getUsername(), "username", ACCESSED);
         checkStringNotNullOrEmpty(userInput.getPassword(), "password", ACCESSED);
-        try{
+        try {
             Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userInput, userInput.getPassword()));
             return (RegisteredUser) authentication.getPrincipal();
         }
-        catch (BadCredentialsException e){
+        catch (BadCredentialsException e) {
             throwResponseStatusException(HttpStatus.NOT_FOUND, "The username provided does not exist.", ACCESSED);
         }
-        catch (AuthenticationException e){
+        catch (AuthenticationException e) {
             throwResponseStatusException(HttpStatus.UNAUTHORIZED, "The password provided is not correct.", ACCESSED);
         }
         return userInput;
