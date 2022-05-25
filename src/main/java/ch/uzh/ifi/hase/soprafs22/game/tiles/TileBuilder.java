@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game.tiles;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Type;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.enums.Variant;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
+import org.jetbrains.annotations.NotNull;
 
 public class TileBuilder implements ITileBuilder {
     private final Tile result;
@@ -12,7 +13,7 @@ public class TileBuilder implements ITileBuilder {
     }
 
     @Override
-    public void setType(String tileType) {
+    public void setType(@NotNull String tileType) {
         switch (tileType) {
             case "border" -> this.result.setType(Type.BORDER);
             case "grass" -> this.result.setType(Type.GRASS);
@@ -23,7 +24,7 @@ public class TileBuilder implements ITileBuilder {
     }
 
     @Override
-    public void setVariant(String tileVariant) {
+    public void setVariant(@NotNull String tileVariant) {
         switch (tileVariant) {
             case "flat" -> this.result.setVariant(Variant.FLAT);
             case "top" -> this.result.setVariant(Variant.TOP);

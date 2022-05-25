@@ -11,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -168,7 +169,7 @@ public class LobbyService {
         }
     }
 
-    public void updateLobby(ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
+    public void updateLobby(@NotNull ILobby lobby, String token, String lobbyName, Visibility visibility, GameMode gameMode, GameType gameType) {
         checkStringConfigNullOrEmpty(token, TOKEN, UPDATED);
         if (!token.equals(lobby.getHost().getToken())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the host of the lobby.");
@@ -211,7 +212,7 @@ public class LobbyService {
         }
     }
 
-    public List<Long> checkPlayersInLobby(ILobby lobby) {
+    public List<Long> checkPlayersInLobby(@NotNull ILobby lobby) {
         int numberPlayers = lobby.getNumberOfPlayers();
         if (lobby.getLobbyCapacity() < numberPlayers) {
             List<Long> removedPlayerList = lobby.reducePlayersInLobby();
@@ -298,7 +299,7 @@ public class LobbyService {
         return lobby.getGame();
     }
 
-    private void checkStringConfigNullOrEmpty(String s, String fieldName, String errorMessageEnding) {
+    private void checkStringConfigNullOrEmpty(String s, @NotNull String fieldName, String errorMessageEnding) {
         if (fieldName.equals(TOKEN)) {
             if (s == null || s.isEmpty()) {
                 String errorMessage = "The user needs to provide authentication to retrieve lobby information."
@@ -315,7 +316,7 @@ public class LobbyService {
         }
     }
 
-    private void checkUserIsInLobby(ILobby lobby, String token, String errorMessageEnding) {
+    private void checkUserIsInLobby(@NotNull ILobby lobby, String token, String errorMessageEnding) {
         // Check if user is in lobby
         for (IPlayer player : lobby) {
             // If tokens match return true
@@ -334,7 +335,7 @@ public class LobbyService {
         }
     }
 
-    private ILobby getLobbyByIdElseThrowNotFound(long lobbyId) {
+    private @NotNull ILobby getLobbyByIdElseThrowNotFound(long lobbyId) {
         ILobby lobby = lobbyManager.getLobbyWithId(lobbyId);
         // Check if lobby exists else throw an error
         if (lobby == null) {

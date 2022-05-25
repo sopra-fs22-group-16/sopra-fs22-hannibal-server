@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.PositionDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.UnitAttackPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
@@ -56,6 +57,9 @@ class GameControllerTest {
 
     @MockBean
     private GameService gameService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     @MockBean
     SimpMessagingTemplate socketMessage;

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game.units;
 
 import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IUnitBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ public class UnitDirector {
         this.unitBuilder = unitBuilder;
     }
 
-    public void make(Map<String, Object> unitStream, int column, int row) {
+    public void make(@NotNull Map<String, Object> unitStream, int column, int row) {
         this.unitBuilder.setType((String) unitStream.get("type"));
         this.unitBuilder.setHealth((int) unitStream.get("health"));
         this.unitBuilder.setMaxHealth((int) unitStream.get("maxHealth"));

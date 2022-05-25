@@ -14,6 +14,8 @@ import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -198,7 +200,7 @@ public class Game {
         return new GameDelta(checkNextTurn(token), getGameOverInfo(), surrenderInfo);
     }
 
-    private TurnInfo checkNextTurn(String token){
+    private @Nullable TurnInfo checkNextTurn(String token){
         return haveAllUnitsOfPlayerMoved(token) && resetUnitsFromPreviousTurn(token) ? nextTurn() : null;
     }
 
@@ -228,7 +230,7 @@ public class Game {
                 .orElse(null);
     }
 
-    private void ensureWithinRange(Position position) throws TileOutOfRangeException {
+    private void ensureWithinRange(@NotNull Position position) throws TileOutOfRangeException {
         List<List<Tile>> tiles = this.gameMap.getTiles();
         // NOTE that X and Y are reversed in the tiles!! it is tiles[y][x], not tiles[x][y]
         int yRange = tiles.size();
@@ -239,7 +241,7 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    private GameOverInfo getGameOverInfo() {
+    private @Nullable GameOverInfo getGameOverInfo() {
         if (running)
             return null;
         Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
