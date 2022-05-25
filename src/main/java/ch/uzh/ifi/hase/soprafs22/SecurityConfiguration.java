@@ -28,15 +28,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(@NotNull HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
-                .authorizeRequests().antMatchers("/console/**").permitAll();
+                .authorizeRequests().antMatchers("/console/**").permitAll()
+                .and().cors();
         httpSecurity.csrf().disable();
         httpSecurity.headers().frameOptions().disable();
-
-        httpSecurity.cors().and()
-                .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .anyRequest().authenticated()
-                .and().csrf().disable();
     }
 
     @Bean
