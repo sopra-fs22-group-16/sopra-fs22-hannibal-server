@@ -19,8 +19,8 @@ public class Socket implements WebSocketMessageBrokerConfigurer{
 
     private static final String WEBSOCKET_PREFIX = "/topic";
     private static final String WEBSOCKET_SUFFIX = "/hannibal-websocket";
-    private static final String ORIGIN_LOCALHOST = "http://localhost:3000";
-    private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com";
+    private static final String ORIGIN_LOCALHOST = "http://localhost:3000/**";
+    private static final String ORIGIN_PROD = "https://sopra-fs22-group-16-client.herokuapp.com/**";
 
     @Override
     public void configureMessageBroker(@NotNull MessageBrokerRegistry config) {
@@ -30,7 +30,7 @@ public class Socket implements WebSocketMessageBrokerConfigurer{
     @Override
     public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
         registry.addEndpoint(WEBSOCKET_SUFFIX)
-                .setAllowedOrigins(ORIGIN_LOCALHOST,ORIGIN_PROD)
+                .setAllowedOriginPatterns(ORIGIN_LOCALHOST,ORIGIN_PROD)
                 .withSockJS();
     }
 }
