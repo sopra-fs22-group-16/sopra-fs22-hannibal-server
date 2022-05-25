@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class GameService {
         this.lobbyManager = LobbyManager.getInstance();
     }
 
-    private Game getGameById(Long id) throws GameNotFoundException {
+    private @NotNull Game getGameById(Long id) throws GameNotFoundException {
         Game game = lobbyManager.getLobbyWithId(id).getGame();
         if (game == null) {
             throw new GameNotFoundException(id);
@@ -51,7 +52,7 @@ public class GameService {
     /**
      * Returns the list of units whose health got affected by the attack.
      */
-    public GameDelta unitAttack(Long id, String token, AttackCommand attackCommand) {
+    public GameDelta unitAttack(Long id, String token, @NotNull AttackCommand attackCommand) {
         try {
             Position attacker = attackCommand.getAttacker();
             Position attackerDestination = attackCommand.getAttackerDestination();
@@ -90,7 +91,7 @@ public class GameService {
         }
     }
 
-    public GameDelta unitMove(Long id, String token, MoveCommand moveCommand) {
+    public GameDelta unitMove(Long id, String token, @NotNull MoveCommand moveCommand) {
         try {
             Position start = moveCommand.getStart();
             Position destination = moveCommand.getDestination();

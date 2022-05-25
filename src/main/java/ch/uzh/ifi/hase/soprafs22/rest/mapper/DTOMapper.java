@@ -19,6 +19,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitMoveDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.GameDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UnitHealthDTO;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
+import org.jetbrains.annotations.NotNull;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -47,7 +48,7 @@ public abstract class DTOMapper {
     @Mapping(source = "registeredUser", target = "registered")
     public abstract PlayerGetDTO convertIPlayerToPlayerGetDTO(IPlayer player);
 
-    protected int convertTeamToTeamNumber(Team team) {
+    protected int convertTeamToTeamNumber(@NotNull Team team) {
         return team.ordinal();
     }
 
@@ -70,7 +71,7 @@ public abstract class DTOMapper {
         return lobbyGetDTO;
     }
 
-    public LobbyGetDTO convertILobbyToLobbyGetDTO(ILobby lobby) {
+    public LobbyGetDTO convertILobbyToLobbyGetDTO(@NotNull ILobby lobby) {
         LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
         lobbyGetDTO.setId(lobby.getId());
         lobbyGetDTO.setName(lobby.getName());
@@ -114,7 +115,7 @@ public abstract class DTOMapper {
     @Mapping(source = "moved", target = "moved")
     public abstract UnitGetDTO convertUnitToUnitGetDTO(Unit unit);
 
-    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(Map<String, PlayerDecorator> playerMap) {
+    protected List<UnitGetDTO> convertPlayerMapToUnitGetDTO(@NotNull Map<String, PlayerDecorator> playerMap) {
         List<UnitGetDTO> units = new ArrayList<>();
         for (PlayerDecorator pd : playerMap.values()) {
             for (Unit u : pd.getUnits()) {
@@ -128,11 +129,11 @@ public abstract class DTOMapper {
     @Mapping(source = "y", target = "y")
     public abstract PositionDTO convertPositionToPositionDTO(Position position);
 
-    protected Position convertPositionDTOToPosition(PositionDTO position) {
+    protected Position convertPositionDTOToPosition(@NotNull PositionDTO position) {
         return new Position(position.getX(), position.getY());
     }
 
-    protected Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(Map<String, PlayerDecorator> playerMap) {
+    protected Map<Long, PlayerGetDTO> convertTokenPlayerMapToIdPlayerGetDTOMap(@NotNull Map<String, PlayerDecorator> playerMap) {
         Map<Long, PlayerGetDTO> newPlayerMap = new HashMap<>();
         for (IPlayer player : playerMap.values()) {
             newPlayerMap.put(player.getId(), convertIPlayerToPlayerGetDTO(player));
@@ -143,14 +144,14 @@ public abstract class DTOMapper {
     @Mapping(source = "attacker", target = "attacker")
     @Mapping(source = "defender", target = "defender")
     @Mapping(source = "attackerDestination", target = "attackerDestination")
-    public AttackCommand convertUnitAttackPutDTOToAttackCommand(UnitAttackPutDTO unitAttackPutDTO) {
+    public AttackCommand convertUnitAttackPutDTOToAttackCommand(@NotNull UnitAttackPutDTO unitAttackPutDTO) {
         Position attacker = convertPositionDTOToPosition(unitAttackPutDTO.getAttacker());
         Position defender = convertPositionDTOToPosition(unitAttackPutDTO.getDefender());
         Position attackerDestination = convertPositionDTOToPosition(unitAttackPutDTO.getAttackerDestination());
         return new AttackCommand(attacker, defender, attackerDestination);
     }
 
-    public MoveCommand convertUnitMovePutDTOToMoveCommand(UnitMoveDTO unitMoveDTO) {
+    public MoveCommand convertUnitMovePutDTOToMoveCommand(@NotNull UnitMoveDTO unitMoveDTO) {
         Position start = convertPositionDTOToPosition(unitMoveDTO.getStart());
         Position destination = convertPositionDTOToPosition(unitMoveDTO.getDestination());
         return new MoveCommand(start, destination);
@@ -175,7 +176,7 @@ public abstract class DTOMapper {
         return unitHealthsList;
     }
 
-    public final GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(IGameStatistics gameStatistics) {
+    public final @NotNull GameStatisticsGetDTO convertIGameStatisticsToGameStatisticsGetDTO(@NotNull IGameStatistics gameStatistics) {
         // Mapper does not map methods to attributes. Instead, it only maps attributes to attributes
         GameStatisticsGetDTO gameStatisticsGetDTO = new GameStatisticsGetDTO();
         gameStatisticsGetDTO.setUnitsPerPlayer(gameStatistics.unitsPerPlayer());
@@ -214,7 +215,7 @@ public abstract class DTOMapper {
     @Mapping(source = "token", target = "token")
     public abstract UserLoginGetDTO convertRegisteredUserToUserLoginGetDTO(RegisteredUser registeredUser);
 
-    public RegisteredUserPageGetDTO convertToRegisteredUserPageGetDTO(int perPage, long totalRegisteredUsers, List<RegisteredUser> registeredUsers) {
+    public RegisteredUserPageGetDTO convertToRegisteredUserPageGetDTO(int perPage, long totalRegisteredUsers, @NotNull List<RegisteredUser> registeredUsers) {
         List<RegisteredUserGetDTO> registeredUserGetDTOList = new LinkedList<>();
         for (RegisteredUser user : registeredUsers) {
             registeredUserGetDTOList.add(DTOMapper.INSTANCE.convertRegisteredUserToRegisteredUserGetDTO(user));

@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game.tiles;
 
 import ch.uzh.ifi.hase.soprafs22.game.tiles.interfaces.ITileBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class TileDirector {
         this.tileBuilder = tileBuilder;
     }
 
-    public void make(Map<String, Object> tile) {
+    public void make(@NotNull Map<String, Object> tile) {
         tileBuilder.setType((String) tile.get("type"));
         tileBuilder.setVariant((String) tile.get("variant"));
         tileBuilder.setTraversability((Boolean) tile.get("traversable"));

@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.game;
 
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,7 @@ public class Turn {
     private int turnNumber = 0;
     private int turnIndex = 0;
 
-    public Turn(Collection<PlayerDecorator> players) {
+    public Turn(@NotNull Collection<PlayerDecorator> players) {
         List<PlayerDecorator> redPlayers = players.stream().filter(player -> player.getTeam() == Team.RED).collect(Collectors.toList());
         List<PlayerDecorator> bluePlayers = players.stream().filter(player -> player.getTeam() == Team.BLUE).collect(Collectors.toList());
         List<PlayerDecorator> turnOrder = new ArrayList<>();

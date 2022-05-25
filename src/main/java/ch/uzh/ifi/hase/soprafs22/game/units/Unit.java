@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.game.player.interfaces.IObserver;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitCommands;
 import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IObservable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +142,7 @@ public class Unit implements IObservable {
         this.moved = moved;
     }
 
-    private boolean inAttackRange(Unit attacker, Unit target){
+    private boolean inAttackRange(@NotNull Unit attacker, @NotNull Unit target){
         int distance = Math.abs(target.getPosition().getX()-attacker.getPosition().getX())
                 + Math.abs(target.getPosition().getY()-attacker.getPosition().getY());
 

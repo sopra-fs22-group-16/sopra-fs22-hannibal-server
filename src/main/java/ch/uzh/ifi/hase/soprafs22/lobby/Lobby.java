@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.utilities.InvitationCodeGenerator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -69,7 +70,7 @@ public class Lobby implements ILobby {
     }
 
     @Override
-    public void setGameMode(GameMode gameMode) {
+    public void setGameMode(@NotNull GameMode gameMode) {
         this.gameMode = gameMode;
         this.lobbyCapacity = gameMode.getMaxNumbersOfPlayers();
     }
