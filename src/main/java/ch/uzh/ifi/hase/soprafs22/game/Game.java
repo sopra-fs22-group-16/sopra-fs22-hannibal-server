@@ -9,11 +9,13 @@ import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.maps.GameMap;
 import ch.uzh.ifi.hase.soprafs22.game.maps.MapLoader;
 import ch.uzh.ifi.hase.soprafs22.game.maps.UnitsLoader;
+import ch.uzh.ifi.hase.soprafs22.game.player.BasePlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.tiles.Tile;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,8 +213,10 @@ public class Game {
         boolean blueUnitAlive = getAllPlayersThat(player -> player.getTeam() == BLUE)
                 .flatMap(player -> player.getUnits().stream())
                 .anyMatch(unit -> unit.getHealth() > 0);
-        running = blueUnitAlive  && redUnitAlive;
+        if((!blueUnitAlive  || !redUnitAlive)) endGame();
     }
+
+
 
     private boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
@@ -241,14 +245,87 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
+    private void endGame(){
+        if(this.running){
+            running = false;
+            if(gameType == GameType.RANKED) {
+                updateRegisteredUserScore();
+            }
+        }
+    }
+
+
+    private void updateRegisteredUserScore(){
+        Optional<Team> winnerTeam = getWinnerTeam();
+        // Check that it is not a draw then update ranked score
+        if (winnerTeam.isPresent()) {
+
+            int minRsRed = Integer.MAX_VALUE;
+            int maxRsRed = 0;
+
+            int minRsBlue = Integer.MAX_VALUE;
+            int maxRsBlue = 0;
+
+            // Get highest and lowest rankedScore in each team
+            for(PlayerDecorator player: decoratedPlayers.values()){
+                RegisteredUser registeredUser = player.getRegisteredUser();
+                if(player.getTeam() == Team.RED){
+                    if(registeredUser.getRankedScore() > maxRsRed){
+                        maxRsRed = registeredUser.getRankedScore();
+                    }
+                    if(registeredUser.getRankedScore() < minRsRed){
+                        minRsRed = registeredUser.getRankedScore();
+                    }
+                }else if(player.getTeam() == Team.BLUE){
+                    if(registeredUser.getRankedScore() > maxRsBlue){
+                        maxRsBlue = registeredUser.getRankedScore();
+                    }
+                    if(registeredUser.getRankedScore() < minRsBlue){
+                        minRsBlue = registeredUser.getRankedScore();
+                    }
+                }
+            }
+
+            float rankedScoreMaxChange = 100.0f;
+            float fallOffVariable = 1000.0f;
+            float maxDifference = Math.max(maxRsBlue-minRsRed, maxRsRed-minRsBlue);
+            // Function that falls of to 0, and after maxDifference/1000.0f > |0.5PI| returns 0
+            // if rankedDifference = 0 return rankedScoreMaxChange
+            int rankedScoreChange = (int) (Math.cos(Math.max(Math.min(maxDifference/fallOffVariable, 0.5*Math.PI), 0.5*(-Math.PI)))*rankedScoreMaxChange);
+
+            for(PlayerDecorator player: decoratedPlayers.values()){
+                RegisteredUser registeredUser = player.getRegisteredUser();
+                if(player.getTeam() == winnerTeam.get()){
+                    registeredUser.setWins(registeredUser.getWins() + 1);
+
+                    registeredUser.setRankedScore(registeredUser.getRankedScore() + rankedScoreChange);
+                }else{
+                    registeredUser.setLosses(registeredUser.getLosses() + 1);
+                    int newRankedScore = registeredUser.getRankedScore() - rankedScoreChange;
+                    registeredUser.setRankedScore(Math.max(newRankedScore, 0));
+                }
+            }
+        }
+    }
+
+    private Optional<Team> getWinnerTeam (){
+        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
+        return playerWithUnits.map(BasePlayerDecorator::getTeam);
+    }
+
     private @Nullable GameOverInfo getGameOverInfo() {
         if (running)
             return null;
-        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
-        Team winnerTeam = playerWithUnits.get().getTeam();
-        List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam)).map(PlayerDecorator::getId).collect(Collectors.toList());
-        return new GameOverInfo(winners);
+        Optional<Team> winnerTeam = getWinnerTeam();
+        if(winnerTeam.isPresent()){
+            List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam.get())).map(PlayerDecorator::getId).collect(Collectors.toList());
+            return new GameOverInfo(winners);
+        }else{
+            //TODO: Handle draw
+            return null;
+        }
     }
+
 
     private Stream<PlayerDecorator> getAllPlayersThat(Predicate<PlayerDecorator> predicate) {
         return this.decoratedPlayers.values().stream().filter(predicate);

@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -30,22 +29,19 @@ public class RegisteredUser implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "logged_in", nullable = false)
-    private boolean loggedIn;
-
     @CreationTimestamp
     @Temporal(TemporalType.DATE)
     @Column(name = "creation_date")
     private Date creationDate;
 
     @Column(columnDefinition = "integer default 1000")
-    private int rankedScore;
+    private int rankedScore = 1000;
 
     @Column(columnDefinition = "integer default 0")
-    private int wins;
+    private int wins = 0;
 
     @Column(columnDefinition = "integer default 0")
-    private int losses;
+    private int losses = 0;
 
     public RegisteredUser(String username, String password) {
         this.username = username;
@@ -138,9 +134,5 @@ public class RegisteredUser implements UserDetails {
 
     public Date getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 }

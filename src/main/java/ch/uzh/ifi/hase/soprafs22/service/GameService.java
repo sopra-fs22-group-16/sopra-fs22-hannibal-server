@@ -2,11 +2,14 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.exceptions.*;
 import ch.uzh.ifi.hase.soprafs22.game.*;
+import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
+import ch.uzh.ifi.hase.soprafs22.game.player.PlayerDecorator;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @Transactional
 public class GameService {
+
+    private final UserRepository userRepository;
+
     private ILobbyManager lobbyManager;
     private static final String NOT_PLAYERS_TURN = "Not player's turn";
     private static final String TILE = "Tile ";
@@ -37,7 +43,8 @@ public class GameService {
     private static final String DOES_NOT_BELONG_TO_THE_PLAYER = " does not belong to the player.";
 
     @Autowired
-    public GameService() {
+    public GameService(UserRepository userRepository) {
+        this.userRepository = userRepository;
         this.lobbyManager = LobbyManager.getInstance();
     }
 
@@ -57,7 +64,19 @@ public class GameService {
             Position attacker = attackCommand.getAttacker();
             Position attackerDestination = attackCommand.getAttackerDestination();
             Position defender = attackCommand.getDefender();
-            return getGameById(id).unitAttack(token, attacker, attackerDestination, defender);
+
+            Game game = getGameById(id);
+            GameDelta gameDelta = game.unitAttack(token, attacker, attackerDestination, defender);
+            // If gameOver info is set (game has ended) and if it is a ranked game
+            // update the registered players
+            if(game.getGameType() == GameType.RANKED && gameDelta.getGameOverInfo() != null){
+                for(PlayerDecorator playerDecorator: game.getDecoratedPlayers().values()){
+                    userRepository.save(playerDecorator.getRegisteredUser());
+                }
+                userRepository.flush();
+            }
+
+            return gameDelta;
         }
         catch (NotPlayersTurnException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
@@ -125,7 +144,18 @@ public class GameService {
 
     public GameDelta surrender(Long id, String token) {
         try {
-            return getGameById(id).surrender(token);
+            Game game = getGameById(id);
+
+            GameDelta gameDelta = game.surrender(token);
+            // If gameOver info is set (game has ended) and if it is a ranked game
+            // update the registered players
+            if(game.getGameType() == GameType.RANKED && gameDelta.getGameOverInfo() != null){
+                for(PlayerDecorator playerDecorator: game.getDecoratedPlayers().values()){
+                    userRepository.save(playerDecorator.getRegisteredUser());
+                }
+                userRepository.flush();
+            }
+            return gameDelta;
         }
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
@@ -142,8 +172,10 @@ public class GameService {
     }
 
     // Only for testing
-    public void setLobbyManager(ILobbyManager lobbyManager) {
+    public ILobbyManager setLobbyManager(ILobbyManager lobbyManager) {
+        ILobbyManager temp = this.lobbyManager;
         this.lobbyManager = lobbyManager;
+        return temp;
     }
 
     public IGameStatistics getGameStats(Long id, String token) {
