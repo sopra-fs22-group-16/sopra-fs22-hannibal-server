@@ -19,7 +19,6 @@ import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -253,7 +252,7 @@ public class Game {
             if (gameType == GameType.RANKED) {
                 this.rankedScoreDeltas = new HashMap<>();
                 for (PlayerDecorator d : this.decoratedPlayers.values()) {
-                    this.rankedScoreDeltas.put(d.getId(), List.of(d.getRegisteredUser().getRankedScore()));
+                    this.rankedScoreDeltas.put(d.getId(), new ArrayList(Arrays.asList(d.getRegisteredUser().getRankedScore())));
                 }
                 updateRegisteredUserScore();
             }
@@ -311,9 +310,9 @@ public class Game {
                     int newRankedScore = registeredUser.getRankedScore() - rankedScoreChange;
                     registeredUser.setRankedScore(Math.max(newRankedScore, 0));
                 }
-                int previousRs = this.rankedScoreDeltas.get(registeredUser.getId()).get(0);
+                int previousRs = this.rankedScoreDeltas.get(player.getId()).get(0);
                 int rankedScoreDelta = registeredUser.getRankedScore() - previousRs;
-                this.rankedScoreDeltas.get(registeredUser.getId()).add(rankedScoreDelta);
+                this.rankedScoreDeltas.computeIfAbsent(player.getId(), k -> new ArrayList<>()).add(rankedScoreDelta);
             }
         }
     }
