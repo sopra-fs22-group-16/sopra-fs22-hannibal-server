@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -29,9 +28,6 @@ public class RegisteredUser implements UserDetails {
 
     @Column(nullable = false)
     private String password;
-
-    @Column(name = "logged_in", nullable = false)
-    private boolean loggedIn;
 
     @CreationTimestamp
     @Temporal(TemporalType.DATE)
@@ -138,9 +134,5 @@ public class RegisteredUser implements UserDetails {
 
     public Date getCreationDate() {
         return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 }
