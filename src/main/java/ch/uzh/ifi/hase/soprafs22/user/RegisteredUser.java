@@ -39,13 +39,13 @@ public class RegisteredUser implements UserDetails {
     private Date creationDate;
 
     @Column(columnDefinition = "integer default 1000")
-    private int rankedScore;
+    private int rankedScore = 1000;
 
     @Column(columnDefinition = "integer default 0")
-    private int wins;
+    private int wins = 0;
 
     @Column(columnDefinition = "integer default 0")
-    private int losses;
+    private int losses = 0;
 
     public RegisteredUser(String username, String password) {
         this.username = username;
