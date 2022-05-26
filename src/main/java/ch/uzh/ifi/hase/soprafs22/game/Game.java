@@ -286,18 +286,12 @@ public class Game {
                 }
             }
 
-            System.out.println("RED:" + minRsRed + " - " + maxRsRed);
-            System.out.println("Blue:" + minRsBlue + " - " + maxRsBlue);
-
             float rankedScoreMaxChange = 100.0f;
             float fallOffVariable = 1000.0f;
             float maxDifference = Math.max(maxRsBlue-minRsRed, maxRsRed-minRsBlue);
-            System.out.println("MAX_DIFFERENCE: " + maxDifference);
             // Function that falls of to 0, and after maxDifference/1000.0f > |0.5PI| returns 0
             // if rankedDifference = 0 return rankedScoreMaxChange
             int rankedScoreChange = (int) (Math.cos(Math.max(Math.min(maxDifference/fallOffVariable, 0.5*Math.PI), 0.5*(-Math.PI)))*rankedScoreMaxChange);
-
-            System.out.println("RANKED_SCORE_CHANGE: " + rankedScoreChange);
 
             for(PlayerDecorator player: decoratedPlayers.values()){
                 RegisteredUser registeredUser = player.getRegisteredUser();
