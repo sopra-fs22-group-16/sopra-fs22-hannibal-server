@@ -108,7 +108,7 @@ public class RegisteredUser implements UserDetails {
         this.password = password;
     }
 
-    public int getRankedScore() {
+    public Integer getRankedScore() {
         return rankedScore;
     }
 

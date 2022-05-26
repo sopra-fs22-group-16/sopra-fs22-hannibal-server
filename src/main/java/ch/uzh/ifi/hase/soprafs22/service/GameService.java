@@ -75,7 +75,6 @@ public class GameService {
                 }
                 userRepository.flush();
             }
-
             return gameDelta;
         }
         catch (NotPlayersTurnException e) {
