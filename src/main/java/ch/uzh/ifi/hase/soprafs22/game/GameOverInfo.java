@@ -20,4 +20,8 @@ public class GameOverInfo {
     public List<Long> getWinners() {
         return winners;
     }
+
+    public Map<Long, List<Integer>> getRankedScoreDeltas() {
+        return rankedScoreDeltas;
+    }
 }
