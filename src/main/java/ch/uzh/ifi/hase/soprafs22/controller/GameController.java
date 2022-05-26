@@ -80,7 +80,7 @@ public class GameController {
      * All socket info should be sent through this method to ensure format consistency.
      */
     private void sendThroughSocket(long id, GameDelta gameDelta) {
-        GameDeltaWebSocketDTO unitMoveWebSocketDTO = DTOMapper.INSTANCE.convertGameDeltaToGameDeltaWebSocketDTO(gameDelta);
-        this.socketMessage.convertAndSend(TOPIC_GAME + id, unitMoveWebSocketDTO);
+        GameDeltaWebSocketDTO gameDeltaWebSocketDTO = DTOMapper.INSTANCE.convertGameDeltaToGameDeltaWebSocketDTO(gameDelta);
+        this.socketMessage.convertAndSend(TOPIC_GAME + id, gameDeltaWebSocketDTO);
     }
 }
