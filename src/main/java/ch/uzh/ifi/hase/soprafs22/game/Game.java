@@ -215,8 +215,9 @@ public class Game {
         boolean blueUnitAlive = getAllPlayersThat(player -> player.getTeam() == BLUE)
                 .flatMap(player -> player.getUnits().stream())
                 .anyMatch(unit -> unit.getHealth() > 0);
-        setRunning(blueUnitAlive && redUnitAlive);
+        if((!blueUnitAlive  || !redUnitAlive)) endGame();
     }
+
 
 
     private boolean haveAllUnitsOfPlayerMoved(String token) {
@@ -246,8 +247,8 @@ public class Game {
             throw new TileOutOfRangeException(position, xRange, yRange);
     }
 
-    private void setRunning(boolean newState) {
-        if (this.running && !newState) {
+    private void endGame(){
+        if(this.running){
             running = false;
             if (gameType == GameType.RANKED) {
                 this.rankedScoreDeltas = new HashMap<>();
