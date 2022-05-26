@@ -308,6 +308,12 @@ public class Game {
         }
     }
 
+    // Used for test that units can get removed and then an endOf game state exists
+    public GameDelta getCurrentGameDelta(){
+        checkGameOver();
+        return new GameDelta(null, null, getGameOverInfo());
+    }
+
     private Optional<Team> getWinnerTeam (){
         Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
         return playerWithUnits.map(BasePlayerDecorator::getTeam);
@@ -321,8 +327,7 @@ public class Game {
             List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam.get())).map(PlayerDecorator::getId).collect(Collectors.toList());
             return new GameOverInfo(winners);
         }else{
-            //TODO: Handle draw
-            return null;
+            return new GameOverInfo(new LinkedList<>());
         }
     }
 
