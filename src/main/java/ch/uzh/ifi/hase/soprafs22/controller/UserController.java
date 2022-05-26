@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -50,15 +49,26 @@ public class UserController {
         return DTOMapper.INSTANCE.convertRegisteredUserToUserRegistrationGetDTO(registeredUser);
     }
 
+    @PostMapping("/{apiVersion}/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserLoginGetDTO userLogout(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
+        RegisteredUser loggedInUser = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
+
+        RegisteredUser loggedOutUser = userService.userLogout(loggedInUser);
+
+        return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(loggedOutUser);
+    }
+
     @PostMapping("/{apiVersion}/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserLoginGetDTO loginUser(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
-        RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
+    public UserLoginGetDTO userLogin(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
+        RegisteredUser loggedOutUser = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
 
-        RegisteredUser registeredUser = userService.loginUser(userInput);
+        RegisteredUser loggedInUser = userService.userLogin(loggedOutUser);
 
-        return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(registeredUser);
+        return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(loggedInUser);
     }
 
     @GetMapping("/{apiVersion}/users")

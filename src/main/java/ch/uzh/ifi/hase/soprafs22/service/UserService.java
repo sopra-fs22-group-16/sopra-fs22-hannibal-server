@@ -12,7 +12,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -163,17 +168,24 @@ public class UserService {
     @Autowired
     private DaoAuthenticationProvider authProvider;
 
-    public RegisteredUser loginUser(@NotNull RegisteredUser userInput) {
-        checkStringNotNullOrEmpty(userInput.getUsername(), "username", ACCESSED);
-        checkStringNotNullOrEmpty(userInput.getPassword(), "password", ACCESSED);
+    public RegisteredUser userLogin(@NotNull RegisteredUser loggedOutUser) {
+        checkStringNotNullOrEmpty(loggedOutUser.getUsername(), "username", ACCESSED);
+        checkStringNotNullOrEmpty(loggedOutUser.getPassword(), "password", ACCESSED);
         try {
-            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userInput, userInput.getPassword()));
+            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(loggedOutUser, loggedOutUser.getPassword()));
             return (RegisteredUser) authentication.getPrincipal();
         }
         catch (BadCredentialsException e) {
             throwResponseStatusException(HttpStatus.NOT_FOUND, "The credentials provided are not correct.", ACCESSED);
         }
-        return userInput;
+        return loggedOutUser;
+    }
+
+    public RegisteredUser userLogout(@NotNull RegisteredUser loggedInUser) {
+        RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(loggedInUser.getUsername());
+        Authentication auth = new UsernamePasswordAuthenticationToken(registeredUser, registeredUser.getPassword());
+        auth.setAuthenticated(false);
+        return (RegisteredUser) auth.getPrincipal();
     }
 
     /**
