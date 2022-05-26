@@ -172,8 +172,10 @@ public class GameService {
     }
 
     // Only for testing
-    public void setLobbyManager(ILobbyManager lobbyManager) {
+    public ILobbyManager setLobbyManager(ILobbyManager lobbyManager) {
+        ILobbyManager temp = this.lobbyManager;
         this.lobbyManager = lobbyManager;
+        return temp;
     }
 
     public IGameStatistics getGameStats(Long id, String token) {
