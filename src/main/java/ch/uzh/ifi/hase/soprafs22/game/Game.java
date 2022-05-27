@@ -34,6 +34,7 @@ public class Game {
     private final Turn turn;
     private GameMap gameMap;
     private boolean running;
+    private Map<Long, List<Integer>> rankedScoreDeltas;
 
     private final GameLogger gameLogger;
 
@@ -43,6 +44,7 @@ public class Game {
         this.gameType = gameType;
         this.decoratedPlayers = new HashMap<>();
         this.running = true;
+        this.rankedScoreDeltas = null;
 
         List<Unit> unitList = new ArrayList<>();
         //TODO Potential Feature: RANKED games get a harder map
@@ -202,7 +204,7 @@ public class Game {
         return new GameDelta(checkNextTurn(token), getGameOverInfo(), surrenderInfo);
     }
 
-    private @Nullable TurnInfo checkNextTurn(String token){
+    private @Nullable TurnInfo checkNextTurn(String token) {
         return haveAllUnitsOfPlayerMoved(token) && resetUnitsFromPreviousTurn(token) ? nextTurn() : null;
     }
 
@@ -248,14 +250,18 @@ public class Game {
     private void endGame(){
         if(this.running){
             running = false;
-            if(gameType == GameType.RANKED) {
+            if (gameType == GameType.RANKED) {
+                this.rankedScoreDeltas = new HashMap<>();
+                for (PlayerDecorator d : this.decoratedPlayers.values()) {
+                    this.rankedScoreDeltas.put(d.getId(), new ArrayList(Arrays.asList(d.getRegisteredUser().getRankedScore())));
+                }
                 updateRegisteredUserScore();
             }
         }
     }
 
 
-    private void updateRegisteredUserScore(){
+    private void updateRegisteredUserScore() {
         Optional<Team> winnerTeam = getWinnerTeam();
         // Check that it is not a draw then update ranked score
         if (winnerTeam.isPresent()) {
@@ -267,20 +273,21 @@ public class Game {
             int maxRsBlue = 0;
 
             // Get highest and lowest rankedScore in each team
-            for(PlayerDecorator player: decoratedPlayers.values()){
+            for (PlayerDecorator player : decoratedPlayers.values()) {
                 RegisteredUser registeredUser = player.getRegisteredUser();
-                if(player.getTeam() == Team.RED){
-                    if(registeredUser.getRankedScore() > maxRsRed){
+                if (player.getTeam() == Team.RED) {
+                    if (registeredUser.getRankedScore() > maxRsRed) {
                         maxRsRed = registeredUser.getRankedScore();
                     }
-                    if(registeredUser.getRankedScore() < minRsRed){
+                    if (registeredUser.getRankedScore() < minRsRed) {
                         minRsRed = registeredUser.getRankedScore();
                     }
-                }else if(player.getTeam() == Team.BLUE){
-                    if(registeredUser.getRankedScore() > maxRsBlue){
+                }
+                else if (player.getTeam() == Team.BLUE) {
+                    if (registeredUser.getRankedScore() > maxRsBlue) {
                         maxRsBlue = registeredUser.getRankedScore();
                     }
-                    if(registeredUser.getRankedScore() < minRsBlue){
+                    if (registeredUser.getRankedScore() < minRsBlue) {
                         minRsBlue = registeredUser.getRankedScore();
                     }
                 }
@@ -288,25 +295,29 @@ public class Game {
 
             float rankedScoreMaxChange = 100.0f;
             float fallOffVariable = 1000.0f;
-            float maxDifference = Math.max(maxRsBlue-minRsRed, maxRsRed-minRsBlue);
+            float maxDifference = Math.max(maxRsBlue - minRsRed, maxRsRed - minRsBlue);
             // Function that falls of to 0, and after maxDifference/1000.0f > |0.5PI| returns 0
             // if rankedDifference = 0 return rankedScoreMaxChange
-            int rankedScoreChange = (int) (Math.cos(Math.max(Math.min(maxDifference/fallOffVariable, 0.5*Math.PI), 0.5*(-Math.PI)))*rankedScoreMaxChange);
+            int rankedScoreChange = (int) (Math.cos(Math.max(Math.min(maxDifference / fallOffVariable, 0.5 * Math.PI), 0.5 * (-Math.PI))) * rankedScoreMaxChange);
 
-            for(PlayerDecorator player: decoratedPlayers.values()){
+            for (PlayerDecorator player : decoratedPlayers.values()) {
                 RegisteredUser registeredUser = player.getRegisteredUser();
-                if(player.getTeam() == winnerTeam.get()){
+                if (player.getTeam() == winnerTeam.get()) {
                     registeredUser.setWins(registeredUser.getWins() + 1);
-
                     registeredUser.setRankedScore(registeredUser.getRankedScore() + rankedScoreChange);
-                }else{
+                }
+                else {
                     registeredUser.setLosses(registeredUser.getLosses() + 1);
                     int newRankedScore = registeredUser.getRankedScore() - rankedScoreChange;
                     registeredUser.setRankedScore(Math.max(newRankedScore, 0));
                 }
+                int previousRs = this.rankedScoreDeltas.get(player.getId()).get(0);
+                int rankedScoreDelta = registeredUser.getRankedScore() - previousRs;
+                this.rankedScoreDeltas.computeIfAbsent(player.getId(), k -> new ArrayList<>()).add(rankedScoreDelta);
             }
         }
     }
+
 
     // Used for test that units can get removed and then an endOf game state exists
     public GameDelta getCurrentGameDelta(){
@@ -314,17 +325,21 @@ public class Game {
         return new GameDelta(null, null, getGameOverInfo());
     }
 
-    private Optional<Team> getWinnerTeam (){
+    private Optional<Team> getWinnerTeam() {
         Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
         return playerWithUnits.map(BasePlayerDecorator::getTeam);
     }
 
     private @Nullable GameOverInfo getGameOverInfo() {
-        if (running)
+        if (running) {
             return null;
+        }
         Optional<Team> winnerTeam = getWinnerTeam();
-        if(winnerTeam.isPresent()){
+        if (winnerTeam.isPresent()) {
             List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam.get())).map(PlayerDecorator::getId).collect(Collectors.toList());
+            if (gameType == GameType.RANKED) {
+                return new GameOverInfo(winners, this.rankedScoreDeltas);
+            }
             return new GameOverInfo(winners);
         }else{
             return new GameOverInfo(new LinkedList<>());

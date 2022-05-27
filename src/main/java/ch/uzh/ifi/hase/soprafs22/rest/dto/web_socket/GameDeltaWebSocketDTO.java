@@ -15,9 +15,7 @@ public class GameDeltaWebSocketDTO {
     private UnitMoveDTO move;
     private List<UnitHealthDTO> unitHealths;
     private TurnInfo turnInfo;
-
     private GameOverInfo gameOverInfo;
-
     private SurrenderInfo surrenderInfo;
 
     public UnitMoveDTO getMove() {

@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -28,6 +29,9 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     public UserServiceTest() {
     }
@@ -279,7 +283,7 @@ public class UserServiceTest {
         // then
         assertEquals(testUser1.getId(), oldData.getId());
         assertEquals(testUser1.getToken(), oldData.getToken());
-        assertEquals(testUser1.getPassword(), newPassword);
+        assertEquals(testUser1.getPassword(), passwordEncoder.encode(newPassword));
         assertEquals(testUser1.getUsername(), newUserName);
         assertEquals(testUser1.getRankedScore(), oldData.getRankedScore());
         assertEquals(testUser1.getWins(), oldData.getWins());
