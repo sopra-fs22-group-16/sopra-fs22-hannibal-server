@@ -2,6 +2,8 @@ package ch.uzh.ifi.hase.soprafs22.game.units.commands;
 
 import ch.uzh.ifi.hase.soprafs22.game.Position;
 
+import java.util.Objects;
+
 public class MoveCommand {
     Position start;
     Position destination;
@@ -39,4 +41,8 @@ public class MoveCommand {
         return start.equals(c.start) && destination.equals(c.destination);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, destination);
+    }
 }

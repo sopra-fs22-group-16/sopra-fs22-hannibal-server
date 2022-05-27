@@ -23,12 +23,11 @@ public class Turn {
     public Turn(@NotNull Collection<PlayerDecorator> players) {
         List<PlayerDecorator> redPlayers = players.stream().filter(player -> player.getTeam() == Team.RED).collect(Collectors.toList());
         List<PlayerDecorator> bluePlayers = players.stream().filter(player -> player.getTeam() == Team.BLUE).collect(Collectors.toList());
-        List<PlayerDecorator> turnOrder = new ArrayList<>();
+        turnOrder = new ArrayList<>();
         for (int i = 0; i < min(redPlayers.size(), bluePlayers.size()); i++) {
             turnOrder.add(redPlayers.get(i));
             turnOrder.add(bluePlayers.get(i));
         }
-        this.turnOrder = turnOrder;
     }
 
     public int getTurnNumber() {
@@ -40,7 +39,7 @@ public class Turn {
         do {
             // take module to wrap around the list.
             turnIndex = ++turnIndex % turnOrder.size();
-        }while(turnOrder.get(turnIndex).getUnits().size() < 1);
+        }while(turnOrder.get(turnIndex).getUnits().isEmpty());
         return getTurnInfo();
     }
 

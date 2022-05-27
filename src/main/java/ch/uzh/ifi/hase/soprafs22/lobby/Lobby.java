@@ -29,7 +29,6 @@ public class Lobby implements ILobby {
     private GameType gameType;
     private String invitationCode;
     private byte[] qrCode;
-    private Random random;
 
     public Lobby(Long id, String name, Visibility visibility, RegisteredUser registeredUserAsHost) {
         this.id = id;
@@ -43,7 +42,6 @@ public class Lobby implements ILobby {
             host.linkRegisteredUser(registeredUserAsHost);
         }
         playerMap.put(host.getToken(), host);
-        this.random = new Random();
     }
 
     @Override

@@ -35,8 +35,8 @@ public final class GameLogger implements IGameStatistics, IGameLogger {
         for(long player : unitsPerPlayer.keySet())
             result.put(player, new ArrayList<>());
         for (Map<Long, Integer> turnSnapshot : turnSnapshots)
-            for (long player : turnSnapshot.keySet())
-                result.get(player).add(turnSnapshot.get(player));
+            for (Map.Entry<Long, Integer> entry : turnSnapshot.entrySet())
+                result.get(entry.getKey()).add(entry.getValue());
         return result;
     }
 

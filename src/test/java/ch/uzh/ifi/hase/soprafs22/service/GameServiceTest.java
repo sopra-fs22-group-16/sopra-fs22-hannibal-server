@@ -39,6 +39,9 @@ class GameServiceTest {
     private static final Player PLAYER_1 = new Player(0, "Player 1", "token1", Team.RED);
     private static final Player PLAYER_2 = new Player(1, "Player 2", "token2", Team.BLUE);
 
+    private static final String PLAYER1_TOKEN = "token1";
+    private static final String PLAYER2_TOKEN = "token2";
+
     private static final Position OUT_OF_RANGE_POSITION = new Position(100000, 100000);
     private static final long NO_GAME_ID = 100000L;
 
@@ -96,7 +99,7 @@ class GameServiceTest {
     void attack_TileOutOfRangeException() {
         attackCommand = new AttackCommand(redUnitPosition, OUT_OF_RANGE_POSITION, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
+                () -> gameService.unitAttack(GAME_ID, PLAYER1_TOKEN, attackCommand));
 
         assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatus());
     }
@@ -114,7 +117,7 @@ class GameServiceTest {
     void attack_UnitNotFoundException() {
         attackCommand = new AttackCommand(noUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
+                () -> gameService.unitAttack(GAME_ID, PLAYER1_TOKEN, attackCommand));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
@@ -123,7 +126,7 @@ class GameServiceTest {
     void attack_GameNotFoundException() {
         attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(NO_GAME_ID, PLAYER_1.getToken(), attackCommand));
+                () -> gameService.unitAttack(NO_GAME_ID, PLAYER1_TOKEN, attackCommand));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
@@ -132,7 +135,7 @@ class GameServiceTest {
     void attack_WrongUnitOwnerException() {
         attackCommand = new AttackCommand(blueUnitPosition, redUnitPosition, blueUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
+                () -> gameService.unitAttack(GAME_ID, PLAYER1_TOKEN, attackCommand));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
@@ -141,7 +144,7 @@ class GameServiceTest {
     void attack_WrongTargetTeamException() {
         attackCommand = new AttackCommand(redUnitPosition, redUnitPosition, redUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand));
+                () -> gameService.unitAttack(GAME_ID, PLAYER1_TOKEN, attackCommand));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
@@ -151,7 +154,7 @@ class GameServiceTest {
     void attack_OK() {
         Position newPos = new Position(blueUnitPosition.getX()-1, blueUnitPosition.getY());
         attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, newPos);
-        gameService.unitAttack(GAME_ID, PLAYER_1.getToken(), attackCommand);
+        assertDoesNotThrow(() -> gameService.unitAttack(GAME_ID, PLAYER1_TOKEN, attackCommand));
     }
 
     // TODO test for TargetUnreachableException once it is implemented in units.
@@ -159,7 +162,7 @@ class GameServiceTest {
     void wait_NotPlayersTurnException() {
         moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_2.getToken(), moveCommand));
+                () -> gameService.unitMove(GAME_ID, PLAYER2_TOKEN, moveCommand));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
@@ -168,7 +171,7 @@ class GameServiceTest {
     void wait_TileOutOfRangeException() {
         moveCommand = new MoveCommand(OUT_OF_RANGE_POSITION, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
+                () -> gameService.unitMove(GAME_ID, PLAYER1_TOKEN, moveCommand));
 
         assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatus());
     }
@@ -186,7 +189,7 @@ class GameServiceTest {
     void wait_UnitNotFoundException() {
         moveCommand = new MoveCommand(noUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
+                () -> gameService.unitMove(GAME_ID, PLAYER1_TOKEN, moveCommand));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
@@ -195,7 +198,7 @@ class GameServiceTest {
     void wait_GameNotFoundException() {
         moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(NO_GAME_ID, PLAYER_1.getToken(), moveCommand));
+                () -> gameService.unitMove(NO_GAME_ID, PLAYER1_TOKEN, moveCommand));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
@@ -204,7 +207,7 @@ class GameServiceTest {
     void wait_WrongUnitOwnerException() {
         moveCommand = new MoveCommand(blueUnitPosition, noUnitPosition);
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand));
+                () -> gameService.unitMove(GAME_ID, PLAYER1_TOKEN, moveCommand));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
@@ -212,7 +215,7 @@ class GameServiceTest {
     @Test
     void wait_OK() {
         moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
-        gameService.unitMove(GAME_ID, PLAYER_1.getToken(), moveCommand);
+        assertDoesNotThrow(() -> gameService.unitMove(GAME_ID, PLAYER1_TOKEN, moveCommand));
     }
 
     private Position positionWithTeamUnit(Game game, Team team) {

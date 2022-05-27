@@ -52,28 +52,19 @@ public class UserService {
 
         switch (orderBy) {
             case "RANKED_SCORE" -> {
-                if (ascending) {
+                if (ascending)
                     return userRepository.findAllByOrderByRankedScoreAsc(page);
-                }
-                else {
-                    return userRepository.findAllByOrderByRankedScoreDesc(page);
-                }
+                return userRepository.findAllByOrderByRankedScoreDesc(page);
             }
             case "WINS" -> {
-                if (ascending) {
+                if (ascending)
                     return userRepository.findAllByOrderByWinsAsc(page);
-                }
-                else {
-                    return userRepository.findAllByOrderByWinsDesc(page);
-                }
+                return userRepository.findAllByOrderByWinsDesc(page);
             }
             case "LOSSES" -> {
-                if (ascending) {
+                if (ascending)
                     return userRepository.findAllByOrderByLossesAsc(page);
-                }
-                else {
-                    return userRepository.findAllByOrderByLossesDesc(page);
-                }
+                return userRepository.findAllByOrderByLossesDesc(page);
             }
             default -> throwResponseStatusException(HttpStatus.BAD_REQUEST, "The data can not be sorted by the field" + orderBy, ACCESSED);
         }

@@ -37,8 +37,8 @@ public class Application {
     }
 
     @Bean
-    ServletRegistrationBean h2servletRegistration() {
-        ServletRegistrationBean registrationBean = new ServletRegistrationBean(new WebServlet());
+    ServletRegistrationBean<WebServlet> h2servletRegistration() {
+        ServletRegistrationBean<WebServlet> registrationBean = new ServletRegistrationBean<>(new WebServlet());
         registrationBean.addUrlMappings("/console/*");
         return registrationBean;
     }

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @WebAppConfiguration
 @SpringBootTest
-public class GameServiceIntegrationTest {
+class GameServiceIntegrationTest {
 
     @Autowired
     GameService gameService;

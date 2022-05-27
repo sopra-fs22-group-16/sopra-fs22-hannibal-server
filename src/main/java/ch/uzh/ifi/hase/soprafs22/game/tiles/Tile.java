@@ -9,9 +9,6 @@ public class Tile {
     private Boolean traversable;
     private int traversingCost;
 
-    public Tile() {
-    }
-
     public Type getType() {
         return type;
     }

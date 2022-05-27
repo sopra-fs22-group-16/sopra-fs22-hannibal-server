@@ -120,7 +120,7 @@ public class Game {
             GameOverException,
             UnitNotFoundException,
             WrongUnitOwnerException,
-            WrongTargetTeamException, TargetUnreachableException {
+            WrongTargetTeamException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
@@ -192,7 +192,7 @@ public class Game {
         return new GameDelta(executedMove, checkNextTurn(token), getGameOverInfo());
     }
 
-    public GameDelta surrender(String token) throws NotAMemberOfGameException, GameOverException, NotPlayersTurnException {
+    public GameDelta surrender(String token) throws NotAMemberOfGameException, GameOverException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
@@ -253,7 +253,7 @@ public class Game {
             if (gameType == GameType.RANKED) {
                 this.rankedScoreDeltas = new HashMap<>();
                 for (PlayerDecorator d : this.decoratedPlayers.values()) {
-                    this.rankedScoreDeltas.put(d.getId(), new ArrayList(Arrays.asList(d.getRegisteredUser().getRankedScore())));
+                    this.rankedScoreDeltas.put(d.getId(), new ArrayList<>(Arrays.asList(d.getRegisteredUser().getRankedScore())));
                 }
                 updateRegisteredUserScore();
             }
@@ -319,7 +319,7 @@ public class Game {
     }
 
     private Optional<Team> getWinnerTeam() {
-        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> player.getUnits().size() > 0).findFirst();
+        Optional<PlayerDecorator> playerWithUnits = getAllPlayersThat(player -> !player.getUnits().isEmpty()).findFirst();
         return playerWithUnits.map(BasePlayerDecorator::getTeam);
     }
 

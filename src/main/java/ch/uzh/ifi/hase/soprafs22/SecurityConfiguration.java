@@ -33,6 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @Override
     public UserDetailsService userDetailsService() {
         return new UserPropsService();
     }
