@@ -86,7 +86,7 @@ public class LobbyService {
         // Check if gameType equals ranked and the request is form an unregistered user
         if (gameType == GameType.RANKED && registeredUser == null) {
             String errorMessage = "An guest user can not create a ranked lobby. Therefore, the lobby could not be created!";
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
         }
 
         // Check if lobby name already exists
