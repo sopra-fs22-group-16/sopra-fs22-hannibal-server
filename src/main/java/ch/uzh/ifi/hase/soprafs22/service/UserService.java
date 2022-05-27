@@ -11,13 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,21 +29,20 @@ import java.util.*;
 @Transactional
 public class UserService {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private DaoAuthenticationProvider authProvider;
+    private final DaoAuthenticationProvider authProvider;
 
     private final UserRepository userRepository;
 
-    private static final String TOKEN = "token";
     private static final String UPDATED = "updated";
     private static final String ACCESSED = "accessed";
     private static final String CREATED = "created";
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(PasswordEncoder passwordEncoder, DaoAuthenticationProvider authProvider, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.authProvider = authProvider;
         this.userRepository = userRepository;
     }
 
