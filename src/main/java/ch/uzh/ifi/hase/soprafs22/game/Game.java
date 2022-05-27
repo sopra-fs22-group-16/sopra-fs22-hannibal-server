@@ -218,8 +218,6 @@ public class Game {
         if((!blueUnitAlive  || !redUnitAlive)) endGame();
     }
 
-
-
     private boolean haveAllUnitsOfPlayerMoved(String token) {
         return this.decoratedPlayers.get(token).getUnits().stream().allMatch(Unit::getMoved);
     }
