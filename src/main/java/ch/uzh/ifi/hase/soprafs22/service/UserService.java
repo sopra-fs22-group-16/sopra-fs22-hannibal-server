@@ -35,6 +35,12 @@ import java.util.*;
 @Transactional
 public class UserService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private DaoAuthenticationProvider authProvider;
+
     private final UserRepository userRepository;
 
     private static final String TOKEN = "token";
@@ -110,10 +116,11 @@ public class UserService {
         userToUpdate.setUsername(userInput.getUsername());
         // Update password only if it is set
         if (userInput.getPassword() != null && !userInput.getPassword().isEmpty()) {
-            userToUpdate.setPassword(userInput.getPassword());
+            userToUpdate.setPassword(passwordEncoder.encode(userInput.getPassword()));
         }
 
-        userRepository.saveAndFlush(userToUpdate);
+        userRepository.save(userToUpdate);
+        userRepository.flush();
     }
 
     private @NotNull RegisteredUser getRegisteredUserByIdElseThrowNotFoundException(long id, String errorMessageEnding) {
@@ -123,6 +130,37 @@ public class UserService {
             throwResponseStatusException(HttpStatus.NOT_FOUND, errorMessageBeginning, errorMessageEnding);
         }
         return optionalRegisteredUser.get();
+    }
+
+    public RegisteredUser registerUser(@NotNull RegisteredUser userInput) {
+        checkStringNotNullOrEmpty(userInput.getUsername(), "username", CREATED);
+        checkStringNotNullOrEmpty(userInput.getPassword(), "password", CREATED);
+        checkDuplicateUsername(userInput.getUsername());
+        userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
+        userInput.setToken(UUID.randomUUID().toString());
+        userInput = userRepository.save(userInput);
+        userRepository.flush();
+        return userInput;
+    }
+
+    public RegisteredUser userLogin(@NotNull RegisteredUser loggedOutUser) {
+        checkStringNotNullOrEmpty(loggedOutUser.getUsername(), "username", ACCESSED);
+        checkStringNotNullOrEmpty(loggedOutUser.getPassword(), "password", ACCESSED);
+        try {
+            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(loggedOutUser, loggedOutUser.getPassword()));
+            return (RegisteredUser) authentication.getPrincipal();
+        }
+        catch (BadCredentialsException e) {
+            throwResponseStatusException(HttpStatus.NOT_FOUND, "The credentials provided are not correct.", ACCESSED);
+        }
+        return loggedOutUser;
+    }
+
+    public RegisteredUser userLogout(@NotNull RegisteredUser loggedInUser) {
+        RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(loggedInUser.getUsername());
+        Authentication auth = new UsernamePasswordAuthenticationToken(registeredUser, registeredUser.getPassword());
+        auth.setAuthenticated(false);
+        return (RegisteredUser) auth.getPrincipal();
     }
 
     private void checkTokenNullOrEmpty(String token, String errorMessageEnding) {
@@ -149,43 +187,6 @@ public class UserService {
     private void throwResponseStatusException(HttpStatus errorStatus, String errorMessageBeginning, String errorMessageEnding) {
         String errorMessage = errorMessageBeginning + " Therefore, the user(s) could not be " + errorMessageEnding + " !";
         throw new ResponseStatusException(errorStatus, errorMessage);
-    }
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public RegisteredUser registerUser(@NotNull RegisteredUser userInput) {
-        checkStringNotNullOrEmpty(userInput.getUsername(), "username", CREATED);
-        checkStringNotNullOrEmpty(userInput.getPassword(), "password", CREATED);
-        checkDuplicateUsername(userInput.getUsername());
-        userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
-        userInput.setToken(UUID.randomUUID().toString());
-        userInput = userRepository.save(userInput);
-        userRepository.flush();
-        return userInput;
-    }
-
-    @Autowired
-    private DaoAuthenticationProvider authProvider;
-
-    public RegisteredUser userLogin(@NotNull RegisteredUser loggedOutUser) {
-        checkStringNotNullOrEmpty(loggedOutUser.getUsername(), "username", ACCESSED);
-        checkStringNotNullOrEmpty(loggedOutUser.getPassword(), "password", ACCESSED);
-        try {
-            Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(loggedOutUser, loggedOutUser.getPassword()));
-            return (RegisteredUser) authentication.getPrincipal();
-        }
-        catch (BadCredentialsException e) {
-            throwResponseStatusException(HttpStatus.NOT_FOUND, "The credentials provided are not correct.", ACCESSED);
-        }
-        return loggedOutUser;
-    }
-
-    public RegisteredUser userLogout(@NotNull RegisteredUser loggedInUser) {
-        RegisteredUser registeredUser = userRepository.findRegisteredUserByUsername(loggedInUser.getUsername());
-        Authentication auth = new UsernamePasswordAuthenticationToken(registeredUser, registeredUser.getPassword());
-        auth.setAuthenticated(false);
-        return (RegisteredUser) auth.getPrincipal();
     }
 
     /**
