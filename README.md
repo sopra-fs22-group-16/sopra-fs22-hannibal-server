@@ -43,7 +43,7 @@ TODO:
 
 * <img src="https://github.com/get-icon/geticon/blob/master/icons/material-ui.svg" width="16" height="16" /> [**Mui**](https://mui.com/)		
 
-* [**react-qr-scanner**](https://www.npmjs.com/package/react-qr-scanner)
+* <img src="https://user-images.githubusercontent.com/91155454/170842620-fd6f8352-6f42-41c2-b35a-6c7157cc2727.svg" width="16" height="16" /> [**react-qr-scanner**](https://www.npmjs.com/package/react-qr-scanner)
 
 * [**sockjs-client**](https://www.npmjs.com/package/sockjs-client)
 
