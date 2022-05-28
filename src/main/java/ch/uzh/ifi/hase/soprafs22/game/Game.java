@@ -308,8 +308,9 @@ public class Game {
                     int newRankedScore = registeredUser.getRankedScore() - rankedScoreChange;
                     registeredUser.setRankedScore(Math.max(newRankedScore, 0));
                 }
-                int previousRs = this.rankedScoreDeltas.get(player.getId()).get(0);
+                int previousRs = this.rankedScoreDeltas.get(player.getId()).remove(0);
                 int rankedScoreDelta = registeredUser.getRankedScore() - previousRs;
+                this.rankedScoreDeltas.computeIfAbsent(player.getId(), k -> new ArrayList<>()).add(registeredUser.getRankedScore());
                 this.rankedScoreDeltas.computeIfAbsent(player.getId(), k -> new ArrayList<>()).add(rankedScoreDelta);
             }
         }
