@@ -91,7 +91,7 @@ After each commit to the master branch, automatic Github Actions get executed wh
 
 ## Roadmap
 
-<img src="https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/blob/ReadMe-media/images/Illustrations/Hannibalroadmap.png" width="100%"/>
+<img src="https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/blob/ReadMe-media/images/Illustrations/Hannibalroadmap.png" width="25%"/>
 
 ## Authors
 
