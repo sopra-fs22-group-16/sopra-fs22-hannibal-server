@@ -130,9 +130,6 @@ public class GameService {
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
         }
-        catch (TargetUnreachableException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit " + e.getUnit().getType().name() + " cannot move from " + e.getStart() + " to " + e.getEnd(), e);
-        }
         catch (WrongUnitOwnerException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getUnit() + DOES_NOT_BELONG_TO_THE_PLAYER, e);
         }

@@ -129,7 +129,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("RANKED_SCORE", true, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }
@@ -149,7 +149,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("RANKED_SCORE", false, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }
@@ -169,7 +169,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("WINS", true, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }
@@ -189,7 +189,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("WINS", false, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }
@@ -209,7 +209,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("LOSSES", true, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }
@@ -229,7 +229,7 @@ class UserServiceTest {
         List<RegisteredUser> registeredUsers = userService.getRegisteredUsers("LOSSES", false, 0, 10);
 
         // then
-        assertEquals(registeredUsers.size(), 3);
+        assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
             assertEquals(users.get(i), registeredUsers.get(i));
         }

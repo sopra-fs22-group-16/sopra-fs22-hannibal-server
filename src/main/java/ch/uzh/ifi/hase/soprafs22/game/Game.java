@@ -166,7 +166,6 @@ public class Game {
             NotAMemberOfGameException,
             GameOverException,
             UnitNotFoundException,
-            TargetUnreachableException,
             WrongUnitOwnerException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
