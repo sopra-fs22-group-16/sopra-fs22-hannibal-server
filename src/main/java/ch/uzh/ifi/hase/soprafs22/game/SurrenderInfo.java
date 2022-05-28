@@ -5,11 +5,7 @@ import java.util.Map;
 
 public class SurrenderInfo {
     private final long surrenderedPlayer;
-    private Map<Long, List<Integer>> rankedScoreDeltas;
-
-    public SurrenderInfo(long surrenderedPlayer) {
-        this.surrenderedPlayer = surrenderedPlayer;
-    }
+    private final Map<Long, List<Integer>> rankedScoreDeltas;
 
     public SurrenderInfo(long surrenderedPlayer, Map<Long, List<Integer>> rankedScoreDeltas) {
         this.surrenderedPlayer = surrenderedPlayer;
