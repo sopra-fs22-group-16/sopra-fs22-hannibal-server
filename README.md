@@ -126,7 +126,7 @@ After each commit to the master branch, automatic Github Actions get executed wh
 This project is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html), which guarantees end users the freedoms to run, study, share and modify the software.
 
 ## Acknowledgments
-* This project is based on the [SoPra FS22 - Client Template](https://github.com/HASEL-UZH/sopra-fs22-template-client)
+* This project is based on the [SoPra FS22 - Server Template](https://github.com/HASEL-UZH/sopra-fs22-template-server)
 * Thanks to **Melih Catal** - [melihcatal](https://github.com/melihcatal) who supported us as a Tutor and Scrum Master during this project.
 
 ## Links
