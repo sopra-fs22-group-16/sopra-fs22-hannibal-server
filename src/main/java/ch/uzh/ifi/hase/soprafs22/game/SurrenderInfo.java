@@ -19,4 +19,8 @@ public class SurrenderInfo {
     public long getSurrenderedPlayer() {
         return surrenderedPlayer;
     }
+
+    public Map<Long, List<Integer>> getRankedScoreDeltas() {
+        return rankedScoreDeltas;
+    }
 }
