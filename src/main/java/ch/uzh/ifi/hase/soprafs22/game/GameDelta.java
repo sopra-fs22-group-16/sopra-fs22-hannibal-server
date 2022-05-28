@@ -24,15 +24,15 @@ public class GameDelta {
     }
 
     public GameDelta(MoveCommand moveCommand, Map<Position, Integer> unitHealths, TurnInfo turnInfo, GameOverInfo gameOverInfo) {
-        this(moveCommand, unitHealths, turnInfo, gameOverInfo, null);
+        this(moveCommand, unitHealths, turnInfo, gameOverInfo, /*surrenderInfo=*/ null);
     }
 
     public GameDelta(MoveCommand executedMove, TurnInfo turnInfo, GameOverInfo gameOverInfo) {
-        this(executedMove, null, turnInfo, gameOverInfo, null);
+        this(executedMove, /*unitHealths=*/ null, turnInfo, gameOverInfo,/*surrenderInfo=*/ null);
     }
 
     public GameDelta(TurnInfo turnInfo, GameOverInfo gameOverInfo, SurrenderInfo surrenderInfo) {
-        this(null, null, turnInfo, gameOverInfo, surrenderInfo);
+        this(/*moveCommand=*/ null, /*unitHealths=*/ null, turnInfo, gameOverInfo, surrenderInfo);
     }
 
     public MoveCommand getMoveCommand() {
