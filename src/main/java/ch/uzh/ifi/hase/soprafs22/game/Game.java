@@ -158,7 +158,7 @@ public class Game {
         checkGameOver();
         MoveCommand moveCommand = new MoveCommand(attacker, attackerDestination);
         Map<Position, Integer> unitHealths = Map.of(defendingUnit.getPosition(), defendingUnit.getHealth(), attackingUnit.getPosition(), attackingUnit.getHealth());
-        return new GameDelta(moveCommand, unitHealths, checkNextTurn(token), getGameOverInfo());
+        return new GameDelta(moveCommand, unitHealths, checkNextTurn(token), getGameOverInfo(false));
     }
 
     public GameDelta unitMove(String token, Position start, Position end) throws NotPlayersTurnException,
@@ -188,7 +188,7 @@ public class Game {
             gameLogger.move(turn.getTurnNumber());
         movingUnit.setMoved(true);
         MoveCommand executedMove = new MoveCommand(start, movingUnit.getPosition());
-        return new GameDelta(executedMove, checkNextTurn(token), getGameOverInfo());
+        return new GameDelta(executedMove, checkNextTurn(token), getGameOverInfo(false));
     }
 
     public GameDelta surrender(String token) throws NotAMemberOfGameException, GameOverException {
@@ -200,7 +200,7 @@ public class Game {
         player.surrender();
         checkGameOver();
         SurrenderInfo surrenderInfo = new SurrenderInfo(player.getId(), this.rankedScoreDeltas);
-        return new GameDelta(checkNextTurn(token), getGameOverInfo(), surrenderInfo);
+        return new GameDelta(checkNextTurn(token), getGameOverInfo(true), surrenderInfo);
     }
 
     private @Nullable TurnInfo checkNextTurn(String token) {
@@ -315,11 +315,10 @@ public class Game {
         }
     }
 
-
     // Used for test that units can get removed and then an endOf game state exists
     public GameDelta getCurrentGameDelta(){
         checkGameOver();
-        return new GameDelta(null, null, getGameOverInfo());
+        return new GameDelta(null, null, getGameOverInfo(false));
     }
 
     private Optional<Team> getWinnerTeam() {
@@ -327,14 +326,14 @@ public class Game {
         return playerWithUnits.map(BasePlayerDecorator::getTeam);
     }
 
-    private @Nullable GameOverInfo getGameOverInfo() {
+    private @Nullable GameOverInfo getGameOverInfo(boolean hasSurrendered) {
         if (running) {
             return null;
         }
         Optional<Team> winnerTeam = getWinnerTeam();
         if (winnerTeam.isPresent()) {
             List<Long> winners = getAllPlayersThat(player -> player.getTeam().equals(winnerTeam.get())).map(PlayerDecorator::getId).collect(Collectors.toList());
-            if (gameType == GameType.RANKED) {
+            if (gameType == GameType.RANKED && !hasSurrendered) {
                 return new GameOverInfo(winners, this.rankedScoreDeltas);
             }
             return new GameOverInfo(winners);
