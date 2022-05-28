@@ -25,7 +25,7 @@ public class Unit implements IObservable, Serializable {
     private long userId;
     private Position position;
     private boolean moved;
-    private final List<IObserver> observers;
+    private transient final List<IObserver> observers;
 
     public Unit() {
         observers = new ArrayList<>();
