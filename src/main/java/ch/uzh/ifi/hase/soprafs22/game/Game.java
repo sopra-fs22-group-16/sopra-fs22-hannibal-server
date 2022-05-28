@@ -199,7 +199,7 @@ public class Game {
         PlayerDecorator player = decoratedPlayers.get(token);
         player.surrender();
         checkGameOver();
-        SurrenderInfo surrenderInfo = new SurrenderInfo(player.getId());
+        SurrenderInfo surrenderInfo = new SurrenderInfo(player.getId(), this.rankedScoreDeltas);
         return new GameDelta(checkNextTurn(token), getGameOverInfo(), surrenderInfo);
     }
 

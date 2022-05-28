@@ -5,11 +5,10 @@ import java.util.Map;
 
 public class GameOverInfo {
     private final List<Long> winners;
-    private final Map<Long, List<Integer>> rankedScoreDeltas;
+    private Map<Long, List<Integer>> rankedScoreDeltas;
 
     public GameOverInfo(List<Long> winners) {
         this.winners = List.copyOf(winners);
-        this.rankedScoreDeltas = null;
     }
 
     public GameOverInfo(List<Long> winners, Map<Long, List<Integer>> rankedScoreDeltas) {
