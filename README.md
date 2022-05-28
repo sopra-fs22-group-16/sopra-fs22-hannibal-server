@@ -94,3 +94,8 @@ do the following:
 ## Testing
 
 Have a look here: https://www.baeldung.com/spring-boot-testing
+
+
+## License
+This project is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html),
+which guarantees end users the freedoms to run, study, share and modify the software.
