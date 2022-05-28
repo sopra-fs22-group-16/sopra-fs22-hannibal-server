@@ -89,8 +89,10 @@ class GameServiceTest {
     @Test
     void attack_NotPlayersTurnException() {
         attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
+
+        String token = PLAYER_2.getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> gameService.unitAttack(GAME_ID, PLAYER_2.getToken(), attackCommand));
+                () -> gameService.unitAttack(GAME_ID, token, attackCommand));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
