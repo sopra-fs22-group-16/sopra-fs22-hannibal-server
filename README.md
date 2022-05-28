@@ -55,116 +55,7 @@ Get the server
 ```bash
 git clone https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-server.git
 ```
-Get the  repository from GitHub and follow the installation guide in each repository.
-
-For your local development environment, you will need [Node.js](https://nodejs.org). All other dependencies, including React, get installed with:
-
-```bash
-npm install
-```
-
-Run this command before you start your application for the first time. Next, you can start the app with:
-
-```bash
-npm run dev
-```
-
-Now you can open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-### Build
-This command builds the app for production to the `build` folder.
-```bash
-npm run build
-```
-It correctly bundles React in production mode and optimizes the build for the best performance: the build is minified, and the filenames include hashes.<br>
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### Testing
-There are currently no tests on the client version of Hannibal.
-
-Tests can be run with the command:
-```bash
-npm run test
-```
-
-This launches the test runner in an interactive watch mode.
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-
-### Deployment
-After each commit to the master branch, automatic Github Actions get executed which deploy our application to [Heroku](https://www.heroku.com/).
-
-## Roadmap
-
-<img src="https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/blob/ReadMe-media/images/Illustrations/Hannibalroadmap.png" width="25%"/>
-
-## Authors
-
-* **Luis Torrejón Machado**  - [luis-tm](https://github.com/luis-tm)
-* **Paul Luley**  - [paolovic](https://github.com/paolovic)
-* **Maria Korobeynikova** - [mkorob](https://github.com/mkorob)
-* **Hilal Çomak** - [hilalcomak](https://github.com/hilalcomak)
-* **Alessio Brazerol** - [apple00juice](https://github.com/apple00juice)
-
-## License
-This project is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html), which guarantees end users the freedoms to run, study, share and modify the software.
-
-## Acknowledgments
-* This project is based on the [SoPra FS22 - Client Template](https://github.com/HASEL-UZH/sopra-fs22-template-client)
-* Thanks to **Melih Catal** - [melihcatal](https://github.com/melihcatal) who supported us as a Tutor and Scrum Master during this project.
-
-## Links
-* [Hannibal Client Website](https://sopra-fs22-group-16-client.herokuapp.com/)
-* [Hannibal Server Website](https://sopra-fs22-group-16-server.herokuapp.com/)
-* [SonarCloud](https://sonarcloud.io/organizations/sopra-fs22-group-16/projects)
-* [Issue tracker](https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/issues)
-
-
-
-
-
-
-
-
-
-
-# SoPra RESTful Service Template FS22
-
-## Getting started with Spring Boot
-
--   Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
--   Guides: http://spring.io/guides
-    -   Building a RESTful Web Service: http://spring.io/guides/gs/rest-service/
-    -   Building REST services with Spring: http://spring.io/guides/tutorials/bookmarks/
-
-## Setup this Template with your IDE of choice
-
-Download your IDE of choice: (e.g., [Eclipse](http://www.eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/)), [Visual Studio Code](https://code.visualstudio.com/) and make sure Java 15 is installed on your system (for Windows-users, please make sure your JAVA_HOME environment variable is set to the correct version of Java).
-
-1. File -> Open... -> SoPra Server Template
-2. Accept to import the project as a `gradle project`
-
-To build right click the `build.gradle` file and choose `Run Build`
-
-### VS Code
-The following extensions will help you to run it more easily:
--   `pivotal.vscode-spring-boot`
--   `vscjava.vscode-spring-initializr`
--   `vscjava.vscode-spring-boot-dashboard`
--   `vscjava.vscode-java-pack`
--   `richardwillis.vscode-gradle`
-
-**Note:** You'll need to build the project first with Gradle, just click on the `build` command in the _Gradle Tasks_ extension. Then check the _Spring Boot Dashboard_ extension if it already shows `soprafs22` and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
-
-## Building with Gradle
-
-You can use the local Gradle Wrapper to build the application.
--   macOS: `./gradlew`
--   Linux: `./gradlew`
--   Windows: `./gradlew.bat`
-
-More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
+and open the project with an IDE of your choice.
 
 ### Build
 
@@ -197,16 +88,6 @@ and in the other one:
 
 `./gradlew bootRun`
 
-If you want to avoid running all tests with every change, use the following command instead:
-
-`./gradlew build --continuous -xtest`
-
-## API Endpoint Testing
-
-### Postman
-
--   We highly recommend to use [Postman](https://www.getpostman.com) in order to test your API Endpoints.
-
 ## Debugging
 
 If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
@@ -222,11 +103,34 @@ do the following:
 5. Set breakpoints in the application where you need it
 6. Step through the process one step at a time
 
-## Testing
+This launches the test runner in an interactive watch mode.
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-Have a look here: https://www.baeldung.com/spring-boot-testing
 
+### Deployment
+After each commit to the master branch, automatic Github Actions get executed which deploy our application to [Heroku](https://www.heroku.com/).
+
+## Roadmap
+
+<img src="https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/blob/ReadMe-media/images/Illustrations/Hannibalroadmap.png" width="25%"/>
+
+## Authors
+
+* **Luis Torrejón Machado**  - [luis-tm](https://github.com/luis-tm)
+* **Paul Luley**  - [paolovic](https://github.com/paolovic)
+* **Maria Korobeynikova** - [mkorob](https://github.com/mkorob)
+* **Hilal Çomak** - [hilalcomak](https://github.com/hilalcomak)
+* **Alessio Brazerol** - [apple00juice](https://github.com/apple00juice)
 
 ## License
-This project is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html),
-which guarantees end users the freedoms to run, study, share and modify the software.
+This project is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html), which guarantees end users the freedoms to run, study, share and modify the software.
+
+## Acknowledgments
+* This project is based on the [SoPra FS22 - Client Template](https://github.com/HASEL-UZH/sopra-fs22-template-client)
+* Thanks to **Melih Catal** - [melihcatal](https://github.com/melihcatal) who supported us as a Tutor and Scrum Master during this project.
+
+## Links
+* [Hannibal Client Website](https://sopra-fs22-group-16-client.herokuapp.com/)
+* [Hannibal Server Website](https://sopra-fs22-group-16-server.herokuapp.com/)
+* [SonarCloud](https://sonarcloud.io/organizations/sopra-fs22-group-16/projects)
+* [Issue tracker](https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/issues)
