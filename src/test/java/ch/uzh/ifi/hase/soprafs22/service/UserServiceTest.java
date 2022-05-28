@@ -131,7 +131,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 
@@ -151,7 +151,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 
@@ -171,7 +171,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 
@@ -191,7 +191,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 
@@ -211,7 +211,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 
@@ -231,7 +231,7 @@ class UserServiceTest {
         // then
         assertEquals(3, registeredUsers.size());
         for(int i = 0; i < 3; ++i){
-            assertEquals(users.get(i), registeredUsers.get(i));
+            assertEquals(registeredUsers.get(i), users.get(i));
         }
     }
 

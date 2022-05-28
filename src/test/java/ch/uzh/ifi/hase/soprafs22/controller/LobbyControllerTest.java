@@ -27,6 +27,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
@@ -87,6 +90,46 @@ class LobbyControllerTest {
                 .andExpect(jsonPath("$.gameType", is(lobby.getGameType().toString())))
                 .andExpect(jsonPath("$.invitationCode", is(lobby.getInvitationCode())));
     }
+
+    @Test
+    void get_LobbiesCollection_returns_public_only() throws Exception{
+        // given one private and one public
+        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.UNRANKED);
+
+        ILobby lobby1 = new Lobby(1L, "lobbyName1", Visibility.PUBLIC, null);
+        lobby1.setGameMode(GameMode.ONE_VS_ONE);
+        lobby1.setGameType(GameType.UNRANKED);
+
+        // merge into collection
+        Map<Long, ILobby> lobbyMap = new HashMap<>();
+        lobbyMap.put(lobby.getId(), lobby);
+        lobbyMap.put(lobby1.getId(), lobby1);
+        Collection<ILobby> lobbyCollection = lobbyMap.values();
+
+        // mock lobby service that returns both public and private
+        given(lobbyService.getLobbiesCollection()).willReturn(lobbyCollection);
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // then the first lobby in the collection will be the public lobby
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is((int) lobby1.getId())))
+                .andExpect(jsonPath("$[0].name", is(lobby1.getName())))
+                .andExpect(jsonPath("$[0].hostId", is((int) lobby1.getHost().getId())))
+                .andExpect(jsonPath("$[0].players[0].id", is((int) lobby1.getHost().getId())))
+                .andExpect(jsonPath("$[0].players[0].name", is(lobby1.getHost().getName())))
+                .andExpect(jsonPath("$[0].players[0].ready", is(lobby1.getHost().isReady())))
+                .andExpect(jsonPath("$[0].players[0].team", is(lobby1.getHost().getTeam().ordinal())))
+                .andExpect(jsonPath("$[0].visibility", is(lobby1.getVisibility().toString())))
+                .andExpect(jsonPath("$[0].gameMode", is(lobby1.getGameMode().toString())))
+                .andExpect(jsonPath("$[0].gameType", is(lobby1.getGameType().toString())));
+    }
+
 
     @Test
     void unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
