@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket;
 
-import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
-
 import java.util.List;
 
 /**

@@ -220,9 +220,7 @@ public class LobbyService {
             lobby.balanceTeams();
             return removedPlayerList;
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
     public void removePlayerFromLobby(String token, Long lobbyId) {

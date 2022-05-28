@@ -104,9 +104,6 @@ public class GameService {
         catch (WrongTargetTeamException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, UNIT + e.getSecond() + " is not a valid target of unit " + e.getFirst() + ".", e);
         }
-        catch (TargetUnreachableException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Target unreachable, unit " + e.getUnit().getType().name() + " cannot move from " + e.getStart() + " to " + e.getEnd(), e);
-        }
     }
 
     public GameDelta unitMove(Long id, String token, @NotNull MoveCommand moveCommand) {
@@ -159,9 +156,6 @@ public class GameService {
         catch (GameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_WITH_ID + e.id() + NOT_FOUND, e);
         }
-        catch (NotPlayersTurnException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, NOT_PLAYERS_TURN, e);
-        }
         catch (GameOverException e) {
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, GAME_IS_OVER, e);
         }
@@ -177,7 +171,7 @@ public class GameService {
         return temp;
     }
 
-    public IGameStatistics getGameStats(Long id, String token) {
+    public IGameStatistics getGameStats(Long id) {
         try {
             return getGameById(id).getStatistics();
         }

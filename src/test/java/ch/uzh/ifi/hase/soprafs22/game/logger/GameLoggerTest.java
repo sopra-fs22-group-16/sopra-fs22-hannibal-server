@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameLoggerTest {
+class GameLoggerTest {
 
     private GameLogger gameLogger;
     private static final Map<Long, Integer> INITIAL_PLAYER_UNITS = Map.of(1L, 10, 2L, 8);

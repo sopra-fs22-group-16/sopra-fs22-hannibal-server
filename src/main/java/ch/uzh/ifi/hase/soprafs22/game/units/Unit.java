@@ -8,10 +8,11 @@ import ch.uzh.ifi.hase.soprafs22.game.units.enums.UnitType;
 import ch.uzh.ifi.hase.soprafs22.game.units.interfaces.IObservable;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Unit implements IObservable {
+public class Unit implements IObservable, Serializable {
     private UnitType type;
     private int health;
     private int maxHealth;

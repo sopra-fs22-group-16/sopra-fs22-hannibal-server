@@ -218,7 +218,7 @@ class GameControllerTest {
                 return 43;
             }
         };
-        when(gameService.getGameStats(any(), any())).thenReturn(gameStatistics);
+        when(gameService.getGameStats(any())).thenReturn(gameStatistics);
         MockHttpServletRequestBuilder getRequest = get("/v1/game/match/1/stats")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("token", "tuktuk");

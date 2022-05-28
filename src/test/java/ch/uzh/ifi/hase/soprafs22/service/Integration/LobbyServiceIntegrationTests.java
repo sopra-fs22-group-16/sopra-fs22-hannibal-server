@@ -316,11 +316,11 @@ class LobbyServiceIntegrationTests {
 
         lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.UNRANKED);
 
-        assertEquals(createdLobby.getId(), id);
-        assertEquals(createdLobby.getName(), "newLobbyName");
-        assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
-        assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
-        assertEquals(createdLobby.getGameType(), GameType.UNRANKED);
+        assertEquals(id, createdLobby.getId());
+        assertEquals("newLobbyName", createdLobby.getName());
+        assertEquals(Visibility.PUBLIC, createdLobby.getVisibility());
+        assertEquals(GameMode.TWO_VS_TWO, createdLobby.getGameMode());
+        assertEquals(GameType.UNRANKED, createdLobby.getGameType());
     }
 
     @Test
@@ -346,11 +346,11 @@ class LobbyServiceIntegrationTests {
 
         lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "newLobbyName", Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED);
 
-        assertEquals(createdLobby.getId(), id);
-        assertEquals(createdLobby.getName(), "newLobbyName");
-        assertEquals(createdLobby.getVisibility(), Visibility.PUBLIC);
-        assertEquals(createdLobby.getGameMode(), GameMode.TWO_VS_TWO);
-        assertEquals(createdLobby.getGameType(), GameType.RANKED);
+        assertEquals(id, createdLobby.getId());
+        assertEquals("newLobbyName", createdLobby.getName());
+        assertEquals(Visibility.PUBLIC, createdLobby.getVisibility());
+        assertEquals(GameMode.TWO_VS_TWO, createdLobby.getGameMode());
+        assertEquals(GameType.RANKED, createdLobby.getGameType());
     }
 
     @Test
@@ -367,8 +367,9 @@ class LobbyServiceIntegrationTests {
         createdLobby.setGameType(gameType);
 
         // Attempt to update lobby with empty name
+        String token = createdLobby.getHost().getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), "", visibility, gameMode, gameType));
+                () -> lobbyService.updateLobby(createdLobby, token, "", visibility, gameMode, gameType));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -388,8 +389,9 @@ class LobbyServiceIntegrationTests {
         createdLobby.setGameType(gameType);
 
         // Attempt to update lobby with empty name
+        String token = createdLobby.getHost().getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, null, null, null));
+                () -> lobbyService.updateLobby(createdLobby, token, lobbyName, null, null, null));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -430,8 +432,9 @@ class LobbyServiceIntegrationTests {
         createdLobby.setGameType(gameType);
 
         // Attempt to update lobby with empty name
+        String token = createdLobby.getHost().getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.updateLobby(createdLobby, createdLobby.getHost().getToken(), lobbyName, Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED));
+                () -> lobbyService.updateLobby(createdLobby, token, lobbyName, Visibility.PUBLIC, GameMode.TWO_VS_TWO, GameType.RANKED));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -527,8 +530,9 @@ class LobbyServiceIntegrationTests {
         assertEquals(0, lobby.getNumberOfPlayers());
 
         // the lobby has been removed from the map
+        long id = lobby.getId();
         Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.getLobby(token, lobby.getId()));
+                () -> lobbyService.getLobby(token, id));
     }
 
     @Test
@@ -621,8 +625,10 @@ class LobbyServiceIntegrationTests {
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
 
         // Attempt to create lobby with not ready player
+        String token = createdLobby.getHost().getToken();
+        long id = createdLobby.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -648,8 +654,10 @@ class LobbyServiceIntegrationTests {
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
         // Attempt to create a game with unregistered members
+        String token = createdLobby.getHost().getToken();
+        long id = createdLobby.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -670,8 +678,10 @@ class LobbyServiceIntegrationTests {
         lobbyService.modifyPlayer(createdLobby.getHost().getToken(), createdLobby.getId(), null, true);
 
         // Attempt to create a game with player 2 not ready
+        String token = createdLobby.getHost().getToken();
+        long id = createdLobby.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -696,8 +706,9 @@ class LobbyServiceIntegrationTests {
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
         // Attempt to create a game with null or empty token
+        long id = createdLobby.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(token, createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
@@ -722,8 +733,10 @@ class LobbyServiceIntegrationTests {
         lobbyService.modifyPlayer(player2.getToken(), createdLobby.getId(), null, true);
 
         // Attempt to create a game while not being the host
+        long id = createdLobby.getId();
+        String token = player2.getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(player2.getToken(), createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
@@ -763,8 +776,10 @@ class LobbyServiceIntegrationTests {
         lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId());
 
         // Attempt to create a game with a game already running
+        long id = createdLobby.getId();
+        String token = createdLobby.getHost().getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> lobbyService.createGame(createdLobby.getHost().getToken(), createdLobby.getId()));
+                () -> lobbyService.createGame(token, id));
 
         // Check https status code
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());

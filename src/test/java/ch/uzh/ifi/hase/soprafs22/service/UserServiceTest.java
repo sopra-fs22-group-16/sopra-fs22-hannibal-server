@@ -22,7 +22,7 @@ import static org.mockito.AdditionalMatchers.and;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
 
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -32,9 +32,6 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    public UserServiceTest() {
-    }
 
     private RegisteredUser testUser1;
     private RegisteredUser testUser2;
@@ -104,8 +101,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getRegisteredUser_withId_success() {
-
+    void getRegisteredUser_withId_success() {
         // when
         RegisteredUser registeredUser = userService.getRegisteredUserWithId(testUser1.getId());
 
@@ -120,7 +116,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getRegisteredUsers_RankedScore_Ascending_success() {
+    void getRegisteredUsers_RankedScore_Ascending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -135,12 +131,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_RankedScore_Descending_success() {
+    void getRegisteredUsers_RankedScore_Descending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -155,12 +151,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_Wins_Ascending_success() {
+    void getRegisteredUsers_Wins_Ascending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -175,12 +171,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_Wins_Descending_success() {
+    void getRegisteredUsers_Wins_Descending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -195,12 +191,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_Losses_Ascending_success() {
+    void getRegisteredUsers_Losses_Ascending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -215,12 +211,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_Losses_Descending_success() {
+    void getRegisteredUsers_Losses_Descending_success() {
 
         // given
         List<RegisteredUser> users = new LinkedList<>();
@@ -235,12 +231,12 @@ public class UserServiceTest {
         // then
         assertEquals(registeredUsers.size(), 3);
         for(int i = 0; i < 3; ++i){
-            assertEquals(registeredUsers.get(i), users.get(i));
+            assertEquals(users.get(i), registeredUsers.get(i));
         }
     }
 
     @Test
-    public void getRegisteredUsers_Unknown_Field_throwsException() {
+    void getRegisteredUsers_Unknown_Field_throwsException() {
 
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> userService.getRegisteredUsers("????", false, 0, 10));
@@ -249,7 +245,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getRegisteredUser_withIdNotInRepository_throwsException() {
+    void getRegisteredUser_withIdNotInRepository_throwsException() {
 
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
                 () -> userService.getRegisteredUserWithId(idNotInRepository));
@@ -259,7 +255,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateRegisteredUser_withId_success() {
+    void updateRegisteredUser_withId_success() {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -292,7 +288,7 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    public void updateRegisteredUser_withNoPasswordSet_success(String password) {
+    void updateRegisteredUser_withNoPasswordSet_success(String password) {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -323,7 +319,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateRegisteredUser_withIdNotInRepository_throwsException() {
+    void updateRegisteredUser_withIdNotInRepository_throwsException() {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -342,24 +338,25 @@ public class UserServiceTest {
         newData.setPassword(newPassword);
 
         // when
+        String token = testUser1.getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> userService.updateRegisteredUser(idNotInRepository, testUser1.getToken(), newData));
+                () -> userService.updateRegisteredUser(idNotInRepository, token, newData));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
 
         // Assert no change
-        assertEquals(testUser1.getId(), oldData.getId());
-        assertEquals(testUser1.getToken(), oldData.getToken());
-        assertEquals(testUser1.getPassword(), oldData.getPassword());
-        assertEquals(testUser1.getUsername(), oldData.getUsername());
-        assertEquals(testUser1.getRankedScore(), oldData.getRankedScore());
-        assertEquals(testUser1.getWins(), oldData.getWins());
-        assertEquals(testUser1.getLosses(), oldData.getLosses());
+        assertEquals(oldData.getId(), testUser1.getId());
+        assertEquals(oldData.getToken(), testUser1.getToken());
+        assertEquals(oldData.getPassword(), testUser1.getPassword());
+        assertEquals(oldData.getUsername(), testUser1.getUsername());
+        assertEquals(oldData.getRankedScore(), testUser1.getRankedScore());
+        assertEquals(oldData.getWins(), testUser1.getWins());
+        assertEquals(oldData.getLosses(), testUser1.getLosses());
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    public void updateRegisteredUser_noToken_throwsException(String token) {
+    void updateRegisteredUser_noToken_throwsException(String token) {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -378,8 +375,9 @@ public class UserServiceTest {
         newData.setPassword(newPassword);
 
         // when
+        long id = testUser1.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> userService.updateRegisteredUser(testUser1.getId(), token, newData));
+                () -> userService.updateRegisteredUser(id, token, newData));
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
 
@@ -395,7 +393,7 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    public void updateRegisteredUser_nullOrEmptyNewUsername_throwsException(String name) {
+    void updateRegisteredUser_nullOrEmptyNewUsername_throwsException(String name) {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -413,8 +411,10 @@ public class UserServiceTest {
         newData.setPassword(newPassword);
 
         // when
+        long id = testUser1.getId();
+        String token = testUser1.getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> userService.updateRegisteredUser(testUser1.getId(), testUser1.getToken(), newData));
+                () -> userService.updateRegisteredUser(id, token, newData));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
 
@@ -429,7 +429,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateRegisteredUser_TokenMissMatch_throwsException() {
+    void updateRegisteredUser_TokenMissMatch_throwsException() {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -448,8 +448,9 @@ public class UserServiceTest {
         newData.setPassword(newPassword);
 
         // when
+        long id = testUser1.getId();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> userService.updateRegisteredUser(testUser1.getId(), "wrong_token", newData));
+                () -> userService.updateRegisteredUser(id, "wrong_token", newData));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
 
@@ -464,7 +465,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateRegisteredUser_NameConflict_throwsException() {
+    void updateRegisteredUser_NameConflict_throwsException() {
 
         RegisteredUser oldData = new RegisteredUser();
         oldData.setId(testUser1.getId());
@@ -483,8 +484,10 @@ public class UserServiceTest {
         newData.setPassword(newPassword);
 
         // when
+        long id = testUser1.getId();
+        String token = testUser1.getToken();
         ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class,
-                () -> userService.updateRegisteredUser(testUser1.getId(), testUser1.getToken(), newData));
+                () -> userService.updateRegisteredUser(id, token, newData));
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
 
@@ -497,5 +500,4 @@ public class UserServiceTest {
         assertEquals(testUser1.getWins(), oldData.getWins());
         assertEquals(testUser1.getLosses(), oldData.getLosses());
     }
-
 }
