@@ -136,9 +136,9 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 After each commit to the master branch, automatic Github Actions get executed which deploy our application to [Heroku](https://www.heroku.com/).
 
 ## Roadmap
-
+<p align="center">
 <img src="https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client/blob/ReadMe-media/images/Illustrations/Hannibalroadmap.png" width="50%"/>
-
+</p>
 ## Authors
 
 * **Luis Torrejón Machado**  - [luis-tm](https://github.com/luis-tm)
