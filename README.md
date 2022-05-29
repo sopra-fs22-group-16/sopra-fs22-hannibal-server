@@ -13,7 +13,7 @@
 Hannibal is a turn-based strategy game in which players can play against each other over the web. Users can create 1vs1 public or private games without registration. However, it is possible to register to keep records of the games played and compete with other users to be at the top of the leaderboard. Because of the quick nature of the game (you can finish a game in roughly 20 turns). Hannibal is best suited to be played on mobile phones, but can also be played on the Desktop version.  
 
 ### Motivation
-We performed multiple brainstorming sessions as a group and came up with different project ideas. We decided we preferred to create a game as we were keen on playing a game we envisioned and created together. From the beginning, we envisioned the game to be something which is fun to play without learning too many rules, and something people enjoying playing, even outside the SoPra requirements. Another major point for us was that the game should be competitive and thus we decided on a turn-based strategy game as this would be appropriate for the scope of the SoPra. While searching for a name, one of our team members proposed Hannibal, as he was a brilliant strategist who lived between 247 and 183 BC. Because Hannibal moved over the alps with elephants, we also choose the pixel art icon of the war elephant as our logo.
+We held multiple brainstorming sessions as a group and came up with different project ideas. We decided we preferred to create a game as we were keen on playing a game we envisioned and created together. From the beginning, we envisioned the game to be something which is fun to play without learning too many rules, and something people would enjoy playing, even outside the SoPra requirements. Another major point for us was that the game should be collaborative and thus we decided on a turn-based strategy game as this would be appropriate for the scope of the SoPra. While searching for a name, one of our team members proposed Hannibal, as he was a brilliant strategist who lived between 247 and 183 BC. Because Hannibal moved over the Alps with elephants, we also choose the pixel art icon of the war elephant as our logo.
 
 
 ## Table of content
@@ -53,14 +53,14 @@ We performed multiple brainstorming sessions as a group and came up with differe
 
 ## High-level components
 
-The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5). It promotes the separation of concerns with introducing the three entities Controller, Service, and Repository. It allows the developer to reuse or create reusable POJOs as models.
-It facilitates testing of a particular layer since it enables the developer to mock any layer below or above it.
+The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5). It promotes the separation of concerns with the introduction of three entities: Controller, Service, and Repository. It allows the developer to reuse or create reusable POJOs as models.
+It facilitates testing of a particular layer since it allows the developer to mock any layer below or above it.
 
-According to the above mentioned pattern a lot of work is executed in the LobbyService and therefore, it depicts a main component. A lobby represents the meeting point for players, the possibility to change the player's name, and the starting point for a game. Whenever all users are set the game will start. So, the LobbyService can be seen as the interface between the actual game and all necessary administration logic.
+According to the above mentioned pattern a lot of work is executed in the LobbyService and therefore, it depicts a main component. A lobby represents the meeting point for players, the possibility to change the player's name, and the starting point for a game. Whenever all users are set, the game will start. So, the LobbyService can be seen as the interface between the actual game and all necessary administration logic.
 
 Unsurprisingly for a game, another major part of the logic is located in the GameService. After all user requests are digested by the respective controllers, game related actions are forwarded to the GameService which takes care of the main options for a play unit: attack, move, and surrender. It triggers the underlying models correspondingly, handles and responds to requests by the controller. Besides that, it also triggers the creation of statistics as soon as a game is finished.
 
-And last but not least, the Game class also bundles multiple functionalities. The Game combines multiple elements to the actual game. It consists of the game map, the game units, the players that control the units, and makes adjustments according to settings like the game mode (casual or ranked) or the game type (1vs1 or - in the future - 2vs2). It also calculates the health points after an attack taking the counter attack into account, and informs about the ending of a game.
+And last but not least, the Game class also bundles multiple functionalities. The Game combines multiple elements to the actual game. It consists of the game map, the game units, the players that control the units, and makes adjustments according to settings like the game mode (casual or ranked) or the game type (1vs1 or - in the future - 2vs2). It also calculates the health points after an attack taking the counter attack into account, and informs about the end of a game.
 
 
 ## External Dependencies	
