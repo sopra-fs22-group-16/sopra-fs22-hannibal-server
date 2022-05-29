@@ -13,6 +13,8 @@ Hannibal is a turn-based strategy game in which players can play against each ot
     - [Build](#build)
     - [Run](#run)
     - [Test](#test)
+    - [Development Mode](#development mode)
+    - [Debugging](#debugging)
     - [Deployment](#deployment)
 
 - [Illustrations](#illustrations)
@@ -89,7 +91,7 @@ and in the other one:
 
 `./gradlew bootRun`
 
-## Debugging
+### Debugging
 
 If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
 through the process step-by-step.
