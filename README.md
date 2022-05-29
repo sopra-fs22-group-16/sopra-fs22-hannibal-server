@@ -39,6 +39,7 @@ We performed multiple brainstorming sessions as a group and came up with differe
 
 ## Technologies
 
+<img src="https://github.com/get-icon/geticon/blob/master/icons/gradle.svg" width="16 height="16" /> [**gradle**](https://gradle.org/)
 <img src="https://user-images.githubusercontent.com/91155454/170843203-151000ab-db93-4750-b4f4-ba4060a23d53.png" width="16" height="16" /> [**Java**](https://java.com/)		
 
 <img src="https://user-images.githubusercontent.com/91155454/170842503-3a531289-1afc-4b9c-87c1-cc120d9229ce.svg" style='visibility:hidden;' width="16" height="16" /> [**REST**](https://en.wikipedia.org/wiki/Representational_state_transfer) 	
