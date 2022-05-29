@@ -67,6 +67,8 @@ And last but not least, the [Game](https://github.com/sopra-fs22-group-16/sopra-
 
 <img src="https://user-images.githubusercontent.com/91155454/170843438-4e721d42-5d97-4126-9739-ce049d0d8701.png" style='visibility:hidden;' width="16" height="16" /> [**Spring**](https://spring.io/) 	
 
+<img src="https://user-images.githubusercontent.com/91155454/170887616-39d92726-e081-45a4-8192-11f41297c98c.png" style='visibility:hidden;' width="16" height="16" /> [**JUnit**](https://junit.org/) 	
+
 <img src="https://user-images.githubusercontent.com/91155454/170843395-534f90bd-793d-477d-8626-4d8015c6041a.png" style='visibility:hidden;' width="16" height="16" /> [**Hibernate**](https://hibernate.org/) 		
 
 ## Getting started
@@ -102,7 +104,7 @@ and open the project with an IDE of your choice.
 ./gradlew test
 ```
 
-A test coverage over 85% was achieved with unit tests for the POJOs, the controller layer, and the service layer, additional integration tests for the service layer, and integration tests for the repository layer.
+A test coverage over 85% with JUnit 5 was achieved with unit tests for the POJOs, the controller layer, and the service layer, additional integration tests for the service layer, and integration tests for the repository layer.
 
 ### Development Mode
 
