@@ -38,6 +38,8 @@ public class UserController {
         this.userService = userService;
     }
 
+    //TODO add tests
+
     @PostMapping("/{apiVersion}/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -48,6 +50,9 @@ public class UserController {
 
         return DTOMapper.INSTANCE.convertRegisteredUserToUserRegistrationGetDTO(registeredUser);
     }
+
+
+    //TODO add tests
 
     @PostMapping("/{apiVersion}/logout")
     @ResponseStatus(HttpStatus.OK)
@@ -60,6 +65,7 @@ public class UserController {
         return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(loggedOutUser);
     }
 
+    //TODO add tests
     @PostMapping("/{apiVersion}/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

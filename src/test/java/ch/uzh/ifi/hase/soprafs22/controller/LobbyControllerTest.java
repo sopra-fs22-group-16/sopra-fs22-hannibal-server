@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
-import ch.uzh.ifi.hase.soprafs22.game.player.Player;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyDelta;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
@@ -12,11 +11,15 @@ import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.post_dto.PlayerPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.LobbyDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,9 +36,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * LobbyControllerTest
@@ -58,13 +65,17 @@ class LobbyControllerTest {
     @MockBean
     SimpMessagingTemplate socketMessage;
 
+    @Captor
+    ArgumentCaptor<LobbyDeltaWebSocketDTO> lobbyDeltaSockDTOArgumentCaptor;
+
+    private static final long LOBBY_ID = 123L;
+
     @Test
     void givenLobbies_whenGetLobby_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
-
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
@@ -92,9 +103,9 @@ class LobbyControllerTest {
     }
 
     @Test
-    void get_LobbiesCollection_returns_public_only() throws Exception{
+    void get_LobbiesCollection_returns_public_only() throws Exception {
         // given one private and one public
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.UNRANKED);
 
@@ -109,7 +120,7 @@ class LobbyControllerTest {
         Collection<ILobby> lobbyCollection = lobbyMap.values();
 
         // mock lobby service that returns both public and private
-        given(lobbyService.getLobbiesCollection()).willReturn(lobbyCollection);
+        given(lobbyService.getLobbies()).willReturn(lobbyCollection);
 
         // when
         MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby")
@@ -134,7 +145,7 @@ class LobbyControllerTest {
     @Test
     void unregistered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -175,9 +186,113 @@ class LobbyControllerTest {
     }
 
     @Test
+    void givenPlayerPutDTO_validPlayerModification_thenReturnLobbyDelta() throws Exception {
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.RANKED);
+        IPlayer player = lobby.generatePlayer();
+        lobby.addPlayer(player);
+
+        PlayerPutDTO playerPutDTO = new PlayerPutDTO();
+        playerPutDTO.setName("Luis");
+        playerPutDTO.setReady(true);
+
+        // when
+        doNothing().when(lobbyService).modifyPlayer(player.getToken(), LOBBY_ID, playerPutDTO.getName(), playerPutDTO.getReady());
+
+        MockHttpServletRequestBuilder putRequest = put("/v1/game/lobby/" + lobby.getId() + "/player")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(playerPutDTO))
+                .header("token", player.getToken());
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+
+        verify(lobbyService).modifyPlayer(player.getToken(), LOBBY_ID, playerPutDTO.getName(), playerPutDTO.getReady());
+        verify(socketMessage).convertAndSend(eq("/topic/lobby/123"), lobbyDeltaSockDTOArgumentCaptor.capture());
+
+        LobbyDeltaWebSocketDTO deltaSockDTO = lobbyDeltaSockDTOArgumentCaptor.getValue();
+        assertTrue(deltaSockDTO.isPullUpdate());
+        assertFalse(deltaSockDTO.isRedirectToGame());
+        assertNull(deltaSockDTO.getRemovedPlayerIdList());
+        assertNull(deltaSockDTO.getNameChangedOfPlayerWithId());
+    }
+
+    @Test
+    void givenLobbyId_validGameCreation_thenReturnLobbyDelta() throws Exception {
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.RANKED);
+        IPlayer player = lobby.generatePlayer();
+        lobby.addPlayer(player);
+
+        Map<String, IPlayer> decoratedPlayers = new HashMap<>();
+        decoratedPlayers.put(player.getToken(), player);
+
+        Game game = new Game(GameMode.ONE_VS_ONE, GameType.RANKED, decoratedPlayers);
+
+        // when
+        given(lobbyService.createGame(player.getToken(), lobby.getId())).willReturn(game);
+
+        MockHttpServletRequestBuilder putRequest = post("/v1/game/match/"+LOBBY_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", player.getToken());
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isCreated());
+
+        verify(lobbyService).createGame(player.getToken(), lobby.getId());
+        verify(socketMessage).convertAndSend(eq("/topic/lobby/123"), lobbyDeltaSockDTOArgumentCaptor.capture());
+
+        LobbyDeltaWebSocketDTO deltaSockDTO = lobbyDeltaSockDTOArgumentCaptor.getValue();
+        assertFalse(deltaSockDTO.isPullUpdate());
+        assertTrue(deltaSockDTO.isRedirectToGame());
+        assertNull(deltaSockDTO.getRemovedPlayerIdList());
+        assertNull(deltaSockDTO.getNameChangedOfPlayerWithId());
+    }
+
+    @Test
+    void givenLobbyPostDTO_validLobbyUpdate_thenReturnLobbyDelta() throws Exception {
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
+        lobby.setGameMode(GameMode.ONE_VS_ONE);
+        lobby.setGameType(GameType.RANKED);
+        IPlayer player = lobby.generatePlayer();
+        lobby.addPlayer(player);
+
+        LobbyPostDTO lobbyPostDTO = new LobbyPostDTO();
+        lobbyPostDTO.setName("otherName");
+        lobbyPostDTO.setVisibility(Visibility.PUBLIC);
+        lobbyPostDTO.setGameMode(GameMode.TWO_VS_TWO);
+        lobbyPostDTO.setGameType(GameType.UNRANKED);
+
+        // when
+        doNothing().when(lobbyService).updateLobby(lobby, player.getToken(), lobbyPostDTO.getName(), lobbyPostDTO.getVisibility(), lobbyPostDTO.getGameMode(), lobbyPostDTO.getGameType());
+
+        MockHttpServletRequestBuilder putRequest = put("/v1/game/lobby/" + lobby.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(lobbyPostDTO))
+                .header("token", player.getToken());
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+
+        verify(lobbyService).updateLobby(null, player.getToken(), lobbyPostDTO.getName(), lobbyPostDTO.getVisibility(), lobbyPostDTO.getGameMode(), lobbyPostDTO.getGameType());
+        verify(socketMessage).convertAndSend(eq("/topic/lobby/"+ lobby.getId()), lobbyDeltaSockDTOArgumentCaptor.capture());
+        LobbyDeltaWebSocketDTO deltaSockDTO1 = lobbyDeltaSockDTOArgumentCaptor.getValue();
+        assertNull(deltaSockDTO1.getNameChangedOfPlayerWithId());
+        assertTrue(deltaSockDTO1.isPullUpdate());
+        assertFalse(deltaSockDTO1.isRedirectToGame());
+        assertEquals(0, deltaSockDTO1.getRemovedPlayerIdList().size());
+
+        verify(socketMessage).convertAndSend(eq("/topic/lobby/join"), lobbyDeltaSockDTOArgumentCaptor.capture());
+        Object deltaSockDTO2 = lobbyDeltaSockDTOArgumentCaptor.getValue();
+        assertEquals("", deltaSockDTO2);
+    }
+
+    @Test
     void registered_createLobby_validInput_lobbyCreated_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
         String token = lobby.getHost().getToken();
@@ -187,7 +302,6 @@ class LobbyControllerTest {
         lobbyPostDTO.setVisibility(lobby.getVisibility());
         lobbyPostDTO.setGameMode(lobby.getGameMode());
         lobbyPostDTO.setGameType(lobby.getGameType());
-
 
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
@@ -220,7 +334,7 @@ class LobbyControllerTest {
     @Test
     void unregistered_addPlayer_validInput_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.UNRANKED);
         String token = lobby.getHost().getToken();
@@ -232,15 +346,13 @@ class LobbyControllerTest {
 
         LobbyDelta lobbyDelta = new LobbyDelta(player, null);
 
-
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
         given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), "")).willReturn(lobbyDelta);
         given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), null)).willReturn(lobbyDelta);
 
-
         // when
-        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/"+lobby.getId()+"/player")
+        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/" + lobby.getId() + "/player")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(playerPostDTO))
                 .header("token", "");
@@ -250,7 +362,7 @@ class LobbyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) player.getId())))
                 .andExpect(jsonPath("$.name", is(player.getName())))
-                .andExpect(jsonPath("$.ready", is( player.isReady())))
+                .andExpect(jsonPath("$.ready", is(player.isReady())))
                 .andExpect(jsonPath("$.team", is(player.getTeam().ordinal())))
                 .andExpect(jsonPath("$.token", is(player.getToken())));
     }
@@ -258,7 +370,7 @@ class LobbyControllerTest {
     @Test
     void registered_addPlayer_validInput_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.UNRANKED);
         String token = lobby.getHost().getToken();
@@ -267,7 +379,7 @@ class LobbyControllerTest {
         playerPostDTO.setInvitationCode(lobby.getInvitationCode());
 
         RegisteredUser registeredUser = new RegisteredUser();
-        registeredUser.setId(0L);
+        registeredUser.setId(LOBBY_ID);
         registeredUser.setUsername("user");
         registeredUser.setPassword("password");
         registeredUser.setToken(UUID.randomUUID().toString());
@@ -280,13 +392,12 @@ class LobbyControllerTest {
 
         LobbyDelta lobbyDelta = new LobbyDelta(player, null);
 
-
         // this mocks the LobbyService -> we define above what the userService should
         // return when getUser() is called
         given(lobbyService.addPlayer(lobby.getInvitationCode(), lobby.getId(), registeredUser.getToken())).willReturn(lobbyDelta);
 
         // when
-        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/"+lobby.getId()+"/player")
+        MockHttpServletRequestBuilder postRequest = post("/v1/game/lobby/" + lobby.getId() + "/player")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(playerPostDTO))
                 .header("token", registeredUser.getToken());
@@ -296,7 +407,7 @@ class LobbyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) player.getId())))
                 .andExpect(jsonPath("$.name", is(player.getName())))
-                .andExpect(jsonPath("$.ready", is( player.isReady())))
+                .andExpect(jsonPath("$.ready", is(player.isReady())))
                 .andExpect(jsonPath("$.team", is(player.getTeam().ordinal())))
                 .andExpect(jsonPath("$.token", is(player.getToken())));
     }
@@ -304,7 +415,7 @@ class LobbyControllerTest {
     @Test
     void validInput_getLobbyQRCode_thenReturnBase64() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -326,7 +437,7 @@ class LobbyControllerTest {
         given(lobbyService.getQRCodeFromLobby("registeredUserToken", lobby.getId())).willReturn(qrCode);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby/0/qrcode")
+        MockHttpServletRequestBuilder getRequest = get("/v1/game/lobby/123/qrcode")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("token", "registeredUserToken");
 
@@ -341,7 +452,7 @@ class LobbyControllerTest {
     @Test
     void createLobby_thenLeaveLobby() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.RANKED);
 
@@ -365,7 +476,7 @@ class LobbyControllerTest {
     @Test
     void given1v1Game_whenGetGame_validInput_thenReturnJsonArray() throws Exception {
         // given
-        ILobby lobby = new Lobby(0L, "lobbyName", Visibility.PRIVATE, null);
+        ILobby lobby = new Lobby(LOBBY_ID, "lobbyName", Visibility.PRIVATE, null);
         lobby.setGameMode(GameMode.ONE_VS_ONE);
         lobby.setGameType(GameType.UNRANKED);
 

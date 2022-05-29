@@ -16,6 +16,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.put_dto.PlayerPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.web_socket.LobbyDeltaWebSocketDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.LobbyService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,7 @@ public class LobbyController {
     @PostMapping("/{apiVersion}/game/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody LobbyPostDTO lobbyPostDTO) {
+    public Map<String, Object> createLobby(@RequestHeader("token") String token, @RequestBody @NotNull LobbyPostDTO lobbyPostDTO) {
 
         // Get data from LobbyPostDTO
         String name = lobbyPostDTO.getName();
@@ -94,8 +95,7 @@ public class LobbyController {
 
     @PutMapping("/{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    // TODO add tests.
-    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPutDTO playerPutDTO) {
+    public void modifyPlayerInLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody @NotNull PlayerPutDTO playerPutDTO) {
         //lobby id --> id
         lobbyService.modifyPlayer(token, id, playerPutDTO.getName(), playerPutDTO.getReady());
 
@@ -109,7 +109,7 @@ public class LobbyController {
     @PutMapping("/{apiVersion}/game/lobby/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody LobbyPostDTO lobbyPutDTO) {
+    public void updateLobby(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody @NotNull LobbyPostDTO lobbyPutDTO) {
 
         ILobby lobby = lobbyService.getLobby(token, id);
 
@@ -122,14 +122,12 @@ public class LobbyController {
         lobbyService.updateLobby(lobby, token, name, visibility, gameMode, gameType);
         List<Long> removedPlayerIds = lobbyService.checkPlayersInLobby(lobby);
 
-
         LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
         lobbyDeltaWebSocketDTO.setPullUpdate(true);
         lobbyDeltaWebSocketDTO.setRemovedPlayerIdList(removedPlayerIds);
 
         // send messages to client via socket
         socketMessage.convertAndSend(TOPIC_LOBBY + id, lobbyDeltaWebSocketDTO);
-
         socketMessage.convertAndSend(TOPIC_PUBLIC_LOBBIES, "");
     }
 
@@ -146,8 +144,8 @@ public class LobbyController {
     @GetMapping("/{apiVersion}/game/lobby")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<LobbyGetDTO> getLobby() {
-        Collection<ILobby> lobbiesCollection = lobbyService.getLobbiesCollection();
+    public List<LobbyGetDTO> getLobbies() {
+        Collection<ILobby> lobbiesCollection = lobbyService.getLobbies();
         List<LobbyGetDTO> lobbiesGetDTOs = new ArrayList<>();
 
         for (ILobby lobby : lobbiesCollection) {
@@ -162,7 +160,6 @@ public class LobbyController {
     @PostMapping("/{apiVersion}/game/match/{lobbyId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void createGame(@RequestHeader("token") String token, @PathVariable Long lobbyId) {
-
         lobbyService.createGame(token, lobbyId);
 
         LobbyDeltaWebSocketDTO lobbyDeltaWebSocketDTO = new LobbyDeltaWebSocketDTO();
@@ -201,7 +198,7 @@ public class LobbyController {
     @PostMapping("{apiVersion}/game/lobby/{id}/player")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public PlayerWithTokenGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody PlayerPostDTO playerPostDTO) {
+    public PlayerWithTokenGetDTO addPlayer(@RequestHeader("token") String token, @PathVariable Long id, @RequestBody @NotNull PlayerPostDTO playerPostDTO) {
 
         LobbyDelta lobbyDelta = lobbyService.addPlayer(playerPostDTO.getInvitationCode(), id, token);
 
