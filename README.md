@@ -87,12 +87,14 @@ once the content of a file has been changed and you save the file.
 
 Start two terminal windows and run:
 
-`./gradlew build --continuous`
+```bash
+./gradlew build --continuous`
+```
 
 and in the other one:
-
+```bash
 `./gradlew bootRun`
-
+```
 ### Debugging
 
 If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
