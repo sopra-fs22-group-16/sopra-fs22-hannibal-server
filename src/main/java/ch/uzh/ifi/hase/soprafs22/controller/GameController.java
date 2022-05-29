@@ -71,7 +71,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void playerSurrender(@RequestHeader("token") String token, @PathVariable Long id) {
 
-        GameDelta gameDelta = this.gameService.surrender(id, token);
+        GameDelta gameDelta = this.gameService.playerSurrender(id, token);
 
         sendThroughSocket(id, gameDelta);
     }

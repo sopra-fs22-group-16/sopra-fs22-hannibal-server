@@ -78,7 +78,7 @@ class GameServiceIntegrationTest {
 
         lobbyService.createGame(registeredUser.getToken(), createdLobby.getId());
 
-        gameService.surrender(createdLobby.getId(), registeredUser.getToken());
+        gameService.playerSurrender(createdLobby.getId(), registeredUser.getToken());
 
         RegisteredUser player1 = userRepository.findRegisteredUserByToken(registeredUser.getToken());
         assertEquals(900, player1.getRankedScore());
