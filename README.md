@@ -55,6 +55,10 @@ We performed multiple brainstorming sessions as a group and came up with differe
 
 The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5). It promotes the separation of concerns with introducing the three entities Controller, Service, and Repository. It allows the developer to reuse or create reusable POJOs as models.
 It facilitates testing of a particular layer since it enables the developer to mock any layer below or above it.
+According to the above mentioned pattern a lot of work is executed in the LobbyService and therefore, it depicts a main component. A lobby represents the meeting point for players, the possibility to change the player's name, and the starting point for a game. Whenever all users are set the game will start. So, the LobbyService can be seen as the interface between the actual game and all necessary administration logic.
+Unsurprisingly for a game, another major part of the logic is located in the GameService. After all user requests are digested by the respective controllers, game related actions are forwarded to the GameService which takes care of the main options for a play unit: attack, move, and surrender. It triggers the underlying models correspondingly, handles and responds to requests by the controller. Besides that, it also triggers the creation of statistics as soon as a game is finished.
+And last but not least, the Game class also bundles multiple functionalities. The Game combines multiple elements to the actual game. It consists of the game map, the game units, the players that control the units, and makes adjustments according to settings like the game mode (casual or ranked) or the game type (1vs1 or - in the future - 2vs2). It also calculates the health points after an attack taking the counter attack into account, and informs about the ending of a game.
+
 
 ## External Dependencies	
 
