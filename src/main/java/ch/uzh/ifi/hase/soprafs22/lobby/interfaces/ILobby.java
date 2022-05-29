@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 
-public interface ILobby extends Iterable<IPlayer>{
+public interface ILobby extends Iterable<IPlayer> {
 
     byte[] getQrCode() throws RestClientException;
 

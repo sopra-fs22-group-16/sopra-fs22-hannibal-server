@@ -1,27 +1,83 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.game.Game;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
+import ch.uzh.ifi.hase.soprafs22.game.player.IPlayer;
 import ch.uzh.ifi.hase.soprafs22.lobby.Lobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.LobbyManager;
 import ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.List;
+
+import static ch.uzh.ifi.hase.soprafs22.game.enums.GameMode.ONE_VS_ONE;
+import static ch.uzh.ifi.hase.soprafs22.game.enums.GameMode.TWO_VS_TWO;
+import static ch.uzh.ifi.hase.soprafs22.game.enums.GameType.RANKED;
+import static ch.uzh.ifi.hase.soprafs22.game.enums.GameType.UNRANKED;
+import static ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility.PRIVATE;
+import static ch.uzh.ifi.hase.soprafs22.lobby.enums.Visibility.PUBLIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 class LobbyServiceTest {
 
+    private static final String TOKEN = "token";
+    private static final Long LOBBY_ID = 1L;
     private final LobbyManager lobbyManager;
-
     private final LobbyService lobbyService;
 
     public LobbyServiceTest() {
-        this.lobbyManager = Mockito.mock(LobbyManager.class);
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
+        this.lobbyManager = mock(LobbyManager.class);
+        UserRepository userRepository = mock(UserRepository.class);
         this.lobbyService = new LobbyService(userRepository, lobbyManager);
+    }
+
+    @Test
+    void playerModification() throws Exception {
+        lobbyService.modifyPlayer(TOKEN, LOBBY_ID, "newName", true);
+
+        verify(lobbyManager).modifyPlayer(TOKEN, LOBBY_ID, "newName", true);
+    }
+
+    @Test
+    void createGame() throws Exception {
+        ILobby lobby = mock(ILobby.class);
+        Game game = mock(Game.class);
+        IPlayer host = mock(IPlayer.class);
+        IPlayer player = mock(IPlayer.class);
+        when(lobbyManager.getLobbyWithId(LOBBY_ID)).thenReturn(lobby);
+        when(lobby.getHost()).thenReturn(host);
+        when(host.getToken()).thenReturn(TOKEN);
+        when(lobby.getGameMode()).thenReturn(ONE_VS_ONE);
+        when(lobby.getNumberOfPlayers()).thenReturn(2);
+        when(lobby.iterator()).thenReturn(List.of(host, player).iterator());
+        when(host.isReady()).thenReturn(true);
+        when(player.isReady()).thenReturn(true);
+        when(lobby.getGame()).thenReturn(null).thenReturn(game);
+
+        Game actualGame = lobbyService.createGame(TOKEN, LOBBY_ID);
+
+        assertEquals(game, actualGame);
+    }
+
+    @Test
+    void updateLobby() throws Exception {
+        ILobby lobby = mock(ILobby.class);
+        IPlayer host = mock(IPlayer.class);
+        when(lobby.getHost()).thenReturn(host);
+        when(host.getToken()).thenReturn(TOKEN);
+
+        lobbyService.updateLobby(lobby, TOKEN, "newName", PUBLIC, TWO_VS_TWO, UNRANKED);
+
+        verify(lobby).setName(eq("newName"));
+        verify(lobby).setVisibility(eq(PUBLIC));
+        verify(lobby).setGameMode(eq(TWO_VS_TWO));
+        verify(lobby).setGameType(eq(UNRANKED));
     }
 
     @Test
@@ -29,9 +85,9 @@ class LobbyServiceTest {
         // given
         long id = 0L;
         String lobbyName = "lobbyName";
-        Visibility visibility = Visibility.PRIVATE;
-        GameMode gameMode = GameMode.ONE_VS_ONE;
-        GameType gameType = GameType.UNRANKED;
+        Visibility visibility = PRIVATE;
+        GameMode gameMode = ONE_VS_ONE;
+        GameType gameType = UNRANKED;
 
         // create lobby
         ILobby createdLobby = new Lobby(id, lobbyName, visibility, null);
@@ -56,10 +112,10 @@ class LobbyServiceTest {
         createdLobby = Mockito.spy(createdLobby);
 
         // override generateQRCode() method
-        Mockito.when(createdLobby.getQrCode()).thenReturn(qrCode);
+        when(createdLobby.getQrCode()).thenReturn(qrCode);
 
         // mock lobbyManager that it returns the mocked lobby
-        Mockito.when(lobbyManager.getLobbyWithId(Mockito.anyLong())).thenReturn(createdLobby);
+        when(lobbyManager.getLobbyWithId(Mockito.anyLong())).thenReturn(createdLobby);
 
         // do
         byte[] result = lobbyService.getQRCodeFromLobby(hostToken, id);

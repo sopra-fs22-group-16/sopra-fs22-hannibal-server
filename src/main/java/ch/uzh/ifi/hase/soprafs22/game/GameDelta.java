@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.game;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class GameDelta {
     private final MoveCommand moveCommand;
@@ -53,5 +54,29 @@ public class GameDelta {
 
     public SurrenderInfo getSurrenderInfo() {
         return surrenderInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameDelta gameDelta = (GameDelta) o;
+        return Objects.equals(moveCommand, gameDelta.moveCommand) && Objects.equals(unitHealths, gameDelta.unitHealths) && Objects.equals(turnInfo, gameDelta.turnInfo) && Objects.equals(gameOverInfo, gameDelta.gameOverInfo) && Objects.equals(surrenderInfo, gameDelta.surrenderInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(moveCommand, unitHealths, turnInfo, gameOverInfo, surrenderInfo);
+    }
+
+    @Override
+    public String toString() {
+        return "GameDelta{" +
+                "moveCommand=" + moveCommand +
+                ", unitHealths=" + unitHealths +
+                ", turnInfo=" + turnInfo +
+                ", gameOverInfo=" + gameOverInfo +
+                ", surrenderInfo=" + surrenderInfo +
+                '}';
     }
 }

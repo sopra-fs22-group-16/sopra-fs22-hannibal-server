@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.game;
 
+import java.util.Objects;
+
 /**
  * Holds data related to a turn.
  */
@@ -28,5 +30,26 @@ public class TurnInfo {
      */
     public long getPlayerId() {
         return playerId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TurnInfo turnInfo = (TurnInfo) o;
+        return turn == turnInfo.turn && playerId == turnInfo.playerId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turn, playerId);
+    }
+
+    @Override
+    public String toString() {
+        return "TurnInfo{" +
+                "turn=" + turn +
+                ", playerId=" + playerId +
+                '}';
     }
 }

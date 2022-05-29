@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,11 +23,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalMatchers.and;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private DaoAuthenticationProvider authProvider;
 
     @InjectMocks
     private UserService userService;
@@ -79,24 +85,24 @@ class UserServiceTest {
         testUser3.setWins(10);
         testUser3.setLosses(20);
 
-        Mockito.when(userRepository.findById(testUser1.getId())).thenReturn(Optional.of(testUser1));
-        Mockito.when(userRepository.findById(testUser2.getId())).thenReturn(Optional.of(testUser2));
+        when(userRepository.findById(testUser1.getId())).thenReturn(Optional.of(testUser1));
+        when(userRepository.findById(testUser2.getId())).thenReturn(Optional.of(testUser2));
 
-        Mockito.when(userRepository.findById(and(not(eq(testUser1.getId())), not(eq(testUser2.getId()))))).thenReturn(Optional.empty());
+        when(userRepository.findById(and(not(eq(testUser1.getId())), not(eq(testUser2.getId()))))).thenReturn(Optional.empty());
 
-        Mockito.when(userRepository.findRegisteredUserByUsername(testUser1.getUsername())).thenReturn(testUser1);
-        Mockito.when(userRepository.findRegisteredUserByUsername(testUser2.getUsername())).thenReturn(testUser2);
+        when(userRepository.findRegisteredUserByUsername(testUser1.getUsername())).thenReturn(testUser1);
+        when(userRepository.findRegisteredUserByUsername(testUser2.getUsername())).thenReturn(testUser2);
 
-        Mockito.when(userRepository.findRegisteredUserByUsername(and(not(eq(testUser1.getUsername())), not(eq(testUser2.getUsername()))))).thenReturn(null);
+        when(userRepository.findRegisteredUserByUsername(and(not(eq(testUser1.getUsername())), not(eq(testUser2.getUsername()))))).thenReturn(null);
 
-        Mockito.when(userRepository.findAllByOrderByRankedScoreAsc(Mockito.any())).thenReturn(List.of(testUser1, testUser2, testUser3));
-        Mockito.when(userRepository.findAllByOrderByRankedScoreDesc(Mockito.any())).thenReturn(List.of(testUser3, testUser2, testUser1));
+        when(userRepository.findAllByOrderByRankedScoreAsc(Mockito.any())).thenReturn(List.of(testUser1, testUser2, testUser3));
+        when(userRepository.findAllByOrderByRankedScoreDesc(Mockito.any())).thenReturn(List.of(testUser3, testUser2, testUser1));
 
-        Mockito.when(userRepository.findAllByOrderByWinsAsc(Mockito.any())).thenReturn(List.of(testUser3, testUser1, testUser2));
-        Mockito.when(userRepository.findAllByOrderByWinsDesc(Mockito.any())).thenReturn(List.of(testUser2, testUser1, testUser3));
+        when(userRepository.findAllByOrderByWinsAsc(Mockito.any())).thenReturn(List.of(testUser3, testUser1, testUser2));
+        when(userRepository.findAllByOrderByWinsDesc(Mockito.any())).thenReturn(List.of(testUser2, testUser1, testUser3));
 
-        Mockito.when(userRepository.findAllByOrderByLossesAsc(Mockito.any())).thenReturn(List.of(testUser2, testUser3, testUser1));
-        Mockito.when(userRepository.findAllByOrderByLossesDesc(Mockito.any())).thenReturn(List.of(testUser1, testUser3, testUser2));
+        when(userRepository.findAllByOrderByLossesAsc(Mockito.any())).thenReturn(List.of(testUser2, testUser3, testUser1));
+        when(userRepository.findAllByOrderByLossesDesc(Mockito.any())).thenReturn(List.of(testUser1, testUser3, testUser2));
 
     }
 
@@ -499,5 +505,45 @@ class UserServiceTest {
         assertEquals(testUser1.getRankedScore(), oldData.getRankedScore());
         assertEquals(testUser1.getWins(), oldData.getWins());
         assertEquals(testUser1.getLosses(), oldData.getLosses());
+    }
+
+    @Test
+    void registerUser() {
+        RegisteredUser registeredUser = mock(RegisteredUser.class);
+        when(registeredUser.getUsername()).thenReturn("userName");
+        when(registeredUser.getPassword()).thenReturn("password");
+
+        userService.registerUser(registeredUser);
+
+        verify(userRepository).save(registeredUser);
+        verify(userRepository).flush();
+    }
+
+    @Test
+    void userLogin() {
+        RegisteredUser registeredUser = mock(RegisteredUser.class);
+        Authentication authentication = mock(Authentication.class);
+        when(registeredUser.getUsername()).thenReturn("userName");
+        when(registeredUser.getPassword()).thenReturn("password");
+        when(authProvider.authenticate(any())).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(registeredUser);
+
+        RegisteredUser actual = userService.userLogin(registeredUser);
+
+        verify(authProvider).authenticate(any());
+        assertEquals(registeredUser, actual);
+    }
+
+    @Test
+    void userLogout() {
+        RegisteredUser registeredUser = mock(RegisteredUser.class);
+        when(registeredUser.getUsername()).thenReturn("userName");
+        when(registeredUser.getPassword()).thenReturn("password");
+        when(userRepository.findRegisteredUserByUsername(eq("userName"))).thenReturn(registeredUser);
+
+        RegisteredUser actual = userService.userLogout(registeredUser);
+
+        verify(userRepository).findRegisteredUserByUsername(eq("userName"));
+        assertEquals(registeredUser, actual);
     }
 }
