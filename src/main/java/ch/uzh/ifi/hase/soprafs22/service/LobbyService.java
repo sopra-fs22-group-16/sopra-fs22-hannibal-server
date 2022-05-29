@@ -350,7 +350,7 @@ public class LobbyService {
         ILobby lobby = getLobbyByIdElseThrowNotFound(lobbyId);
 
         if (invitationCode != null && !lobby.getInvitationCode().equals(invitationCode)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format("The code %s does not match the lobby", invitationCode));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The code %s does not match the lobby", invitationCode));
         }
 
         RegisteredUser registeredUser = null;
@@ -366,7 +366,7 @@ public class LobbyService {
         // Check if gameType equals ranked and the request is form an unregistered user
         if (lobby.getGameType() == GameType.RANKED && registeredUser == null) {
             String errorMessage = "A guest user can not join a ranked lobby. Therefore, you could not join the lobby!";
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, errorMessage);
         }
 
         IPlayer newPlayer = lobby.generatePlayer();
