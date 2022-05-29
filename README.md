@@ -39,7 +39,7 @@ We performed multiple brainstorming sessions as a group and came up with differe
 
 ## Technologies
 
-<img src="https://user-images.githubusercontent.com/91155454/170885686-bd14da8d-5070-49ac-b88d-baa2e20729bf.svg" width="16 height="16" /> [**gradle**](https://gradle.org/)
+<img src="https://user-images.githubusercontent.com/91155454/170843203-151000ab-db93-4750-b4f4-ba4060a23d53.png" width="16" height="16" /> [**Java**](https://java.com/)
                                                                                                  
 <img src="https://user-images.githubusercontent.com/91155454/170843203-151000ab-db93-4750-b4f4-ba4060a23d53.png" width="16" height="16" /> [**Java**](https://java.com/)		
 
