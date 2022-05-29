@@ -243,7 +243,7 @@ public class LobbyService {
     }
 
     /**
-     * Create a game for a lobby
+     * Create a game for a lobby.
      *
      * @param token   token of the user that tries to start a game
      * @param lobbyId id of the lobby for which a game should be created

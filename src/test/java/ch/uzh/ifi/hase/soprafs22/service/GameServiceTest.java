@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.game.Game;
-import ch.uzh.ifi.hase.soprafs22.game.Position;
+import ch.uzh.ifi.hase.soprafs22.game.*;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameMode;
 import ch.uzh.ifi.hase.soprafs22.game.enums.GameType;
 import ch.uzh.ifi.hase.soprafs22.game.enums.Team;
@@ -13,6 +12,8 @@ import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.MoveCommand;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobby;
 import ch.uzh.ifi.hase.soprafs22.lobby.interfaces.ILobbyManager;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.user.RegisteredUser;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ class GameServiceTest {
     @BeforeEach
     void beforeEach() {
         Map<String, IPlayer> players = Map.of(PLAYER_1.getToken(), PLAYER_1, PLAYER_2.getToken(), PLAYER_2);
-        Game game = new Game(GameMode.ONE_VS_ONE, GameType.RANKED, players);
+        Game game = new Game(GameMode.ONE_VS_ONE, GameType.UNRANKED, players);
         when(lobbyManager.getLobbyWithId(GAME_ID)).thenReturn(lobbyWithGame);
         when(lobbyManager.getLobbyWithId(NO_GAME_ID)).thenReturn(lobbyWithoutGame);
         when(lobbyWithGame.getGame()).thenReturn(game);
@@ -84,8 +85,6 @@ class GameServiceTest {
         gameService.setLobbyManager(oldLobbyManger);
     }
 
-    // TODO: add test for GameOver in attack, move and wait.
-    // TODO test for AttackOutOfRangeException once it is implemented in units.
     @Test
     void attack_NotPlayersTurnException() {
         attackCommand = new AttackCommand(redUnitPosition, blueUnitPosition, redUnitPosition);
@@ -218,6 +217,19 @@ class GameServiceTest {
     void wait_OK() {
         moveCommand = new MoveCommand(redUnitPosition, noUnitPosition);
         assertDoesNotThrow(() -> gameService.unitMove(GAME_ID, PLAYER1_TOKEN, moveCommand));
+    }
+
+    @Test
+    void validSurrender() {
+        GameDelta gameDelta = gameService.surrender(GAME_ID, PLAYER1_TOKEN);
+
+        GameDelta expected = new GameDelta(/*moveCommand=*/ null,
+                /*unitHealths*/ null,
+                new TurnInfo(/*turn=*/1, /*playerId=*/ 1),
+                new GameOverInfo(List.of(1L), /*rankedScoreDeltas=*/ null),
+                new SurrenderInfo(0L, /*rankedScoreDeltas=*/ null));
+
+        assertEquals(expected, gameDelta);
     }
 
     private Position positionWithTeamUnit(Game game, Team team) {
