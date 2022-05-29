@@ -35,7 +35,7 @@ Hannibal is a turn-based strategy game in which players can play against each ot
 
 ## High-level components
 
-TODO:
+The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5).
 
 ## External Dependencies	
 
