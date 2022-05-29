@@ -38,7 +38,8 @@ Hannibal is a turn-based strategy game in which players can play against each ot
 
 ## High-level components
 
-The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5).
+The high-level architecture follows the [Repository-Service Pattern](https://tom-collings.medium.com/controller-service-repository-16e29a4684e5). It promotes the separation of concerns with introducing the three entities Controller, Service, and Repository. It allows the developer to reuse or create reusable POJOs as models.
+It facilitates testing of a particular layer since it enables the developer to mock any layer below or above it.
 
 ## External Dependencies	
 
@@ -77,6 +78,7 @@ and open the project with an IDE of your choice.
 ```bash
 ./gradlew test
 ```
+A test coverage over 85% was achieved with unit tests for the POJOs, the controller layer, and the service layer, additional integration tests for the service layer, and integration tests for the repository layer.
 
 ### Development Mode
 
