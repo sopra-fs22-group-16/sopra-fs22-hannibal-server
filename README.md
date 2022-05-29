@@ -99,13 +99,12 @@ do the following:
 1. Open Tab: **Run**/Edit Configurations
 2. Add a new Remote Configuration and name it properly
 3. Start the Server in Debug mode: `./gradlew bootRun --debug-jvm`
-4. Press `Shift + F9` or the use **Run**/Debug"Name of your task"
+4. Use **Run**/Debug"Name of your task"
 5. Set breakpoints in the application where you need it
 6. Step through the process one step at a time
 
 This launches the test runner in an interactive watch mode.
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
 
 ### Deployment
 After each commit to the master branch, automatic Github Actions get executed which deploy our application to [Heroku](https://www.heroku.com/).
