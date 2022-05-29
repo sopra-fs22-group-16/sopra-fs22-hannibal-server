@@ -192,7 +192,7 @@ class GameTest {
 
     @Test
     void gameIsOver_surrender() throws Exception {
-        GameDelta delta = game.surrender("token0");
+        GameDelta delta = game.playerSurrender("token0");
 
         assertEquals(1L, delta.getGameOverInfo().getWinners().get(0));
     }
@@ -284,7 +284,7 @@ class GameTest {
         playerMap.put("token2", new Player(2L, "user2", "token2", Team.RED));
         playerMap.put("token3", new Player(3L, "user3", "token3", Team.BLUE));
         game = new Game(GameMode.TWO_VS_TWO, GameType.UNRANKED, playerMap);
-        game.surrender("token0"); // player 0 surrenders, turn = 0
+        game.playerSurrender("token0"); // player 0 surrenders, turn = 0
         game.nextTurn(); // player 1 skips turn, turn = 1
         game.nextTurn(); // player 2 skips turn, turn = 2
 

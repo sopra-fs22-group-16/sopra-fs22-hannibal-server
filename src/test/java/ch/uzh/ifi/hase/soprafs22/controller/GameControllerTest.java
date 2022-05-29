@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.game.Game;
-import ch.uzh.ifi.hase.soprafs22.game.GameDelta;
-import ch.uzh.ifi.hase.soprafs22.game.Position;
-import ch.uzh.ifi.hase.soprafs22.game.TurnInfo;
+import ch.uzh.ifi.hase.soprafs22.game.*;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
@@ -31,6 +28,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,18 +75,15 @@ class GameControllerTest {
 
     private Position position1;
     private Position position2;
-    private Position position3;
 
     private AttackCommand attackCommand;
     private MoveCommand moveCommand;
-
-    private TurnInfo turnInfo = new TurnInfo(1, 2L);
 
     @BeforeEach
     void setUp() {
         position1 = new Position(1, 2);
         position2 = new Position(3, 4);
-        position3 = new Position(5, 6);
+        Position position3 = new Position(5, 6);
         positionDTO1 = new PositionDTO();
         positionDTO2 = new PositionDTO();
         positionDTO3 = new PositionDTO();
@@ -106,7 +102,7 @@ class GameControllerTest {
 
 
     @Test
-    void test_unitAttack() throws Exception {
+    void givenUnitAttackPutDTO_validAttack_thenReturnGameDelta() throws Exception {
         UnitAttackPutDTO attackPutDTO = new UnitAttackPutDTO();
         attackPutDTO.setAttacker(positionDTO1);
         attackPutDTO.setDefender(positionDTO2);
@@ -134,8 +130,11 @@ class GameControllerTest {
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), gameDeltaSockDTOArgumentCaptor.capture());
 
         GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
-
         assertNull(deltaSockDTO.getTurnInfo());
+        assertNull(deltaSockDTO.getGameOverInfo());
+        assertNull(deltaSockDTO.getSurrenderInfo());
+        assertNotNull(deltaSockDTO.getMove());
+
         UnitMoveDTO moveSock = deltaSockDTO.getMove();
         assertEquals(1, moveSock.getStart().getX());
         assertEquals(2, moveSock.getStart().getY());
@@ -146,7 +145,7 @@ class GameControllerTest {
         assertEquals(2, healthSock.size());
 
         // list used to come from a list (with guaranteed order) now it is a map.
-        for (UnitHealthDTO uh: healthSock) {
+        for (UnitHealthDTO uh : healthSock) {
             if (uh.getHealth() == 1) {
                 assertEquals(1, uh.getUnitPosition().getX());
                 assertEquals(2, uh.getUnitPosition().getY());
@@ -163,7 +162,7 @@ class GameControllerTest {
     }
 
     @Test
-    void test_unitMove() throws Exception {
+    void givenUnitMoveDTO_validMove_thenReturnGameDelta() throws Exception {
         UnitMoveDTO unitMoveDTO = new UnitMoveDTO();
         unitMoveDTO.setStart(positionDTO1);
         unitMoveDTO.setDestination(positionDTO2);
@@ -179,10 +178,13 @@ class GameControllerTest {
 
         verify(gameService).unitMove(MATCH_ID, TOKEN, moveCommand);
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), gameDeltaSockDTOArgumentCaptor.capture());
-        GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
 
+        GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
         assertNull(deltaSockDTO.getUnitHealths());
         assertNull(deltaSockDTO.getTurnInfo());
+        assertNull(deltaSockDTO.getGameOverInfo());
+        assertNull(deltaSockDTO.getSurrenderInfo());
+
         UnitMoveDTO moveSock = deltaSockDTO.getMove();
         assertEquals(1, moveSock.getStart().getX());
         assertEquals(2, moveSock.getStart().getY());
@@ -191,7 +193,7 @@ class GameControllerTest {
     }
 
     @Test
-    void test_getStats() throws Exception {
+    void givenGameStatistics_validInput_thenReturnGameStatistics() throws Exception {
         IGameStatistics gameStatistics = new IGameStatistics() {
             @Override
             public Map<Long, List<Integer>> unitsPerPlayer() {
@@ -244,6 +246,33 @@ class GameControllerTest {
                 .andExpect(jsonPath("$.averageUnitsPerTurn", is(0.42)))
                 .andExpect(jsonPath("$.averageKillsPerTurn", is(3.14)))
                 .andExpect(jsonPath("$.totalMoves", is(43)));
+    }
+
+    @Test
+    void givenPlayerId_validSurrender_thenReturnGameDelta() throws Exception {
+        long playerId = 1L;
+        MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/surrender")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", TOKEN);
+
+        SurrenderInfo surrenderInfo = new SurrenderInfo(playerId, new HashMap<>());
+        TurnInfo turnInfo = new TurnInfo(1, playerId);
+        GameOverInfo gameOverInfo = new GameOverInfo(new ArrayList<>());
+        GameDelta gameDelta = new GameDelta(turnInfo, gameOverInfo, surrenderInfo);
+        when(gameService.playerSurrender(MATCH_ID, TOKEN)).thenReturn(gameDelta);
+
+        mockMvc.perform(request)
+                .andExpect(status().isNoContent());
+
+        verify(gameService).playerSurrender(MATCH_ID, TOKEN);
+        verify(socketMessage).convertAndSend(eq("/topic/game/101"), gameDeltaSockDTOArgumentCaptor.capture());
+
+        GameDeltaWebSocketDTO deltaSockDTO = gameDeltaSockDTOArgumentCaptor.getValue();
+        assertEquals(turnInfo, deltaSockDTO.getTurnInfo());
+        assertEquals(gameOverInfo, deltaSockDTO.getGameOverInfo());
+        assertEquals(surrenderInfo, deltaSockDTO.getSurrenderInfo());
+        assertNull(deltaSockDTO.getMove());
+        assertNull(deltaSockDTO.getUnitHealths());
     }
 
     /**

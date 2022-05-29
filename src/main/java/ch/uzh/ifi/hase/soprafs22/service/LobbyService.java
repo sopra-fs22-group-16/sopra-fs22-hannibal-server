@@ -342,7 +342,7 @@ public class LobbyService {
         return lobby;
     }
 
-    public Collection<ILobby> getLobbiesCollection() {
+    public Collection<ILobby> getLobbies() {
         return lobbyManager.getLobbiesCollection();
     }
 

@@ -135,11 +135,10 @@ public class GameService {
         }
     }
 
-    public GameDelta surrender(Long id, String token) {
+    public GameDelta playerSurrender(Long id, String token) {
         try {
             Game game = getGameById(id);
-
-            GameDelta gameDelta = game.surrender(token);
+            GameDelta gameDelta = game.playerSurrender(token);
             // If gameOver info is set (game has ended) and if it is a ranked game
             // update the registered players
             if(game.getGameType() == GameType.RANKED && gameDelta.getGameOverInfo() != null){

@@ -23,8 +23,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,11 +87,11 @@ class UserControllerTest {
         String orderBy = "RANKED_SCORE";
 
         List<RegisteredUser> users = new LinkedList<>();
-        for(int i = 0; i < pageSize; ++i){
+        for (int i = 0; i < pageSize; ++i) {
             RegisteredUser registeredUser = new RegisteredUser();
-            registeredUser.setId((long)i);
-            registeredUser.setToken("token-"+i);
-            registeredUser.setUsername("username-"+i);
+            registeredUser.setId((long) i);
+            registeredUser.setToken("token-" + i);
+            registeredUser.setUsername("username-" + i);
             registeredUser.setPassword("password");
             registeredUser.setRankedScore(i);
             registeredUser.setWins(i);
@@ -106,7 +105,7 @@ class UserControllerTest {
         given(userService.getTotalRegisteredUsers()).willReturn(totalUsers);
 
         // when
-        MockHttpServletRequestBuilder getRequest = get("/v1/users?sortBy="+orderBy+"&ascending=true&pageNumber="+page+"&perPage="+pageSize)
+        MockHttpServletRequestBuilder getRequest = get("/v1/users?sortBy=" + orderBy + "&ascending=true&pageNumber=" + page + "&perPage=" + pageSize)
                 .contentType(MediaType.APPLICATION_JSON);
 
         // then
@@ -114,7 +113,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.limit", is(pageSize)))
                 .andExpect(jsonPath("$.length", is(users.size())))
-                .andExpect(jsonPath("$.total", is((int)totalUsers)))
+                .andExpect(jsonPath("$.total", is((int) totalUsers)))
                 .andExpect(jsonPath("$.users").isArray())
                 .andExpect(jsonPath("$.users[0].id", is(users.get(0).getId().intValue())))
                 .andExpect(jsonPath("$.users[0].username", is(users.get(0).getUsername())))
@@ -122,6 +121,70 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.users[0].wins", is(users.get(0).getWins())))
                 .andExpect(jsonPath("$.users[0].losses", is(users.get(0).getLosses())));
 
+    }
+
+    @Test
+    void givenUnregisteredUserPutDTO_registerUser_thenReturnRegisteredUser() throws Exception {
+        RegisteredUserPutDTO unregisteredUserPutDTO = new RegisteredUserPutDTO();
+        unregisteredUserPutDTO.setUsername("Luis");
+        unregisteredUserPutDTO.setPassword("LuisPassword");
+
+        RegisteredUser unregisteredUser = new RegisteredUser();
+        unregisteredUser.setUsername("Luis");
+        unregisteredUser.setPassword("LuisPassword");
+
+        given(userService.registerUser(Mockito.any())).willReturn(unregisteredUser);
+
+        MockHttpServletRequestBuilder postRequest = post("/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(unregisteredUserPutDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username", is(unregisteredUser.getUsername())))
+                .andExpect(jsonPath("$.id", is(0)));
+    }
+
+    @Test
+    void givenRegisteredUserPutDTO_userLogin_thenReturnLoggedInUser() throws Exception {
+        RegisteredUserPutDTO registeredUserPutDTO = new RegisteredUserPutDTO();
+        registeredUserPutDTO.setUsername("Luis");
+        registeredUserPutDTO.setPassword("LuisPassword");
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("Luis");
+        registeredUser.setPassword("LuisPassword");
+
+        given(userService.userLogin(Mockito.any())).willReturn(registeredUser);
+
+        MockHttpServletRequestBuilder postRequest = post("/v1/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(registeredUserPutDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(0)));
+    }
+
+    @Test
+    void givenLoggedInUserPutDTO_userLogout_thenReturnLoggedOutUser() throws Exception {
+        RegisteredUserPutDTO registeredUserPutDTO = new RegisteredUserPutDTO();
+        registeredUserPutDTO.setUsername("Luis");
+        registeredUserPutDTO.setPassword("LuisPassword");
+
+        RegisteredUser registeredUser = new RegisteredUser();
+        registeredUser.setUsername("Luis");
+        registeredUser.setPassword("LuisPassword");
+
+        given(userService.userLogout(Mockito.any())).willReturn(registeredUser);
+
+        MockHttpServletRequestBuilder postRequest = post("/v1/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(registeredUserPutDTO));
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(0)));
     }
 
     @Test
