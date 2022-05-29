@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.game.*;
-import ch.uzh.ifi.hase.soprafs22.game.logger.GameLogger;
 import ch.uzh.ifi.hase.soprafs22.game.logger.interfaces.IGameStatistics;
 import ch.uzh.ifi.hase.soprafs22.game.units.Unit;
 import ch.uzh.ifi.hase.soprafs22.game.units.commands.AttackCommand;
@@ -103,7 +102,7 @@ class GameControllerTest {
 
 
     @Test
-    void test_unitAttack() throws Exception {
+    void givenUnitAttackPutDTO_validAttack_thenReturnGameDelta() throws Exception {
         UnitAttackPutDTO attackPutDTO = new UnitAttackPutDTO();
         attackPutDTO.setAttacker(positionDTO1);
         attackPutDTO.setDefender(positionDTO2);
@@ -163,7 +162,7 @@ class GameControllerTest {
     }
 
     @Test
-    void test_unitMove() throws Exception {
+    void givenUnitMoveDTO_validMove_thenReturnGameDelta() throws Exception {
         UnitMoveDTO unitMoveDTO = new UnitMoveDTO();
         unitMoveDTO.setStart(positionDTO1);
         unitMoveDTO.setDestination(positionDTO2);
@@ -194,7 +193,7 @@ class GameControllerTest {
     }
 
     @Test
-    void test_getGameStats() throws Exception {
+    void givenGameStatistics_validInput_thenReturnGameStatistics() throws Exception {
         IGameStatistics gameStatistics = new IGameStatistics() {
             @Override
             public Map<Long, List<Integer>> unitsPerPlayer() {
@@ -250,7 +249,7 @@ class GameControllerTest {
     }
 
     @Test
-    void test_playerSurrender() throws Exception {
+    void givenPlayerId_validSurrender_thenReturnGameDelta() throws Exception {
         long playerId = 1L;
         MockHttpServletRequestBuilder request = put("/v1/game/match/101/command/surrender")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -263,7 +262,7 @@ class GameControllerTest {
         when(gameService.playerSurrender(MATCH_ID, TOKEN)).thenReturn(gameDelta);
 
         mockMvc.perform(request)
-                .andExpect(status().is2xxSuccessful());
+                .andExpect(status().isNoContent());
 
         verify(gameService).playerSurrender(MATCH_ID, TOKEN);
         verify(socketMessage).convertAndSend(eq("/topic/game/101"), gameDeltaSockDTOArgumentCaptor.capture());
@@ -272,7 +271,7 @@ class GameControllerTest {
         assertEquals(turnInfo, deltaSockDTO.getTurnInfo());
         assertEquals(gameOverInfo, deltaSockDTO.getGameOverInfo());
         assertEquals(surrenderInfo, deltaSockDTO.getSurrenderInfo());
-        assertNull( deltaSockDTO.getMove());
+        assertNull(deltaSockDTO.getMove());
         assertNull(deltaSockDTO.getUnitHealths());
     }
 
