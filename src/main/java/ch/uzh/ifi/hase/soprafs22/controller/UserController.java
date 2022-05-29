@@ -38,12 +38,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    //TODO add tests
-
     @PostMapping("/{apiVersion}/users")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public UserRegistrationGetDTO registerUser(@RequestBody RegisteredUserPutDTO unregisteredUserPutDTO){
+    public UserRegistrationGetDTO registerUser(@RequestBody RegisteredUserPutDTO unregisteredUserPutDTO) {
         RegisteredUser userInput = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(unregisteredUserPutDTO);
 
         RegisteredUser registeredUser = userService.registerUser(userInput);
@@ -51,13 +49,10 @@ public class UserController {
         return DTOMapper.INSTANCE.convertRegisteredUserToUserRegistrationGetDTO(registeredUser);
     }
 
-
-    //TODO add tests
-
     @PostMapping("/{apiVersion}/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserLoginGetDTO userLogout(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
+    public UserLoginGetDTO userLogout(@RequestBody RegisteredUserPutDTO registeredUserPutDTO) {
         RegisteredUser loggedInUser = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
 
         RegisteredUser loggedOutUser = userService.userLogout(loggedInUser);
@@ -65,11 +60,10 @@ public class UserController {
         return DTOMapper.INSTANCE.convertRegisteredUserToUserLoginGetDTO(loggedOutUser);
     }
 
-    //TODO add tests
     @PostMapping("/{apiVersion}/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserLoginGetDTO userLogin(@RequestBody RegisteredUserPutDTO registeredUserPutDTO){
+    public UserLoginGetDTO userLogin(@RequestBody RegisteredUserPutDTO registeredUserPutDTO) {
         RegisteredUser loggedOutUser = DTOMapper.INSTANCE.convertRegisteredUserPutDTOToRegisteredUser(registeredUserPutDTO);
 
         RegisteredUser loggedInUser = userService.userLogin(loggedOutUser);

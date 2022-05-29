@@ -234,7 +234,7 @@ class LobbyControllerTest {
         // when
         given(lobbyService.createGame(player.getToken(), lobby.getId())).willReturn(game);
 
-        MockHttpServletRequestBuilder putRequest = post("/v1/game/match/"+LOBBY_ID)
+        MockHttpServletRequestBuilder putRequest = post("/v1/game/match/" + LOBBY_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("token", player.getToken());
 
@@ -277,7 +277,7 @@ class LobbyControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(lobbyService).updateLobby(null, player.getToken(), lobbyPostDTO.getName(), lobbyPostDTO.getVisibility(), lobbyPostDTO.getGameMode(), lobbyPostDTO.getGameType());
-        verify(socketMessage).convertAndSend(eq("/topic/lobby/"+ lobby.getId()), lobbyDeltaSockDTOArgumentCaptor.capture());
+        verify(socketMessage).convertAndSend(eq("/topic/lobby/" + lobby.getId()), lobbyDeltaSockDTOArgumentCaptor.capture());
         LobbyDeltaWebSocketDTO deltaSockDTO1 = lobbyDeltaSockDTOArgumentCaptor.getValue();
         assertNull(deltaSockDTO1.getNameChangedOfPlayerWithId());
         assertTrue(deltaSockDTO1.isPullUpdate());

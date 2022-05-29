@@ -271,7 +271,7 @@ class GameControllerTest {
         assertEquals(turnInfo, deltaSockDTO.getTurnInfo());
         assertEquals(gameOverInfo, deltaSockDTO.getGameOverInfo());
         assertEquals(surrenderInfo, deltaSockDTO.getSurrenderInfo());
-        assertNull( deltaSockDTO.getMove());
+        assertNull(deltaSockDTO.getMove());
         assertNull(deltaSockDTO.getUnitHealths());
     }
 

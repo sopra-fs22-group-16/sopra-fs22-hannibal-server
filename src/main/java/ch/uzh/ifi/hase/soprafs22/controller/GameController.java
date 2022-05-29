@@ -63,7 +63,7 @@ public class GameController {
 
     @GetMapping("/{apiVersion}/game/match/{id}/stats")
     public GameStatisticsGetDTO getGameStats(@PathVariable Long id) {
-        IGameStatistics gameStatistics =  this.gameService.getGameStats(id);
+        IGameStatistics gameStatistics = this.gameService.getGameStats(id);
         return DTOMapper.INSTANCE.convertIGameStatisticsToGameStatisticsGetDTO(gameStatistics);
     }
 
