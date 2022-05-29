@@ -221,7 +221,7 @@ class GameServiceTest {
 
     @Test
     void validSurrender() {
-        GameDelta gameDelta = gameService.surrender(GAME_ID, PLAYER1_TOKEN);
+        GameDelta gameDelta = gameService.playerSurrender(GAME_ID, PLAYER1_TOKEN);
 
         GameDelta expected = new GameDelta(/*moveCommand=*/ null,
                 /*unitHealths*/ null,
