@@ -11,7 +11,8 @@ Hannibal is a turn-based strategy game in which players can play against each ot
 - [Getting started](#getting-started)
     - [Prerequisites and Installation](#prerequisites-and-installation)
     - [Build](#build)
-    - [Testing](#testing)
+    - [Run](#run)
+    - [Test](#test)
     - [Deployment](#deployment)
 
 - [Illustrations](#illustrations)
