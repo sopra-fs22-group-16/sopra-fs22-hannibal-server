@@ -191,7 +191,7 @@ public class Game {
         return new GameDelta(executedMove, checkNextTurn(token), getGameOverInfo(false));
     }
 
-    public GameDelta surrender(String token) throws NotAMemberOfGameException, GameOverException {
+    public GameDelta playerSurrender(String token) throws NotAMemberOfGameException, GameOverException {
         if (!this.decoratedPlayers.containsKey(token))
             throw new NotAMemberOfGameException();
         if (hasEnded())
