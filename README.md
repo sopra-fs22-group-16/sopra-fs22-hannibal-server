@@ -56,6 +56,7 @@ These instructions will get you a copy of the project up and running on your loc
 Follow the instruction guide for the [Hannibal server](https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-server) and [Hannibal client](https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-client).
 
 Get the server
+
 ```bash
 git clone https://github.com/sopra-fs22-group-16/sopra-fs22-group-16-server.git
 ```
@@ -78,6 +79,7 @@ and open the project with an IDE of your choice.
 ```bash
 ./gradlew test
 ```
+
 A test coverage over 85% was achieved with unit tests for the POJOs, the controller layer, and the service layer, additional integration tests for the service layer, and integration tests for the repository layer.
 
 ### Development Mode
@@ -88,13 +90,15 @@ once the content of a file has been changed and you save the file.
 Start two terminal windows and run:
 
 ```bash
-./gradlew build --continuous`
+./gradlew build --continuous
 ```
 
 and in the other one:
+
 ```bash
-`./gradlew bootRun`
+./gradlew bootRun
 ```
+
 ### Debugging
 
 If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
